@@ -1,0 +1,168 @@
+# ============================================================
+#  C# / ASP.NET Core MVC Razor Pages – universell .gitignore
+# ============================================================
+
+# ---------- Build-output ----------
+[Bb]in/
+[Oo]bj/
+out/
+publish/
+
+# ---------- .NET / MSBuild ----------
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+project.lock.json
+project.fragment.lock.json
+artifacts/
+_ReSharper*/
+*.DotSettings.user
+
+# ---------- NuGet ----------
+*.nupkg
+*.snupkg
+**/[Pp]ackages/
+!**/[Pp]ackages/build/
+nuget.config   # behåll om ni versionshanterar feed-inställningar – annars ta bort kommentaren
+.nuget/
+
+# ---------- Razor / ASP.NET ----------
+bundleconfig.json.bak
+ScaffoldingReadMe.txt
+*.pubxml
+*.pubxml.user
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp_proj
+*_wpftmp.csproj
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# ---------- Visual Studio ----------
+.vs/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+[Ee]xpress/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww]in32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Ll]og/
+[Ll]ogs/
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+_NCrunch_*
+nCrunchTemp_*
+AutoTest.Net/
+
+# ---------- VS Code ----------
+.vscode/*
+!.vscode/extensions.json   # dela gärna rekommenderade extensions
+!.vscode/settings.json     # ta bort ! om ni INTE vill dela inställningar
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+
+# ---------- JetBrains (Rider) ----------
+.idea/
+*.sln.iml
+
+# ---------- Vim / Neovim ----------
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+*~
+tags
+[._]*.un~
+
+# ---------- Emacs ----------
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ---------- macOS ----------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ---------- Windows ----------
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ---------- Linux ----------
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ---------- Miljöfiler & hemligheter ----------
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+launchSettings.json          # innehåller ofta portar/env – överväg om ni vill dela
+
+# ---------- Docker (om applicabelt) ----------
+docker-compose.override.yml
+
+# ---------- Övrigt ----------
+*.log
+*.bak
+*.tmp
+npm-debug.log*
+node_modules/
+wwwroot/lib/                 # om ni hanterar frontend-deps via libman/npm
