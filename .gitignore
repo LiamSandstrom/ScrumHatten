@@ -2,6 +2,8 @@
 #  C# / ASP.NET Core MVC Razor Pages – universell .gitignore
 # ============================================================
 
+notes.md
+
 # ---------- Build-output ----------
 [Bb]in/
 [Oo]bj/
