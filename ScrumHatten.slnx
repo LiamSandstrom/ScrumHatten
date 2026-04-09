@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="MVC/MVC.csproj" />
+  <Project Path="Repository/Repository.csproj" />
+  <Project Path="Services/Services.csproj" />
 </Solution>
