@@ -14,5 +14,6 @@ namespace Models
         public string Name { get; set; }
         public int Price { get; set; }
         public List<HatMaterial> Materials { get; set; } = new();
+        public int Quantity { get; set; }
     }
 }
