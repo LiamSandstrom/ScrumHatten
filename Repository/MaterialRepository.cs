@@ -1,10 +1,48 @@
-﻿using System;
+﻿using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Repository
 {
-    internal class MaterialRepository
+    public class MaterialRepository : IMaterialRepository
     {
+        private readonly IMongoCollection<Material> _collection;
+        public MaterialRepository(MongoConnector connector) {
+            
+            _collection = connector._database.GetCollection<Material>("Materials");
+        }
+        public async Task<double>GetPriceByIdAsync(string id)
+                    {
+            var price = await _collection.Find(m => m.Id == id)
+                .Project(m => m.Price)
+                .FirstOrDefaultAsync();
+            return price;
+        }
+
+        public async Task<int> GetQuantityByIdAsync(string id)
+        {
+            var quantity = await _collection.Find(m => m.Id == id)
+                .Project(m => m.Quantity)
+                .FirstOrDefaultAsync();
+            return quantity;
+        }
+
+        public async Task<string> GetUnitByIdAsync(string id)
+        {
+            var unit = await _collection.Find(m => m.Id == id)
+                .Project(m => m.Unit)
+                .FirstOrDefaultAsync();
+            return unit;
+        }
+        public async Task<List<string>> GetAllMaterialsAsync()
+        {
+            var materials = await _collection.Find(_ => true)
+                .Project(m => m.Name)
+                .ToListAsync();
+            return materials;
+        }
     }
 }
