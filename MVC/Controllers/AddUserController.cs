@@ -21,31 +21,18 @@ namespace MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddUser(User model, string PasswordHash)
+        public async Task<IActionResult> AddUser(User model)
         {
             if (ModelState.IsValid)
             {
+                model.Id = Guid.NewGuid();
+                model.SecurityStamp = Guid.NewGuid().ToString();
+                model.ConcurrencyStamp = Guid.NewGuid().ToString();
                 _mongoConnector.AddUser(model);
-                return RedirectToAction("Index");
+                TempData["SuccessMessage"] = "Användaren har lagts till!" ;
+                return RedirectToAction("AddUser","AddUser");
             }
-
-
-            //        Id = model.Id,
-            //        Name = model.Name,
-            //        UserName = model.UserName,
-            //        Email = model.Email,
-            //        PhoneNumber = model.PhoneNumber,
-            //        Role = model.Role
-            //    };
-            //    var result = await _userManager.CreateAsync(user, PasswordHash);
-            //    if (result.Succeeded)
-            //    {
-            //        return RedirectToAction("Index");
-            //    }
-            //    foreach (var error in result.Errors)
-            //    {
-            //        ModelState.AddModelError(string.Empty, error.Description);
-            //    }
+            TempData["ErrorMessage"] = "Kunde inte lägga till användaren.";
             return View(model);
         }
         public IActionResult Index()
