@@ -1,6 +1,6 @@
 ﻿namespace MVC.Controllers
 {
-    public class StockedHatController
+    public class HatController
     {
     }
 }

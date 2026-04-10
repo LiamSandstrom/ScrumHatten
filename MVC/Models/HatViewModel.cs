@@ -1,6 +1,6 @@
 ﻿namespace MVC.Models
 {
-    public class StockedHatsVM
+    public class HatViewModel
     {
     }
 }
