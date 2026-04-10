@@ -1,5 +1,4 @@
-﻿
-@model Models.User
+﻿@model Models.User
 
 @{
 	ViewData["Title"] = "Lägg till ny användare";
@@ -8,45 +7,54 @@
 
 <hr />
 
-<div class = "row">
+<div class="row">
 	<div class="col-md-4">
-		<form asp-action ="AddUser" method ="post">
-			<div class ="form-group mb-3">
-				<lable asp-for="Name" class="control-label">Namn</lable>
-				<input asp-for ="Name" class="form-control"/>
+		<form asp-action="AddUser" method="post">
+			<div class="form-group mb-3">
+				<label asp-for="Name" class="control-label">Namn</label>
+				<input asp-for="Name" class="form-control" />
 			</div>
 			<div class="form-group mb-3">
-				<lable asp-for="UserName" class="control-label">Användarnamn</lable>
+				<label asp-for="UserName" class="control-label">Användarnamn</label>
 				<input asp-for="UserName" class="form-control" />
 			</div>
 			<div class="form-group mb-3">
-				<lable asp-for="PasswordHash" class="control-label">Lösenord</lable>
-				<input asp-for="PasswordHash" class="form-control" />
+				<label asp-for="PasswordHash" class="control-label">Lösenord</label>
+				<input asp-for="PasswordHash" type="password" class="form-control" />
 			</div>
 			<div class="form-group mb-3">
-				<lable asp-for="Email" class="control-label">E-post</lable>
+				<label asp-for="Email" class="control-label">E-post</label>
 				<input asp-for="Email" class="form-control" />
 			</div>
 			<div class="form-group mb-3">
-				<lable asp-for="PhoneNumber" class="control-label">Telefonnummer</lable>
+				<label asp-for="PhoneNumber" class="control-label">Telefonnummer</label>
 				<input asp-for="PhoneNumber" class="form-control" />
 			</div>
+
 			<div class="form-group mb-3">
-				<lable asp-for="Id" class="control-label">AnställningsId</lable>
-				<input asp-for="Id" class="form-control" />
-			</div>
-			<div class ="form-group mb-3">
-				<lable asp-for="Role" class="control-label">Välj roll</lable>
+				<label asp-for="Role" class="control-label">Välj roll</label>
 				<select asp-for="Role" class="form-control"
-				asp-items ="Html.GetEnumSelectList<Models.UserRole>()">
+						asp-items="Html.GetEnumSelectList<Models.UserRole>()">
 					<option value="">-- Välj en roll --</option>
 				</select>
 				<span asp-validation-for="Role" class="text-danger"></span>
 			</div>
-				<div class="form-group">
-					<buttom type="submit" class="btn btn-success">Regristrera användare</buttom>
-				<a asp-action ="Index" class="btn btn-secondary">Avbryt</a>
+			<div class="form-group">
+				<button type="submit" class="btn btn-success">Regristrera användare</button>
+				<a asp-action="Index" class="btn btn-secondary">Avbryt</a>
+			</div>
+			@if (TempData["SuccessMessage"] != null)
+			{
+				<div class="alert alert-success mt-3">
+					@TempData["SuccessMessage"]
 				</div>
+			}
+			@if (TempData["ErrorMessage"] != null)
+			{
+				<div class="alert alert-danger mt-3">
+					@TempData["ErrorMessage"]
+				</div>
+			}
 		</form>
 	</div>
 </div>
