@@ -14,25 +14,15 @@ namespace Models
         [BsonRepresentation(BsonType.ObjectId)]
 
         [BsonElement("Amound")]
-        public string Amount {  get; set; }
+        public string Amount { get; set; }
 
 
         [BsonElement("Price")]
         public decimal Price { get; set; }
-      
-     
+
+
         // Lägg till Material
 
-       // Lägg in anställd
-
-
-        public MaterialOder(string amound,  decimal price,  HatMaterial hatMaterial)
-        {
-            Amount = amound;
-            Price = price;
-            HatMaterial = hatMaterial;
-        }
-
-       
+        // Lägg in anställd
     }
 }
