@@ -1,5 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
+using System.Reflection.Metadata;
+using Models;
 namespace Repository
 {
     public class MongoConnector
@@ -21,5 +23,11 @@ namespace Repository
             }
         }
 
+        public void AddUser(User user)
+        {
+            var collection = _database.GetCollection<User>("Users");
+            collection.InsertOne(user);
+        }
     }
 }
+

@@ -1,6 +1,6 @@
 <Solution>
   <Project Path="Models/Models.csproj" />
   <Project Path="MVC/MVC.csproj" />
-  <Project Path="Repository/Repository.csproj" />
-  <Project Path="Services/Services.csproj" />
+  <Project Path="Repository/DAL.csproj" />
+  <Project Path="Services/BL.csproj" />
 </Solution>
