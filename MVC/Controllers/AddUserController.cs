@@ -1,6 +1,6 @@
 ﻿using Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
+using Repository;
 using System.Xml;
 
 namespace MVC.Controllers
@@ -8,11 +8,11 @@ namespace MVC.Controllers
 {
     public class AddUserController : Controller
     {
-        private readonly UserManager<User> _userManager;
+        private readonly MongoConnector _mongoConnector;
 
-        public AddUserController(UserManager<User> userManager)
+        public AddUserController(MongoConnector mongoConnector)
         {
-            _userManager = userManager;
+            _mongoConnector = mongoConnector;
         }
         [HttpGet]
         public IActionResult AddUser()
@@ -25,25 +25,27 @@ namespace MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User
-                {
-                    Id = model.Id,
-                    Name = model.Name,
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
-                    Role = model.Role
-                };
-                var result = await _userManager.CreateAsync(user, PasswordHash);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index");
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                _mongoConnector.AddUser(model);
+                return RedirectToAction("Index");
             }
+
+
+            //        Id = model.Id,
+            //        Name = model.Name,
+            //        UserName = model.UserName,
+            //        Email = model.Email,
+            //        PhoneNumber = model.PhoneNumber,
+            //        Role = model.Role
+            //    };
+            //    var result = await _userManager.CreateAsync(user, PasswordHash);
+            //    if (result.Succeeded)
+            //    {
+            //        return RedirectToAction("Index");
+            //    }
+            //    foreach (var error in result.Errors)
+            //    {
+            //        ModelState.AddModelError(string.Empty, error.Description);
+            //    }
             return View(model);
         }
         public IActionResult Index()
