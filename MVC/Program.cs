@@ -1,10 +1,22 @@
+using BL.Interfaces;
+using BL.Services;
+using DAL.Repositories;
+using DAL.Repositories.Interfaces;
 using Repository;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration["MongoDB:ConnectionString"];
 builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionString));
+
+
+// ELin och Carro till HatRepository och HatService
+builder.Services.AddScoped<IHatRepository, HatRepository>();
+builder.Services.AddScoped<IHatService, HatService>();
+
 
 var app = builder.Build();
 

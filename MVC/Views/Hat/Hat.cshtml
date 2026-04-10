@@ -1,0 +1,24 @@
+﻿@model List<Models.Hat>
+
+<h2>Alla hattar</h2>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>Det finns inga hattar att visa</p>
+}
+else
+{
+    <ul>
+        @foreach (var hat in Model)
+        {
+            <li>
+                <strong>@hat.Name</strong> - @hat.Price kr
+                <a asp-controller="Hat"
+                       asp-action="Details"
+                       asp-route-id="@hat.Id">
+                    Se detaljer
+                </a>
+            </li>
+        }
+    </ul>
+}
