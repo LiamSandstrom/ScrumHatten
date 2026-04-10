@@ -4,7 +4,7 @@ namespace Repository
 {
     public class MongoConnector
     {
-        private readonly IMongoDatabase _database;
+        public IMongoDatabase _database;
 
         public MongoConnector(string connectionString)
         {
