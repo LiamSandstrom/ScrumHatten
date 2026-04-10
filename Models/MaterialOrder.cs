@@ -27,7 +27,7 @@ namespace Models
 
 
 
-        public MaterialOrder(string amount,  decimal price,  HatMaterial hatMaterial)
+        public MaterialOrder(double amount,  decimal price,  HatMaterial hatMaterial)
         {
             Amount = amount;
             Price = price;
