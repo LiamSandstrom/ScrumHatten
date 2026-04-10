@@ -30,7 +30,7 @@ namespace Models
         {
             Amount = amound;
             Price = price;
-            HatMaterial = hatMaterial;
+            hatMaterial = hatMaterial;
         }
 
        

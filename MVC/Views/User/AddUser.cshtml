@@ -1,5 +1,52 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
+@model Models.User
+
 @{
+	ViewData["Title"] = "Lägg till ny användare";
 }
+<h2> Skapa en ny användare</h2>
+
+<hr />
+
+<div class = "row">
+	<div class="col-md-4">
+		<form asp-action ="AddUser" method ="post">
+			<div class ="form-group mb-3">
+				<lable asp-for="Name" class="control-lable">Namn</lable>
+				<input asp-for ="Name" class="form-control"/>
+			</div>
+			<div class="form-group mb-3">
+				<lable asp-for="UserName" class="control-lable">Användarnamn</lable>
+				<input asp-for="UserName" class="form-control" />
+			</div>
+			<div class="form-group mb-3">
+				<lable asp-for="PasswordHash" class="control-lable">Lösenord</lable>
+				<input asp-for="PasswordHash" class="form-control" />
+			</div>
+			<div class="form-group mb-3">
+				<lable asp-for="Email" class="control-lable">E-post</lable>
+				<input asp-for="Email" class="form-control" />
+			</div>
+			<div class="form-group mb-3">
+				<lable asp-for="PhoneNumber" class="control-lable">Telefonnummer</lable>
+				<input asp-for="PhoneNumber" class="form-control" />
+			</div>
+			<div class="form-group mb-3">
+				<lable asp-for="Id" class="control-lable">AnställningsId</lable>
+				<input asp-for="Id" class="form-control" />
+			</div>
+			<div class ="form-group mb-3">
+				<lable asp-for="Role" class="control-lable">Välj roll</lable>
+				<select asp-for="Role" class="form-control"
+				asp-items ="Html.GetEnumSelectList<Models.UserRole>()">
+					<option value="">-- Välj en roll --</option>
+				</select>
+				<span asp-validation-for="Role" class="text-danger"></span>
+			</div>
+				<div class="form-group">
+					<buttom typeof="submit" class="btn btn-success">Regristrera användare</buttom>
+				<a asp-action ="Index" class="btn btn-secondary">Avbryt</a>
+				</div>
+		</form>
+	</div>
+</div>
