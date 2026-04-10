@@ -1,0 +1,29 @@
+﻿
+
+@model List <Hat>
+
+<h2>Lagerförda hattar</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Namn</th>
+            <th>Pris</th>
+            <th>Beskrivning</th>
+            <th>Bild</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hat in Model)
+        {
+            <tr>
+                <td>@hat.Id</td>
+                <td>@hat.Name</td>
+                <td>@hat.Price</td>
+                <td>@hat.Description</td>
+                <td><img src="@hat.ImageUrl" alt="@hat.Name" width="100" /></td>
+            </tr>
+        }
+        </tbody>
+
+   
