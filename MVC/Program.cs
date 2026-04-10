@@ -23,7 +23,7 @@ builder.Services.AddIdentity<User, ApplicationRole>(options =>
 })
 .AddMongoDbStores<User, ApplicationRole, Guid>(
     builder.Configuration["MongoDB:ConnectionString"],
-    builder.Configuration["ScrumHatten"]
+    "ScrumHatten"
 )
 .AddDefaultTokenProviders();
 
