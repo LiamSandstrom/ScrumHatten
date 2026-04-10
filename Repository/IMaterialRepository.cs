@@ -4,13 +4,12 @@ using System.Text;
 
 namespace Repository
 {
-    internal interface IHatInterface
+    public interface IMaterialRepository
     {
-        Task<List<String>> GetAllHats();
-        Task<List<String>> GetStockedHats();
-        Task<List<String>> GetCustomHats();
-        Task<List<int>> GetQuantityById(string id);
-        Task<List<double>> GetPriceById(string id);
+        Task<String> GetUnitByIdAsync(string id);
+        Task<int> GetQuantityByIdAsync(string id);
+        Task<double> GetPriceByIdAsync(string id);
+        Task<List<string>> GetAllMaterialsAsync();
         
     }
 }

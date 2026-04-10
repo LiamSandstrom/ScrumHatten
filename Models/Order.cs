@@ -18,7 +18,7 @@ namespace Models
 
         public decimal TimeToMake { get; set; } 
 
-        public string DateToFinish { get; set; }
+        public DateTime DateToFinish { get; set; }
 
         public int HatAmount { get; set; }  
 

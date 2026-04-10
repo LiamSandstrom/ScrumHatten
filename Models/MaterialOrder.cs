@@ -6,15 +6,15 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Models
 {
-    public class MaterialOder
+    public class MaterialOrder
     {
 
 
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
 
-        [BsonElement("Amound")]
-        public string Amount {  get; set; }
+        [BsonElement("Amount")]
+        public double Amount {  get; set; }
 
 
         [BsonElement("Price")]
@@ -26,9 +26,10 @@ namespace Models
        // Lägg in anställd
 
 
-        public MaterialOder(string amound,  decimal price,  HatMaterial hatMaterial)
+
+        public MaterialOrder(string amount,  decimal price,  HatMaterial hatMaterial)
         {
-            Amount = amound;
+            Amount = amount;
             Price = price;
             HatMaterial = hatMaterial;
         }
