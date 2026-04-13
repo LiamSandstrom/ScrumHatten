@@ -74,45 +74,58 @@ namespace MVC.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public IActionResult DeleteHat(string id)
+        {
+            try
+            {
+                _hatService.DeleteHat(id);
+                TempData["SuccessMessage"] = "Hatten har tagits bort.";
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = "Kunde inte ta bort hatten.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateHat(Hat hat, IFormFile? ImageFile)
+        {
+            try
+            {
+                // Om en ny bild valts
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "hats");
+
+                    if (!Directory.Exists(folderPath))
+                        Directory.CreateDirectory(folderPath);
+
+                    string fileName = Guid.NewGuid() + Path.GetExtension(ImageFile.FileName);
+
+                    string fullPath = Path.Combine(folderPath, fileName);
+
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        ImageFile.CopyTo(stream);
+                    }
+
+                    hat.ImageUrl = "/images/hats/" + fileName;
+                }
+
+                _hatService.UpdateHat(hat);
+
+                TempData["SuccessMessage"] = "Hatten uppdaterades!";
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = "Kunde inte uppdatera hatten.";
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
-
-//using Microsoft.AspNetCore.Mvc;
-//using BL.Interfaces;
-//using Models;
-
-//namespace MVC.Controllers
-//{
-//    public class HatController : Controller
-//    {
-//        private readonly IHatService _hatService;
-
-//        public HatController(IHatService hatService)
-//        {
-//            _hatService = hatService;
-//        }
-
-//        // // HAR SVÅRT ATT KOPPLA MOT DATABASEN
-//        public IActionResult Index()
-//        {
-//            List<Hat> hats = _hatService.GetAllHats() ?? new List<Hat>();
-//            return View(hats);
-//        }
-
-//        [HttpPost]
-//        public IActionResult AddHat(Hat hat)
-//        {
-//            if (string.IsNullOrWhiteSpace(hat.Name))
-//            {
-//                TempData["ErrorMessage"] = "Du måste ange ett namn på hatten.";
-//                return RedirectToAction("Index");
-//            }
-
-//            _hatService.AddHat(hat);
-//            TempData["SuccessMessage"] = "Hatten har lagts till!";
-//            return RedirectToAction("Index");
-//        }
-
-//    }
-//}
-
