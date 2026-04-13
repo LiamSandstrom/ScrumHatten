@@ -1,6 +1,15 @@
-﻿namespace MVC.Controllers
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using MVC.Models;
+
+namespace MVC.Controllers
 {
-    public class UserController
+    public class UserController : Controller
     {
+        public IActionResult UserList()
+        {
+            return View();
+        }
+
     }
 }
