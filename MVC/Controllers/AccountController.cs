@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using MongoDB.Driver.Linq;
 using MVC.Models.Account;
 
 
@@ -11,28 +12,35 @@ namespace MVC.Controllers
 
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
+        private RoleManager<ApplicationRole> roleManager;
 
 
-        public AccountController(UserManager<User> um, SignInManager<User> sm)
+        public AccountController(UserManager<User> um, SignInManager<User> sm, RoleManager<ApplicationRole> rm)
         {
             userManager = um;
             signInManager = sm;
+            roleManager = rm;
         }
 
 
 
 
         [HttpGet]
-
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
             if (User.Identity!.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
 
+            var model = new RegisterViewModel
+            {
+                roles = await roleManager.Roles.Select(r => r.Name).ToListAsync()
+                
+            };
 
-            return View();
+
+            return View(model);
 
 
         }
@@ -40,7 +48,6 @@ namespace MVC.Controllers
 
 
         [HttpPost]
-
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
         {
             if (!ModelState.IsValid)
@@ -54,8 +61,8 @@ namespace MVC.Controllers
                 {
                     PhoneNumber = registerViewModel.Phonenumber,
                     Email = registerViewModel.Email,
-                    Name = registerViewModel.Name
-
+                    Name = registerViewModel.Name,
+                    
                 };
 
                 var result = await userManager.CreateAsync(user, registerViewModel.Password);
@@ -63,6 +70,7 @@ namespace MVC.Controllers
 
                 if (result.Succeeded)
                 {
+                    await userManager.AddToRoleAsync(user, registerViewModel.selectedRole);
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return Json(CreateResponse(
                         success: true,
