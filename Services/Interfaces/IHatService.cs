@@ -5,5 +5,6 @@ namespace BL.Interfaces
     public interface IHatService
     {
         List<Hat> GetAllHats();
+        void AddHat(Hat hat);
     }
 }

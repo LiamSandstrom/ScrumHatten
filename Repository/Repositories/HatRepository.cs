@@ -23,5 +23,10 @@ namespace Repository.Repositories
                 return new List<Hat>();
             }
         }
+
+        public void AddHat(Hat hat)
+        {
+            _hatCollection.InsertOne(hat);
+        }
     }
 }
