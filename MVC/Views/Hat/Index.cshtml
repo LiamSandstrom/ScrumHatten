@@ -1,14 +1,37 @@
 ﻿@model List<Models.Hat>
+@using MVC.ViewModels
 
 @{
     ViewData["Title"] = "Alla hattar";
 }
 
-<h1>Alla hattar</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Alla hattar</h1>
+
+    <button class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#addHatModal">
+        Lägg till hatt
+    </button>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 
 @if (Model == null || !Model.Any())
 {
-    <p>Det finns inga hattar att visa.</p>
+    <p>Det finns inga hattar ännu.</p>
 }
 else
 {
@@ -16,35 +39,75 @@ else
         @foreach (var hat in Model)
         {
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-
-                    <img src="@hat.ImageUrl" class="card-img-top" alt="@hat.Name" style="height:250px; object-fit:cover;" />
+                <div class="card">
+                    <img src="@(string.IsNullOrWhiteSpace(hat.ImageUrl) ? "https://via.placeholder.com/300x250" : hat.ImageUrl)"
+                         class="card-img-top"
+                         style="height:250px; object-fit:cover;" />
 
                     <div class="card-body">
-                        <h5 class="card-title">@hat.Name</h5>
-
-                        <p class="card-text">
-                            @hat.Description
-                        </p>
-
-                        <p>
-                            <strong>Pris:</strong> @hat.Price kr
-                        </p>
-
-                        <p>
-                            <strong>Antal i lager:</strong> @hat.Quantity
-                        </p>
-
-                        <a asp-controller="Hat"
-                               asp-action="Materials"
-                               asp-route-id="@hat.Id"
-                               class="btn btn-primary">
-                            Visa material
-                        </a>
-
+                        <h5>@hat.Name</h5>
+                        <p>@hat.Description</p>
+                        <p><strong>Pris:</strong> @hat.Price kr</p>
+                        <p><strong>I lager:</strong> @hat.Quantity</p>
                     </div>
                 </div>
             </div>
         }
     </div>
 }
+
+<div class="modal fade" id="addHatModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form asp-action="AddHat" method="post" enctype="multipart/form-data">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Lägg till hatt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>Namn</label>
+                        <input name="Name" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Beskrivning</label>
+                        <textarea name="Description" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Bild</label>
+                        <input name="ImageFile" type="file" class="form-control" accept="image/*" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Pris</label>
+                        <input name="Price" type="number" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Antal i lager</label>
+                        <input name="Quantity" type="number" class="form-control" required />
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Avbryt
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        Spara hatt
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
