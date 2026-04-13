@@ -22,7 +22,7 @@ namespace Repository
             return price;
         }
 
-        public async Task<int> GetQuantityByIdAsync(string id)
+        public async Task<double> GetQuantityByIdAsync(string id)
         {
             var quantity = await _collection.Find(m => m.Id == id)
                 .Project(m => m.Quantity)
@@ -54,5 +54,18 @@ namespace Repository
         {
             await _collection.InsertOneAsync(newMaterial);
         }
+
+
+public async Task UpdateQuantityAsync(string id, double addedAmount)
+
+        {
+            var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
+            var update = Builders<Material>.Update.Inc(m => m.Quantity, addedAmount);
+
+            await _collection.UpdateOneAsync(filter, update);
+
+        }
+
     }
+
 }
