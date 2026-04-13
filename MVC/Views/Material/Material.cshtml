@@ -3,6 +3,10 @@
     Lägg till nytt material
     </button>
 
+<button type="button" class= "btn btn-primary" data-bs-toggle="modal" data-bs-target="#restockMaterialModal">
+    Fyll på material
+    </button>
+
 <div class="container mt-4">
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
         @foreach (var item in Model)
@@ -21,9 +25,10 @@
                 </div>
             </div>
         }
+        </div>
+    </div>
 
-
-<div class="modal fade" id="addMaterialModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -43,7 +48,7 @@
                     <div class="mb-3">
                         <label class="form-label" for="matPrice">Pris per enhet</label>
                         <input type="number" id="matPrice" class="form-control" step="0.01" min="0" required />
-                    <div class="mb-3">
+                    </div><div class="mb-3">
                         <label class="form-label" for="matAmount">Antal</label>
                         <input type="number" id="matAmount" class="form-control" step="0.1" min="0"/>
                     </div>
@@ -55,6 +60,58 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="restockMaterialModal" tabindex="-1" aria-hidden="true">
+<div class="modal-dialog modal-lg"> 
+    <div class="modal-content">
+<div class="modal-header">
+    <h5 class="modal-title"> Fyll på material</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+<table class="table">
+
+<thead>
+
+    <tr>
+
+<th>Material</th>
+<th> Nuvarande</th>
+<th>Fyll på</th>
+<th></th>
+    </tr>
+</thead>
+
+<tbody>
+@foreach (var item in Model)
+{
+
+    <tr>
+<td>@item.Name</td>
+<td>@item.Quantity @item.Unit</td>
+
+<td>
+    <input type="number" id="restock-@item.Id" class="form-control forn-control-sm" min="0" placeholder="0" />
+    </td>
+    <td>
+        <button class="btn btn-sm btn-outline-success" onclick="updateStock('@item.Id')">Ok</button>
+    </td>
+    </tr>
+}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 @section Scripts { 
     <script src="~/js/material.js"></script>

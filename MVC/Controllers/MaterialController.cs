@@ -65,8 +65,24 @@ namespace MVC.Controllers {
             return View(materials);
         }
 
+[HttpPatch("Material/Restock/{id}")]
+public async Task<IActionResult> Restock(string id, [FromBody] double addedAmount)
+        {
 
-    }
+          try
+            {
+                await _materialRepository.UpdateQuantityAsync(id, addedAmount);
+                return Ok();
+            }  
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        } }
+
+
 }
 
 //Task<String> GetUnitByIdAsync(string id);
