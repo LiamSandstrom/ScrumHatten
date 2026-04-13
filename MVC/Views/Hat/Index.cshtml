@@ -1,0 +1,50 @@
+﻿@model List<Models.Hat>
+
+@{
+    ViewData["Title"] = "Alla hattar";
+}
+
+<h1>Alla hattar</h1>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Det finns inga hattar att visa.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var hat in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+
+                    <img src="@hat.ImageUrl" class="card-img-top" alt="@hat.Name" style="height:250px; object-fit:cover;" />
+
+                    <div class="card-body">
+                        <h5 class="card-title">@hat.Name</h5>
+
+                        <p class="card-text">
+                            @hat.Description
+                        </p>
+
+                        <p>
+                            <strong>Pris:</strong> @hat.Price kr
+                        </p>
+
+                        <p>
+                            <strong>Antal i lager:</strong> @hat.Quantity
+                        </p>
+
+                        <a asp-controller="Hat"
+                               asp-action="Materials"
+                               asp-route-id="@hat.Id"
+                               class="btn btn-primary">
+                            Visa material
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
