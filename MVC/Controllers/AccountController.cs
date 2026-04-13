@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -24,14 +25,14 @@ namespace MVC.Controllers
 
 
 
-
+        //[Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            if (User.Identity!.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            //if (User.Identity!.IsAuthenticated)
+            //{
+            //    return RedirectToAction("Index", "Home");
+            //}
 
             var model = new RegisterViewModel
             {
@@ -62,7 +63,8 @@ namespace MVC.Controllers
                     PhoneNumber = registerViewModel.Phonenumber,
                     Email = registerViewModel.Email,
                     Name = registerViewModel.Name,
-                    
+                    UserName = registerViewModel.Email
+
                 };
 
                 var result = await userManager.CreateAsync(user, registerViewModel.Password);
@@ -82,7 +84,7 @@ namespace MVC.Controllers
 
                 return Json(CreateResponse(
                       success: false,
-                      message: "Username already taken",
+                      message: "Registration failed",
                       notify: true
                   ));
 
