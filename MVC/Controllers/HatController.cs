@@ -69,7 +69,7 @@ namespace MVC.Controllers
             }
             catch
             {
-                TempData["ErrorMessage"] = "Kunde inte spara hatten i databasen.";
+                TempData["ErrorMessage"] = "Kunde inte spara hatten.";
             }
 
             return RedirectToAction("Index");
