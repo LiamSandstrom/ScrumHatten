@@ -7,7 +7,8 @@
         constructor() {
             this.#element = null;
             this.#timeout = null;
-            this.#mainElement = document.querySelector(".content-wrapper");
+            this.#mainElement = document.querySelector(".mainContainer");
+            console.log(this.#mainElement)
         }
 
         showSuccess(message) {
@@ -46,7 +47,7 @@
     const originalFetch = window.fetch;
     const ui = new NotifyUI()
 
-    window.fetch = function (...args) {
+    window.fetch = function(...args) {
         const [url, options] = args;
 
 
@@ -65,6 +66,7 @@
                             if (data && typeof data === 'object') {
 
                                 if (data.notify === true) {
+                                    console.log("notify triggered", data.success, data.message);
                                     if (data.success) {
                                         ui.showSuccess(data.message || "Success");
                                     } else {
@@ -80,7 +82,7 @@
                                         else {
                                             window.location.href = data.redirectUrl;
                                         }
-                                    }, data.Notify ? 1000 : 0);
+                                    }, data.notify ? 1000 : 0);
                                 }
                             }
                         }
@@ -101,14 +103,14 @@
     };
 
 
-    window.handleFormSubmit = function (formId) {
+    window.handleFormSubmit = function(formId) {
         const form = document.getElementById(formId);
         if (!form) {
             console.error(`Form with id "${formId}" not found`);
             return;
         }
 
-        form.addEventListener("submit", async function (e) {
+        form.addEventListener("submit", async function(e) {
             e.preventDefault();
 
             const formData = new FormData(form);
