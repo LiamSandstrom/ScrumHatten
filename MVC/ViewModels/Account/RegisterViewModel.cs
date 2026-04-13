@@ -7,7 +7,7 @@ namespace MVC.Models.Account
 
         [Required(ErrorMessage = "Please Enter a Name")]
         [StringLength(30)]
-        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Name can only contain letters and numbers")]
+        [RegularExpression(@"^[a-zA-Z0-9 ]+$", ErrorMessage = "Name can only contain letters and numbers")]
         public string Name { get; set; }
 
 
@@ -19,8 +19,8 @@ namespace MVC.Models.Account
 
 
 
-        [Required(ErrorMessage ="Please enter an phonenumer")]
-        [Phone(ErrorMessage ="Please eneter a valid pohonenumer")]
+        [Required(ErrorMessage ="Please enter an phone number")]
+        [Phone(ErrorMessage ="Please eneter a valid phone number")]
         public string Phonenumber { get; set; }
 
 
