@@ -28,5 +28,20 @@ namespace Repository.Repositories
         {
             _hatCollection.InsertOne(hat);
         }
+
+        public Hat? GetHatById(string id)
+        {
+            return _hatCollection.Find(h => h.Id == id).FirstOrDefault();
+        }
+
+        public void DeleteHat(string id)
+        {
+            _hatCollection.DeleteOne(h => h.Id == id);
+        }
+
+        public void UpdateHat(Hat hat)
+        {
+            _hatCollection.ReplaceOne(h => h.Id == hat.Id, hat);
+        }
     }
 }

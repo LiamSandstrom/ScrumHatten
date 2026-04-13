@@ -6,5 +6,8 @@ namespace BL.Interfaces
     {
         List<Hat> GetAllHats();
         void AddHat(Hat hat);
+        Hat? GetHatById(string id);
+        void DeleteHat(string id);
+        void UpdateHat(Hat hat);
     }
 }

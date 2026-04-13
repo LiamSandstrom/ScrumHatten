@@ -17,9 +17,25 @@ namespace BL.Services
         {
             return _hatRepository.GetAllHats();
         }
+
         public void AddHat(Hat hat)
         {
             _hatRepository.AddHat(hat);
+        }
+
+        public Hat? GetHatById(string id)
+        {
+            return _hatRepository.GetHatById(id);
+        }
+
+        public void DeleteHat(string id)
+        {
+            _hatRepository.DeleteHat(id);
+        }
+
+        public void UpdateHat(Hat hat)
+        {
+            _hatRepository.UpdateHat(hat);
         }
     }
 }
