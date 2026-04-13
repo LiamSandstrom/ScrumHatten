@@ -10,7 +10,7 @@ namespace Repository
         Task<String> GetUnitByIdAsync(string id);
         Task<int> GetQuantityByIdAsync(string id);
         Task<double> GetPriceByIdAsync(string id);
-        Task<List<string>> GetAllMaterialsAsync();
+        Task<List<Material>> GetAllMaterialsAsync();
 
         Task AddMaterialAsync(Material material);
         Task<Material> GetMaterialByIdAsync (string id);

@@ -5,8 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration["MongoDB:ConnectionString"];
 builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionString));
-builder.Services.AddSingleton<IMaterialRepository, MaterialRepository>();
 
+builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
-using Models;
 
 namespace MVC.Controllers { 
 
@@ -12,14 +11,9 @@ namespace MVC.Controllers {
         private readonly IMaterialRepository _materialRepository;
 
         public MaterialController(IMaterialRepository materialRepository)
-        {
-            _materialRepository = materialRepository;
-        }
-
-        public IActionResult Material()
-        {
-            return View();
-        }
+    {
+        _materialRepository = materialRepository;
+    }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
@@ -63,6 +57,12 @@ namespace MVC.Controllers {
             await _materialRepository.AddMaterialAsync(material);
 
             return CreatedAtAction(nameof(GetById), new { id = material.Id }, material);
+        }
+
+        public async Task<IActionResult> Material()
+        {
+            var materials = await _materialRepository.GetAllMaterialsAsync();
+            return View(materials);
         }
 
 
