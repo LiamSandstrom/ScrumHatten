@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Repository\DAL.csproj" />
+    <ProjectReference Include="..\Services\BL.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
