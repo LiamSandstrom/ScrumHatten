@@ -5,3 +5,7 @@
     width: 340px;
     margin: auto;
 }
+
+.fullWidth {
+    width: 100%;
+}

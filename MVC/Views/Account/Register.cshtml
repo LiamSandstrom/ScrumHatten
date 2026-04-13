@@ -1,6 +1,48 @@
-﻿@page
-@model MVC.Views.Account.RegisterModel
-@{
-}
+﻿@model MVC.Models.Account.RegisterViewModel;
 
 
+<link rel="stylesheet" href="~/css/login.css"/>
+
+
+
+
+<div class="loginContainer">
+	<h2> Skapa en ny användare</h2>
+
+	<div class="">
+		<form asp-action="Register" method="post" id="registerForm">
+			<div class="form-group mb-3">
+				<label asp-for="Name" class="control-label">Namn</label>
+				<input asp-for="Name" class="form-control" />
+			</div>
+			<div class="form-group mb-3">
+				<label asp-for="Email" class="control-label">E-post</label>
+				<input asp-for="Email" class="form-control" />
+			</div>
+			<div class="form-group mb-3">
+				<label asp-for="Phonenumber" class="control-label">Telefonnummer</label>
+				<input asp-for="Phonenumber" class="form-control" />
+			<div class="form-group mb-3">
+				<label asp-for="roles" class="control-label">Välj roll</label>
+				<select asp-for="selectedRole" class="form-control" asp-items="@(new SelectList(Model.roles))">
+					<option value="">-- Välj en roll --</option>
+				</select>
+				<span asp-validation-for="selectedRole" class="text-danger"></span>
+			</div>
+			<div class="form-group mb-3">
+				<label asp-for="Password" class="control-label">Lösenord</label>
+				<input asp-for="Password" type="password" class="form-control" />
+			</div>
+			<div class="form-group mb-3">
+				<label asp-for="ConfirmPassword" class="control-label">Bekräfta lösenord</label>
+				<input asp-for="ConfirmPassword" type="password" class="form-control" />
+			</div>
+
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-success fullWidth">Registrera användare</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script src="/js/account.js"></script>
