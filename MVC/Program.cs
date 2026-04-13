@@ -1,4 +1,7 @@
 using Repository;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +11,10 @@ builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionStrin
 
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 var app = builder.Build();
+
+#pragma warning disable CS0618
+BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+#pragma warning restore CS0618
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
