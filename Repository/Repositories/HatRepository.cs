@@ -14,7 +14,14 @@ namespace Repository.Repositories
 
         public List<Hat> GetAllHats()
         {
-            return _hatCollection.Find(_ => true).ToList();
+            try
+            {
+                return _hatCollection.Find(_ => true).ToList();
+            }
+            catch
+            {
+                return new List<Hat>();
+            }
         }
     }
 }
