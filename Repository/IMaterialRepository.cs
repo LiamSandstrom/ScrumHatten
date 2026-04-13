@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Models;
 
 namespace Repository
 {
@@ -10,6 +11,9 @@ namespace Repository
         Task<int> GetQuantityByIdAsync(string id);
         Task<double> GetPriceByIdAsync(string id);
         Task<List<string>> GetAllMaterialsAsync();
+
+        Task AddMaterialAsync(Material material);
+        Task<Material> GetMaterialByIdAsync (string id);
         
     }
 }

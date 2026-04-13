@@ -17,7 +17,7 @@ namespace Repository
         public async Task<double>GetPriceByIdAsync(string id)
                     {
             var price = await _collection.Find(m => m.Id == id)
-                .Project(m => m.Price)
+                .Project(m => m.PricePerUnit)
                 .FirstOrDefaultAsync();
             return price;
         }
@@ -43,6 +43,19 @@ namespace Repository
                 .Project(m => m.Name)
                 .ToListAsync();
             return materials;
+        }
+
+        public async Task<Material> GetMaterialByIdAsync(string id)
+        {
+            var material = await _collection.Find(m => m.Id == id).FirstOrDefaultAsync();
+            return material;
+        }
+
+        
+
+        public async Task AddMaterialAsync(Material newMaterial)
+        {
+            await _collection.InsertOneAsync(newMaterial);
         }
     }
 }

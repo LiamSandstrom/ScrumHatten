@@ -3,16 +3,31 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
+using Models;
 
 namespace MVC.Controllers { 
 
     public class MaterialController : Controller
     {
+        private readonly IMaterialRepository _materialRepository;
+
+        public MaterialController(IMaterialRepository materialRepository)
+        {
+            _materialRepository = materialRepository;
+        }
+
         public IActionResult Material()
         {
             return View();
         }
-        private readonly IMaterialRepository _materialRepository;
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var material = await _materialRepository.GetMaterialByIdAsync(id);
+            if (material == null) return NotFound("Materialet hittades inte!");
+            return Ok(material);
+        }
 
         [HttpGet("names")]
         public async Task<IActionResult> GetNames()
@@ -41,6 +56,15 @@ namespace MVC.Controllers {
             var price = await _materialRepository.GetPriceByIdAsync(id);
             return Ok(price);
         }
+         [HttpPost]
+        public async Task<IActionResult> Create ([FromBody] Material material)
+        {
+            if (material == null) return BadRequest("Material-data saknas!");
+            await _materialRepository.AddMaterialAsync(material);
+
+            return CreatedAtAction(nameof(GetById), new { id = material.Id }, material);
+        }
+
 
     }
 }
