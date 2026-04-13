@@ -38,21 +38,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 var app = builder.Build();
 
 //Create Roles 
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider
-        .GetRequiredService<RoleManager<ApplicationRole>>();
 
-    string[] roller = { "Admin", "User" };
-
-    foreach (var roll in roller)
-    {
-        if (!await roleManager.RoleExistsAsync(roll))
-        {
-            await roleManager.CreateAsync(new ApplicationRole { Name = roll });
-        }
-    }
-}
 
 if (!app.Environment.IsDevelopment())
 {
