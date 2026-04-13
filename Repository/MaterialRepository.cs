@@ -37,12 +37,9 @@ namespace Repository
                 .FirstOrDefaultAsync();
             return unit;
         }
-        public async Task<List<string>> GetAllMaterialsAsync()
+        public async Task<List<Material>> GetAllMaterialsAsync()
         {
-            var materials = await _collection.Find(_ => true)
-                .Project(m => m.Name)
-                .ToListAsync();
-            return materials;
+           return await _collection.Find(_ => true).ToListAsync();
         }
 
         public async Task<Material> GetMaterialByIdAsync(string id)
