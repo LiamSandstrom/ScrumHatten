@@ -4,22 +4,23 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 
-namespace MVC.Controllers { 
-
+namespace MVC.Controllers
+{
     public class MaterialController : Controller
     {
         private readonly IMaterialRepository _materialRepository;
 
         public MaterialController(IMaterialRepository materialRepository)
-    {
-        _materialRepository = materialRepository;
-    }
+        {
+            _materialRepository = materialRepository;
+        }
 
-        [HttpGet("{id}")]
+        [HttpGet("details/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
             var material = await _materialRepository.GetMaterialByIdAsync(id);
-            if (material == null) return NotFound("Materialet hittades inte!");
+            if (material == null)
+                return NotFound("Materialet hittades inte!");
             return Ok(material);
         }
 
@@ -44,16 +45,18 @@ namespace MVC.Controllers {
             return Ok(quantity);
         }
 
-        [HttpGet("price")] 
+        [HttpGet("price")]
         public async Task<IActionResult> GetPriceById(string id)
-            {
+        {
             var price = await _materialRepository.GetPriceByIdAsync(id);
             return Ok(price);
         }
-         [HttpPost]
-        public async Task<IActionResult> Create ([FromBody] Material material)
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Material material)
         {
-            if (material == null) return BadRequest("Material-data saknas!");
+            if (material == null)
+                return BadRequest("Material-data saknas!");
             await _materialRepository.AddMaterialAsync(material);
 
             return CreatedAtAction(nameof(GetById), new { id = material.Id }, material);
@@ -65,24 +68,20 @@ namespace MVC.Controllers {
             return View(materials);
         }
 
-[HttpPatch("Material/Restock/{id}")]
-public async Task<IActionResult> Restock(string id, [FromBody] double addedAmount)
+        [HttpPatch("Material/Restock/{id}")]
+        public async Task<IActionResult> Restock(string id, [FromBody] double addedAmount)
         {
-
-          try
+            try
             {
                 await _materialRepository.UpdateQuantityAsync(id, addedAmount);
                 return Ok();
-            }  
-
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-
-        } }
-
-
+        }
+    }
 }
 
 //Task<String> GetUnitByIdAsync(string id);
