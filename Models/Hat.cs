@@ -2,11 +2,9 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Models
 {
-    public class Hat 
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -16,4 +14,3 @@ namespace Models
         public List<HatMaterial> Materials { get; set; } = new();
         public int Quantity { get; set; }
     }
-}
