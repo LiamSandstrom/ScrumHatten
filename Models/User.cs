@@ -14,6 +14,7 @@ namespace Models
         public string Name { get; set; }
         public bool IsAdmin { get; set; }
         public UserRole Role { get; set; }
+        public decimal Pay { get; set; }
     }
 
 }
