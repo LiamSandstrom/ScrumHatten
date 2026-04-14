@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MVC.Views.Account
 {
-    public class LoginModel : PageModel
+    public class LoginModel
     {
-        public void OnGet()
-        {
-        }
     }
 }

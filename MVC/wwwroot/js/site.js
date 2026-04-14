@@ -1,128 +1,86 @@
-﻿(() => {
-    class NotifyUI {
-        #element
-        #timeout
-        #mainElement
+﻿class NotifyUI {
+    #element
+    #timeout
+    #mainElement
 
-        constructor() {
-            this.#element = null;
-            this.#timeout = null;
-            this.#mainElement = document.querySelector(".mainContainer");
-            console.log(this.#mainElement)
-        }
-
-        showSuccess(message) {
-            this.createElement(message, "notify-success notification", "/icons/Check.svg")
-        }
-
-        showError(message) {
-            this.createElement(message, "notify-error notification", "/icons/Error.svg")
-        }
-
-        createElement(message, cssClass, imgUrl) {
-            if (this.#element) {
-                this.#element.remove();
-                this.#element = null
-                clearTimeout(this.#timeout)
-            }
-            const div = document.createElement("div");
-            div.classList = cssClass
-
-            const icon = document.createElement("img")
-            icon.src = imgUrl
-            div.appendChild(icon)
-
-            const text = document.createElement("p")
-            text.textContent = message
-            div.appendChild(text)
-
-            this.#mainElement.appendChild(div)
-            this.#element = div;
-
-            this.#timeout = setTimeout(() => this.#element.style.opacity = 0, 3000)
-        }
-
+    constructor() {
+        this.#element = null;
+        this.#timeout = null;
+        this.#mainElement = document.querySelector(".mainContainer");
     }
 
-    const originalFetch = window.fetch;
+    showSuccess(message) {
+        this.createElement(message, "notify-success notification", "/icons/Check.svg")
+    }
+
+    showError(message) {
+        this.createElement(message, "notify-error notification", "/icons/Error.svg")
+    }
+
+    createElement(message, cssClass, imgUrl) {
+        if (this.#element) {
+            this.#element.remove();
+            this.#element = null
+            clearTimeout(this.#timeout)
+        }
+        const div = document.createElement("div");
+        div.classList = cssClass
+
+        const icon = document.createElement("img")
+        icon.src = imgUrl
+        div.appendChild(icon)
+
+        const text = document.createElement("p")
+        text.textContent = message
+        div.appendChild(text)
+
+        this.#mainElement.appendChild(div)
+        this.#element = div;
+
+        this.#timeout = setTimeout(() => this.#element.style.opacity = 0, 3000)
+    }
+
+}
+
+async function apiFetch(url, options = {}) {
     const ui = new NotifyUI()
+    const response = await fetch(url, options);
 
-    window.fetch = function(...args) {
-        const [url, options] = args;
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+        const data = await response.json();
 
-
-        if (options && options.method && options.method.toUpperCase() === "POST") {
-            return originalFetch.apply(this, args)
-                .then(async response => {
-                    try {
-
-                        const clonedResponse = response.clone();
-
-                        const contentType = response.headers.get('content-type');
-                        if (contentType && contentType.includes('application/json')) {
-                            const data = await clonedResponse.json();
-
-                            //our api Structure
-                            if (data && typeof data === 'object') {
-
-                                if (data.notify === true) {
-                                    console.log("notify triggered", data.success, data.message);
-                                    if (data.success) {
-                                        ui.showSuccess(data.message || "Success");
-                                    } else {
-                                        ui.showError(data.message || "Error");
-                                    }
-                                }
-
-                                if (data.redirectUrl) {
-                                    setTimeout(() => {
-                                        if (data.redirectUrl === "refresh") {
-                                            location.reload();
-                                        }
-                                        else {
-                                            window.location.href = data.redirectUrl;
-                                        }
-                                    }, data.notify ? 1000 : 0);
-                                }
-                            }
-                        }
-                    } catch (error) {
-                        console.debug('Non-JSON response or parse error:', error);
-                    }
-
-                    return response;
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    throw error;
-                });
+        if (data?.notify) {
+            data.success
+                ? ui.showSuccess(data.message)
+                : ui.showError(data.message);
         }
 
-        // Pass through if not POST
-        return originalFetch.apply(this, args);
-    };
-
-
-    window.handleFormSubmit = function(formId) {
-        const form = document.getElementById(formId);
-        if (!form) {
-            console.error(`Form with id "${formId}" not found`);
-            return;
+        if (data?.redirectUrl) {
+            const delay = data.notify ? 1000 : 0;
+            setTimeout(() => {
+                data.redirectUrl === "refresh"
+                    ? location.reload()
+                    : window.location.href = data.redirectUrl;
+            }, delay);
         }
 
-        form.addEventListener("submit", async function(e) {
-            e.preventDefault();
+        response.parsedData = data;
+    }
 
-            const formData = new FormData(form);
+    return response;
+}
 
-            try {
-                await fetch(form.action, {
-                    method: 'POST',
-                    body: formData
-                });
-            } catch (error) {
-                console.error('Form submission error:', error);
-            }
+handleFormSubmit = (formId) => {
+    const form = document.getElementById(formId);
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = "true";
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await apiFetch(form.action, {
+            method: "POST",
+            body: new FormData(form)
         });
-    };
-})();
+    });
+}
