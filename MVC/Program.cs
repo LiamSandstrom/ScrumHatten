@@ -1,48 +1,71 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
+
+using DAL.Repositories;
+using DAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Models;
 using Repository;
 using Repository.Repositories;
 using BL.Services;
 using BL.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
 var connectionString = builder.Configuration["MongoDB:ConnectionString"];
 builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionString));
 
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 
 builder.Services.AddSingleton<HatRepository>();
 builder.Services.AddScoped<IHatService, HatService>();
 
+builder.Services.AddIdentity<User, ApplicationRole>(options =>
+{
+    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.User.RequireUniqueEmail = false;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+})
+.AddMongoDbStores<User, ApplicationRole, Guid>(
+    builder.Configuration["MongoDB:ConnectionString"],
+    "ScrumHatten"
+)
+.AddDefaultTokenProviders();
+
+// Cookie-inställningar
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+
 var app = builder.Build();
 
-#pragma warning disable CS0618
-BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
-#pragma warning restore CS0618
+//Create Roles 
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

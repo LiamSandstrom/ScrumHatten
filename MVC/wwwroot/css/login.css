@@ -1,0 +1,10 @@
+﻿body {}
+
+.loginContainer {
+    width: 340px;
+    margin: auto;
+}
+
+.fullWidth {
+    height: 100%;
+}

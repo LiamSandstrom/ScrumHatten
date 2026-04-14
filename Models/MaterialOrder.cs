@@ -14,26 +14,26 @@ namespace Models
         [BsonRepresentation(BsonType.ObjectId)]
 
         [BsonElement("Amount")]
-        public double Amount {  get; set; }
+        public double Amount { get; set; }
 
 
         [BsonElement("Price")]
         public decimal Price { get; set; }
-      
-     
+
+
         // Lägg till Material
 
-       // Lägg in anställd
+        // Lägg in anställd
 
 
 
-        public MaterialOrder(double amount,  decimal price,  HatMaterial hatMaterial)
+        public MaterialOrder(double amount, decimal price, HatMaterial hatMaterial)
         {
             Amount = amount;
             Price = price;
             hatMaterial = hatMaterial;
         }
 
-       
+
     }
 }

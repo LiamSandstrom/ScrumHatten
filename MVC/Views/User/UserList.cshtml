@@ -1,0 +1,36 @@
+﻿@page
+@model MVC.ViewModels.UserListViewModel
+@{
+}
+
+<link rel="stylesheet" href="~/css/user.css"/>
+
+<div class="pageContent">
+    <h1 class="userListHeader">Anställda</h1>
+
+    <div class="userTableContainer">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Namn</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Telefonnummer</th>
+                <th scope="col">Roll</th>
+                </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @for (int i = 0; i < Model.Users.Count; i++) {
+                <tr>
+                    <th scope="row">@i</th>
+                    <td>@Model.Users[i].Name</td>
+                    <td>@Model.Users[i].Email </td>
+                    <td>@Model.Users[i].PhoneNumber</td>
+                    <td>@Model.Users[i].Roles.First()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+
+</div>
