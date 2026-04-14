@@ -1,9 +1,12 @@
+
 using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Models;
 using Repository;
-
+using Repository.Repositories;
+using BL.Services;
+using BL.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -12,6 +15,10 @@ var connectionString = builder.Configuration["MongoDB:ConnectionString"];
 builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionString));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+
+builder.Services.AddSingleton<HatRepository>();
+builder.Services.AddScoped<IHatService, HatService>();
 
 builder.Services.AddIdentity<User, ApplicationRole>(options =>
 {
@@ -37,10 +44,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+
 var app = builder.Build();
 
 //Create Roles 
-
 
 if (!app.Environment.IsDevelopment())
 {

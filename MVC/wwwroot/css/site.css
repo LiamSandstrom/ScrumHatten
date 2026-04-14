@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 html {
     font-size: 14px;
 }
@@ -70,10 +74,36 @@ html {
 
 body {
     display: flex;
-    flex-direction: column;
-    align-content: center;
     height: 100%;
+    max-width: 100vw;
     min-height: 100vh;
+}
+
+.form-floating>.form-control-plaintext::placeholder,
+.form-floating>.form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+    margin-bottom: 60px;
+    background-color: white;
+    font-family: "Serif", Didone;
+}
+
+.bg-dark {
+    background-color: #7d563b !important;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-link {
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.nav-link:hover {
+    color: #f0f0f0 !important;
+    text-decoration: underline;
 }
 
 .form-floating>.form-control-plaintext::placeholder,
@@ -89,7 +119,12 @@ body {
 
 .mainContainer {
     flex-grow: 1;
+    flex-direction: column;
     display: flex;
+}
+
+.mainContent {
+    flex-grow: 1;
 }
 
 .footerContainer {
