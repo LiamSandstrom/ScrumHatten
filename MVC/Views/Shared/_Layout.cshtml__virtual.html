@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>/*~~~~~~~~~~~~~~*/ - MVC</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="/**/" />
+    <link rel="stylesheet" href="~/MVC.styles.css" asp-append-version="/**/" />
+</head>
+<body>
+
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+
+                    <a asp-controller="Home" asp-action="Index"
+                           class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <span class="fs-5 d-none d-sm-inline">Menu</span>
+                    </a>
+
+                    <ul class="nav nav-pills flex-column mb-auto" id="menu">
+
+                        <li class="nav-item">
+                            <a asp-controller="Home" asp-action="Index" class="nav-link text-white">
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="Home" asp-action="Privacy" class="nav-link text-white">
+                                Privacy
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
+                                Alla hattar
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Material" asp-action="Material" class="nav-link text-white">
+                                Alla material
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="AddUser" asp-action="AddUser" class="nav-link text-white">
+                                + Lägg till användare
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+
+            <div class="mainContainer">
+            <div
+                /*~~~~~~~~~*/
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+            </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="/**/"></script>
+    /*~~*/ /*~~~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~~~~*/ /*~~*/
+</body>
+</html>
+
