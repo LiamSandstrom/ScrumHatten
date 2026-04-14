@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using MongoDB.Driver.Linq;
 using MVC.Models.Account;
-using MVC.Views.Account;
+using MVC.ViewModels.Account;
 
 
 namespace MVC.Controllers
@@ -107,9 +107,76 @@ namespace MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginModel loginViewModel)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            return Json(ModelStateErrorResponse("Har inte fixat LOGIN POST kod"));
+            if (!ModelState.IsValid)
+            {
+
+                return Json(ModelStateErrorResponse(ModelState.ErrorCount.ToString()));
+            }
+
+            try
+            {
+                var result = await signInManager.PasswordSignInAsync(
+                     loginViewModel.Email,
+                     loginViewModel.Password,
+                     isPersistent: loginViewModel.RememberMe,
+                     lockoutOnFailure: true
+                 );
+
+                if (result.Succeeded)
+                {
+                    return Json(CreateResponse(
+                        success: true,
+                        message: "Login lyckades!",
+                        redirectUrl: Url.Action("Index", "Home") ?? "/"
+                    ));
+                }
+
+                return Json(CreateResponse(
+                    success: false,
+                    errors: new Dictionary<string, string>
+                    {
+                        ["Password"] = "Ogiltigt username or password"
+                    },
+                    notify: true
+                ));
+            }
+            catch (Exception ex)
+            {
+                return Json(CreateResponse(
+                success: false,
+                message: "Ett error hände vid login. Försök igen.",
+                notify: true
+                ));
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                await signInManager.SignOutAsync();
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [Authorize(Roles = "Admin, User")]
+        public IActionResult Protected()
+        {
+            return Json(ModelStateErrorResponse("Logged in only"));
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult AdminOnly()
+        {
+            return Json(ModelStateErrorResponse("Admin only"));
         }
     }
 }
