@@ -56,3 +56,44 @@ fetch(`/Material/Restock/${id}`,{
     });
 
 }
+
+async function saveAllRestocks() {
+    const inputs = document.querySelectorAll('input[id^="restock-"]');
+    const updatePromises = [];
+
+    inputs.forEach(input => {
+        const id = input.id.replace('restock-', '');
+        const addedAmount = parseFloat(input.value);
+
+        if (!isNaN(addedAmount) && addedAmount > 0) {
+            updatePromises.push(updateStockSingle(id, addedAmount));
+
+        }
+    });
+
+    if (updatePromises.length === 0) {
+        alert("Inga ändringar att spara.");
+        return;
+    }
+
+    try {
+        await Promise.all(updatePromises);
+        alert("Lagret har uppdaterats!");
+        location.reload();
+        } catch (error) {
+            alert("Kunde inte uppdatera lagret.");
+            console.error(error);
+        }
+    }
+
+    function updateStockSingle(id, addedAmount) {
+    return fetch(`/Material/Restock/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(addedAmount)
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`Kunde inte uppdatera material med ID: ${id}`);
+        }
+    });
+}
