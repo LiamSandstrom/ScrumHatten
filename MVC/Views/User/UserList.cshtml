@@ -1,5 +1,4 @@
-﻿@page
-@model MVC.ViewModels.UserListViewModel
+﻿@model MVC.ViewModels.UserViewModel.UserListViewModel;
 @{
 }
 
@@ -20,14 +19,22 @@
                 </tr>
         </thead>
         <tbody class="table-group-divider">
-            @for (int i = 0; i < Model.Users.Count; i++) {
+            @for (
+                
+            int i = 0; i < Model.Users.Count; i++) {
                 <tr>
                     <th scope="row">@i</th>
                     <td>@Model.Users[i].Name</td>
                     <td>@Model.Users[i].Email </td>
                     <td>@Model.Users[i].PhoneNumber</td>
-                    <td>@Model.Users[i].Roles.First()</td>
-                </tr>
+                    @{
+                            var roleId = Model.Users[i].Roles.FirstOrDefault();
+                            var role = Model.UserRoles.FirstOrDefault(r => r.Id == roleId);
+                            <td>@(role?.Name ?? "-")</td>
+                        }
+                        <td><a asp-action="Edit" asp-route-id="@Model.Users[i].Id">Redigera</a></td>
+                    </tr>
+
             }
         </tbody>
     </table>
