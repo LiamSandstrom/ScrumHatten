@@ -7,6 +7,7 @@ using Repository;
 namespace MVC.Controllers
 {
 
+[Route("Material")]
     public class MaterialController : Controller
     {
         private readonly IMaterialRepository _materialRepository;
