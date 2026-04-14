@@ -6,6 +6,7 @@ using Repository;
 
 namespace MVC.Controllers
 {
+
     public class MaterialController : Controller
     {
         private readonly IMaterialRepository _materialRepository;
@@ -15,7 +16,7 @@ namespace MVC.Controllers
             _materialRepository = materialRepository;
         }
 
-        [HttpGet("details/{id}")]
+        [HttpGet("/Material/details/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
             var material = await _materialRepository.GetMaterialByIdAsync(id);
@@ -81,6 +82,45 @@ namespace MVC.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromBody] Material updatedMaterial)
+        {
+            if (updatedMaterial == null || string.IsNullOrEmpty(updatedMaterial.Id))
+            {
+                return BadRequest("Ogiltig materialdata!");
+            }
+            try
+            {
+                await _materialRepository.UpdateNameAsync(updatedMaterial.Id, updatedMaterial.Name);
+                await _materialRepository.UpdatePricePerUnitAsync(updatedMaterial.Id, updatedMaterial.PricePerUnit);
+                await _materialRepository.UpdateUnitAsync(updatedMaterial.Id, updatedMaterial.Unit);
+                await _materialRepository.ReplaceQuantityAsync(updatedMaterial.Id, updatedMaterial.Quantity);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+
+            }
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            try
+            {
+                await _materialRepository.DeleteMaterialAsync(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+
     }
 }
 

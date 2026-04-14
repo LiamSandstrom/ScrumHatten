@@ -1,34 +1,40 @@
 <h1>Material</h1>
-<button type="button" class= "btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
     Lägg till nytt material
-    </button>
+</button>
 
-<button type="button" class= "btn btn-primary" data-bs-toggle="modal" data-bs-target="#restockMaterialModal">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#restockMaterialModal">
     Fyll på material
-    </button>
+</button>
 
 <div class="container mt-4">
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
         @foreach (var item in Model)
         {
             <div class="col">
-                <div class="card h-100 shadow-sm">
+                <div class="card h-100 shadow-sm position-relative">
+                    <a href="javascript:void(0)" onclick="editMaterial('@item.Id')"
+                           class="position-absolute top-0 end-0 m-2 text-warning" style="text-decoration: none;"
+                           title="Redigera material">
+                        <i class="bi bi-pencil-fill" style="font-size: 1.1rem;" data-bs-target="#editMaterialModal"></i>
+                    </a>
+
                     <div class="card-body text-center">
                         <h5 class="card-title">@item.Name</h5>
                         <p class="card-text text-muted">
                             <strong>@item.Quantity</strong> @item.Unit
                         </p>
-                        </div>
-                        <div class="card-footer bg-transparent border-top-0 text-center">
-                            <small class="text-primary">@item.PricePerUnit kr/@item.Unit</small>
-                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 text-center">
+                        <small class="text-primary">@item.PricePerUnit kr/@item.Unit</small>
+                    </div>
                 </div>
             </div>
         }
-        </div>
     </div>
+</div>
 
-    <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="addMaterialModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -43,14 +49,21 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="matUnit">Enhet</label>
-                        <input type="text" id="matUnit" class="form-control" required />
+                        <select id="matUnit" class="form-control" required>
+                            <option value="" disabled selected>Välj enhet...</option>
+                            <option value="st">Styck (st)</option>
+                            <option value="m">Meter (m)</option>
+                            <option value="m2">Kvadratmeter (m²)</option>
+                            <option value="g">Gram (g)</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="matPrice">Pris per enhet</label>
                         <input type="number" id="matPrice" class="form-control" step="0.01" min="0" required />
-                    </div><div class="mb-3">
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label" for="matAmount">Antal</label>
-                        <input type="number" id="matAmount" class="form-control" step="0.1" min="0"/>
+                        <input type="number" id="matAmount" class="form-control" step="0.1" min="0" />
                     </div>
                 </form>
             </div>
@@ -63,61 +76,111 @@
 </div>
 
 <div class="modal fade" id="restockMaterialModal" tabindex="-1" aria-hidden="true">
-<div class="modal-dialog modal-lg"> 
-    <div class="modal-content">
-<div class="modal-header">
-    <h5 class="modal-title"> Fyll på material</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-</div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"> Fyll på material</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
 
-<div class="modal-body">
-<table class="table">
+            <div class="modal-body">
+                <table class="table">
 
-<thead>
+                    <thead>
 
-    <tr>
+                        <tr>
 
-<th>Material</th>
-<th> Nuvarande</th>
-<th>Fyll på</th>
-<th></th>
-    </tr>
-</thead>
+                            <th>Material</th>
+                            <th> Nuvarande</th>
+                            <th>Fyll på</th>
+                            <th></th>
+                        </tr>
+                    </thead>
 
-<tbody>
-@foreach (var item in Model)
-{
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
 
-    <tr>
-<td>@item.Name</td>
-<td>@item.Quantity @item.Unit</td>
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Quantity @item.Unit</td>
 
-<td>
-    <input type="number" id="restock-@item.Id" class="form-control forn-control-sm" min="0" placeholder="0" />
-    </td>
-    <td>
+                                <td>
+                                    <input type="number" id="restock-@item.Id" class="form-control forn-control-sm" min="0"
+                                           placeholder="0" />
+                                </td>
+                                <td>
        
-    </td>
-    </tr>
-}
+                                </td>
+                            </tr>
+                        }
 
-</tbody>
+                    </tbody>
 
-</table>
+                </table>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                <button type="button" class="btn btn-primary" onclick="saveAllRestocks()">Spara påfyllning</button>
+            </div>
+        </div>
+
+    </div>
 
 </div>
 
-<div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-    <button type="button" class="btn btn-primary" onclick="saveAllRestocks()">Spara påfyllning</button>
-</div>
-</div>
+<div class="modal fade" id="editMaterialModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"> 
+                <h5 class="modal-title">Redigera material</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editMaterialForm">
+                    <input type="hidden" id="editMatId" />
 
-</div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editMatName">Namn</label>
+                        <input type="text" id="editMatName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editMatUnit">Enhet</label>
+                        <select id="editMatUnit" class="form-control" required>
+                            <option value="st">Styck (st)</option>
+                            <option value="m">Meter (m)</option>
+                            <option value="m2">Kvadratmeter (m²)</option>
+                            <option value="g">Gram (g)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editMatPrice">Pris per enhet</label>
+                        <input type="number" id="editMatPrice" class="form-control" step="0.01" min="0" required />
+                    </div>
 
-</div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editMatQuantity">Antal</label>
+                        <input type="number" id="editMatQuantity" class="form-control" step="0.01" min="0" required />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-danger" onclick="deleteMaterial()">Ta bort</button>
+                
+                <div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-primary" onclick="updateMaterial()">Spara ändringar</button>
+                </div>
 
-@section Scripts { 
+            </div>
+        </div>
+    </div>
+</div>
+            
+
+@section Scripts {
     <script src="~/js/material.js"></script>
 }
 

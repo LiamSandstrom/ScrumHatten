@@ -66,6 +66,48 @@ public async Task UpdateQuantityAsync(string id, double addedAmount)
 
         }
 
+public async Task ReplaceQuantityAsync(string id, double newQuantity)
+        {
+            var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
+            var update = Builders<Material>.Update.Set(m => m.Quantity, newQuantity);
+
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateNameAsync(string id, string newName)
+        {
+            var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
+            var update = Builders<Material>.Update.Set(m => m.Name, newName);
+
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdatePricePerUnitAsync(string id, double newPrice)
+        {
+            var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
+            var update = Builders<Material>.Update.Set(m => m.PricePerUnit, newPrice);
+
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateUnitAsync(string id, string newUnit)
+        {
+            var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
+            var update = Builders<Material>.Update.Set(m => m.Unit, newUnit);
+
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task DeleteMaterialAsync(string id)
+        {
+            var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
+            await _collection.DeleteOneAsync(filter);
+
+
+
+
+
     }
 
+    }
 }

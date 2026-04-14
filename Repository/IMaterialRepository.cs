@@ -16,6 +16,11 @@ namespace Repository
         Task<Material> GetMaterialByIdAsync (string id);
 
         Task UpdateQuantityAsync(string id, double addedAmount);
+        Task UpdateNameAsync(string id, string newName);
+        Task UpdatePricePerUnitAsync(string id, double newPrice);
+        Task UpdateUnitAsync(string id, string newUnit);
+        Task DeleteMaterialAsync(string id);
+        Task ReplaceQuantityAsync(string id, double newQuantity);
         
     }
 }
