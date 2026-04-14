@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using MongoDB.Driver.Linq;
 using MVC.Models.Account;
+using MVC.Views.Account;
 
 
 namespace MVC.Controllers
@@ -23,8 +24,6 @@ namespace MVC.Controllers
             roleManager = rm;
         }
 
-
-
         //[Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Register()
@@ -37,15 +36,11 @@ namespace MVC.Controllers
             var model = new RegisterViewModel
             {
                 roles = await roleManager.Roles.Select(r => r.Name).ToListAsync()
-                
+
             };
-
-
             return View(model);
 
-
         }
-
 
 
         [HttpPost]
@@ -68,7 +63,6 @@ namespace MVC.Controllers
                 };
 
                 var result = await userManager.CreateAsync(user, registerViewModel.Password);
-
 
                 if (result.Succeeded)
                 {
@@ -101,20 +95,7 @@ namespace MVC.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpGet]
-
         public IActionResult Login()
         {
             if (User.Identity!.IsAuthenticated)
@@ -125,10 +106,10 @@ namespace MVC.Controllers
             return View();
         }
 
-
-
-
-
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginModel loginViewModel)
+        {
+            return Json(ModelStateErrorResponse("Har inte fixat LOGIN POST kod"));
+        }
     }
-
 }
