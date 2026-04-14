@@ -2,6 +2,8 @@
 using BL.Interfaces;
 using Models;
 using MVC.ViewModels;
+using Repository;
+using System.Linq;
 
 namespace MVC.Controllers
 {
@@ -9,17 +11,32 @@ namespace MVC.Controllers
     {
         private readonly IHatService _hatService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMaterialRepository _materialRepository;
 
-        public HatController(IHatService hatService, IWebHostEnvironment webHostEnvironment)
+        public HatController(IHatService hatService, IWebHostEnvironment webHostEnvironment, IMaterialRepository materialRepository)
         {
             _hatService = hatService;
             _webHostEnvironment = webHostEnvironment;
+            _materialRepository = materialRepository;
         }
 
-        public IActionResult Index()
+        //HäMTA ALLA HATTAR OCH MATERIALER
+
+        public async Task<IActionResult> Index()
         {
-            List<Hat> hats = _hatService.GetAllHats() ?? new List<Hat>();
-            return View(hats);
+            var hats = _hatService.GetAllHats() ?? new List<Hat>();
+            var materials = await _materialRepository.GetAllMaterialsAsync();
+
+            var model = new HatIndexViewModel
+            {
+                Hats = hats,
+                Materials = materials
+            };
+
+            return View(model);
+
+
+            ///LÄGG TILL HATT
         }
 
         [HttpPost]
@@ -53,13 +70,23 @@ namespace MVC.Controllers
                 imagePath = "/images/hats/" + fileName;
             }
 
+            var hatMaterials = model.Materials?
+                .Where(m => !string.IsNullOrWhiteSpace(m.MaterialId) && m.Amount > 0)
+                .Select(m => new HatMaterial
+                {
+                    MaterialId = m.MaterialId,
+                    Amount = m.Amount
+                })
+                .ToList() ?? new List<HatMaterial>();
+
             Hat newHat = new Hat
             {
                 Name = model.Name,
                 Description = model.Description,
                 Price = model.Price,
                 Quantity = model.Quantity,
-                ImageUrl = imagePath
+                ImageUrl = imagePath,
+                Materials = hatMaterials
             };
 
             try
@@ -74,6 +101,8 @@ namespace MVC.Controllers
 
             return RedirectToAction("Index");
         }
+
+        //TA BORT HATT
 
         [HttpPost]
         public IActionResult DeleteHat(string id)
@@ -91,12 +120,23 @@ namespace MVC.Controllers
             return RedirectToAction("Index");
         }
 
+        //REDIGERA HATT
+
         [HttpPost]
-        public IActionResult UpdateHat(Hat hat, IFormFile? ImageFile)
+        public IActionResult UpdateHat(
+    string Id,
+    string Name,
+    string Description,
+    double Price,
+    int Quantity,
+    string ImageUrl,
+    IFormFile? ImageFile,
+    List<HatMaterialInputViewModel> Materials)
         {
             try
             {
-                // Om en ny bild valts
+                string imagePath = ImageUrl;
+
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "hats");
@@ -105,7 +145,6 @@ namespace MVC.Controllers
                         Directory.CreateDirectory(folderPath);
 
                     string fileName = Guid.NewGuid() + Path.GetExtension(ImageFile.FileName);
-
                     string fullPath = Path.Combine(folderPath, fileName);
 
                     using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -113,10 +152,30 @@ namespace MVC.Controllers
                         ImageFile.CopyTo(stream);
                     }
 
-                    hat.ImageUrl = "/images/hats/" + fileName;
+                    imagePath = "/images/hats/" + fileName;
                 }
 
-                _hatService.UpdateHat(hat);
+                var hatMaterials = Materials?
+                    .Where(m => !string.IsNullOrWhiteSpace(m.MaterialId) && m.Amount > 0)
+                    .Select(m => new HatMaterial
+                    {
+                        MaterialId = m.MaterialId,
+                        Amount = m.Amount
+                    })
+                    .ToList() ?? new List<HatMaterial>();
+
+                Hat updatedHat = new Hat
+                {
+                    Id = Id,
+                    Name = Name,
+                    Description = Description,
+                    Price = Price,
+                    Quantity = Quantity,
+                    ImageUrl = imagePath,
+                    Materials = hatMaterials
+                };
+
+                _hatService.UpdateHat(updatedHat);
 
                 TempData["SuccessMessage"] = "Hatten uppdaterades!";
             }
