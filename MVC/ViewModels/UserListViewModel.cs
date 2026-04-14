@@ -2,7 +2,7 @@
 
 namespace MVC.ViewModels
 {
-    public class UsserListViewModel
+    public class UserListViewModel
     {
         public List<User> Users = new();
     }
