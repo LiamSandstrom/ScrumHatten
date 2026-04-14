@@ -17,13 +17,9 @@ namespace MVC.Models.Account
         public string Email { get; set; }
 
 
-
-
         [Required(ErrorMessage ="Please enter an phone number")]
         [Phone(ErrorMessage ="Please eneter a valid phone number")]
         public string Phonenumber { get; set; }
-
-
 
 
         [Required(ErrorMessage = "Please Enter a Password")]

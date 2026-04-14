@@ -10,11 +10,10 @@
 }
 <link rel="stylesheet" href="~/css/login.css" />
 
-<h1>Redigera anställd</h1>
 
 <div class="loginContainer">
     <form asp-action="Register" method="post" id="registerForm">
-        <h1 class="h3 mb-3 fw-normal">Skapa en ny användare</h1>
+        <h1 class="h3 mb-3 fw-normal">Redigera   anställd</h1>
 
         <div class="form-floating mb-2">
             <input asp-for="Name" class="form-control" placeholder="Namn" />
@@ -36,7 +35,7 @@
 
         <div class="form-floating mb-2">
             <select asp-for="selectedRole" class="form-control" asp-items="@(new SelectList(Model.roles))">
-                <option value="">-- Välj en roll --</option>
+                <option value="">@Model.selectedRole</option>
             </select>
             <label asp-for="selectedRole">Välj roll</label>
             <p id="error-selectedRole" class="error-text"></p>
