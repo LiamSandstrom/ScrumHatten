@@ -1,0 +1,220 @@
+﻿@model List<Models.Hat>
+@using MVC.ViewModels
+
+@{
+    ViewData["Title"] = "Alla hattar";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Alla hattar</h1>
+
+    <button class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#addHatModal">
+        Lägg till hatt
+    </button>
+
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (Model == null || !Model.Any())
+{
+    <p>Det finns inga hattar ännu.</p>
+}
+else
+{
+
+    <div class="row">
+        @foreach (var hat in Model)
+        {
+            <div class="col-md-4 mb-4">
+
+                <div class="card h-100">
+
+                    <img src="@(string.IsNullOrWhiteSpace(hat.ImageUrl) ? "https://via.placeholder.com/300x250" : hat.ImageUrl)"
+                         class="card-img-top"
+                         style="height:250px; object-fit:cover;" />
+
+                    <div class="card-body">
+
+                        <h5>@hat.Name</h5>
+
+                        <p>@hat.Description</p>
+
+                        <p><strong>Pris:</strong> @hat.Price kr</p>
+
+                        <p><strong>I lager:</strong> @hat.Quantity</p>
+
+                        <div class="d-flex gap-2">
+
+                            <button class="btn btn-warning btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editHatModal_@hat.Id">
+                                Redigera
+                            </button>
+
+                            <form asp-action="DeleteHat" method="post">
+                                <input type="hidden" name="id" value="@hat.Id" />
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Är du säker på att du vill ta bort hatten?')">
+                                    Ta bort
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            @* REDIGERA HATT  *@
+
+            <div class="modal fade" id="editHatModal_@hat.Id">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <form asp-action="UpdateHat" method="post" enctype="multipart/form-data">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Redigera hatt</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <input type="hidden" name="Id" value="@hat.Id" />
+                                <input type="hidden" name="ImageUrl" value="@hat.ImageUrl" />
+
+                                <div class="mb-3">
+                                    <label>Namn</label>
+                                    <input name="Name" class="form-control" value="@hat.Name" required />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Beskrivning</label>
+                                    <textarea name="Description" class="form-control">@hat.Description</textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Byt bild</label>
+                                    <input name="ImageFile" type="file" class="form-control" accept="image/*" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Pris</label>
+                                    <input name="Price" type="number" class="form-control" value="@hat.Price" required />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Antal i lager</label>
+                                    <input name="Quantity" type="number" class="form-control" value="@hat.Quantity" required />
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        data-bs-dismiss="modal">
+                                    Avbryt
+                                </button>
+
+                                <button type="submit"
+                                        class="btn btn-warning">
+                                    Spara ändringar
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+
+
+}
+
+@*  LÄGG TILL HATT *@ 
+
+<div class="modal fade" id="addHatModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form asp-action="AddHat" method="post" enctype="multipart/form-data">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Lägg till hatt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>Namn</label>
+                        <input name="Name" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Beskrivning</label>
+                        <textarea name="Description" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Bild</label>
+                        <input name="ImageFile" type="file" class="form-control" accept="image/*" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Pris</label>
+                        <input name="Price" type="number" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Antal i lager</label>
+                        <input name="Quantity" type="number" class="form-control" required />
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Avbryt
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-success">
+                        Spara hatt
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
