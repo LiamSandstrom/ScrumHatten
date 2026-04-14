@@ -1,4 +1,4 @@
-﻿@model MVC.Views.Account.LoginModel
+﻿@model MVC.ViewModels.Account.LoginViewModel;
 @section Scripts {
     <script>
         handleFormSubmit("loginForm")
@@ -11,19 +11,19 @@
         <h1 class="h3 mb-3 fw-normal">Logga in</h1>
 
         <div class="form-floating">
-            <input type="email" class="form-control" id="floatingInput" placeholder="namn@exempel.com">
+            <input asp-for="Email" type="email" class="form-control" id="floatingInput" placeholder="namn@exempel.com">
             <label for="floatingInput">Email</label>
             <p id="error-Email" class="error-text"></p>
         </div>
 
         <div class="form-floating">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Lösenord">
+            <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Lösenord">
             <label for="floatingPassword">Lösenord</label>
             <p id="error-Password" class="error-text"></p>
         </div>
 
         <div class="form-check text-start my-3">
-            <input class="form-check-input" type="checkbox" value="remember-me" id="checkDefault">
+            <input asp-for="RememberMe" class="form-check-input" type="checkbox" value="remember-me" id="checkDefault">
             <label class="form-check-label" for="checkDefault">Kom ihåg mig</label>
         </div>
 
