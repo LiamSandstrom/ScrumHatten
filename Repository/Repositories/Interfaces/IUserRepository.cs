@@ -13,5 +13,7 @@ namespace DAL.Repositories.Interfaces
 
         Task<User> AddUserAsync(User user);
 
+        Task<User> GetUser(Guid id);
+
     }
 }
