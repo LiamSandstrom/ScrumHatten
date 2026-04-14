@@ -1,9 +1,9 @@
-﻿@model MVC.Models.Account.RegisterViewModel;
-@section Scripts {
+/*~~*/ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~*/ /*~~~*/ ~
     <script>
         handleFormSubmit("registerForm")
     </script>
-    }
+    ~
 <link rel="stylesheet" href="~/css/login.css" />
 
 <div class="loginContainer">
@@ -11,40 +11,40 @@
         <h1 class="h3 mb-3 fw-normal">Skapa en ny användare</h1>
 
         <div class="form-floating mb-2">
-            <input asp-for="Name" class="form-control" placeholder="Namn" />
-            <label asp-for="Name">Namn</label>
+            <input asp-for="/**/" class="form-control" placeholder="Namn" />
+            <label asp-for="/**/">Namn</label>
             <p id="error-Name" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
-            <input asp-for="Email" class="form-control" placeholder="namn@exempel.com" />
-            <label asp-for="Email">E-post</label>
+            <input asp-for="/*~*/" class="form-control" placeholder="namn@exempel.com" />
+            <label asp-for="/*~*/">E-post</label>
             <p id="error-Email" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
-            <input asp-for="Phonenumber" class="form-control" placeholder="Telefonnummer" />
-            <label asp-for="Phonenumber">Telefonnummer</label>
+            <input asp-for="/*~~~~~~~*/" class="form-control" placeholder="Telefonnummer" />
+            <label asp-for="/*~~~~~~~*/">Telefonnummer</label>
             <p id="error-Phonenumber" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
-            <select asp-for="selectedRole" class="form-control" asp-items="@(new SelectList(Model.roles))">
+            <select asp-for="/*~~~~~~~~*/" class="form-control" asp-items="/*~*/ /*~~~~~~~~~~~~~~~~~~~~*/">
                 <option value="">-- Välj en roll --</option>
             </select>
-            <label asp-for="selectedRole">Välj roll</label>
+            <label asp-for="/*~~~~~~~~*/">Välj roll</label>
             <p id="error-selectedRole" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
-            <input asp-for="Password" type="password" class="form-control" placeholder="Lösenord" />
-            <label asp-for="Password">Lösenord</label>
+            <input asp-for="/*~~~~*/" type="password" class="form-control" placeholder="Lösenord" />
+            <label asp-for="/*~~~~*/">Lösenord</label>
             <p id="error-Password" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-3">
-            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Bekräfta lösenord" />
-            <label asp-for="ConfirmPassword">Bekräfta lösenord</label>
+            <input asp-for="/*~~~~~~~~~~~*/" type="password" class="form-control" placeholder="Bekräfta lösenord" />
+            <label asp-for="/*~~~~~~~~~~~*/">Bekräfta lösenord</label>
             <p id="error-ConfirmPassword" class="error-text"></p>
         </div>
 
@@ -53,4 +53,5 @@
 </div>
 
 <script src="/js/account.js"></script>
+
 
