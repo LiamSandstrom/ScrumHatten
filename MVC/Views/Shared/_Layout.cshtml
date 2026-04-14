@@ -47,11 +47,21 @@
                 </li>
 
                 <li>
-                    <a asp-controller="AddUser" asp-action="AddUser" class="nav-link text-white">
+                    <a asp-controller="Account" asp-action="Register" class="nav-link text-white">
                         + Lägg till användare
                     </a>
                 </li>
-                       @*  <li>
+                <li>
+                    <a asp-controller="Account" asp-action="Login" class="nav-link text-white">
+                        Logga in
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Account" asp-action="Logout" class="nav-link text-white">
+                        Logga ut
+                    </a>
+                </li>
+                @*  <li>
                             <a asp-controller="Home" asp-action="Privacy" class="nav-link text-white">
                                 Privacy
                             </a>
