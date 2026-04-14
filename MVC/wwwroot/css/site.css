@@ -18,8 +18,28 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: white;
+    font-family:"Serif", Didone; 
 }
+
+.bg-dark {
+    background-color: #7d563b !important;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-link {
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.nav-link:hover {
+        color: #f0f0f0 !important;
+        text-decoration: underline;
+    }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
