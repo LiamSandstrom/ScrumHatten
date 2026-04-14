@@ -7,23 +7,24 @@ using Models;
 using MongoDB.Driver;
 using MVC.Models.Account;
 using MVC.ViewModels.UserViewModel;
-using System.Security.Cryptography.X509Certificates;
 
 namespace MVC.Controllers
 {
-    public class UserController : Controller
+    public class UserController : BaseController
     {
 
         private IUserRepository _userRepository;
         private IRoleRepository _roleRepository;
         private RoleManager<ApplicationRole> _roleManager;
+        private UserManager<User> _userManager;
 
 
-        public UserController(IUserRepository userRepository, IRoleRepository roleRepository, RoleManager<ApplicationRole> rm)
+        public UserController(IUserRepository userRepository, IRoleRepository roleRepository, RoleManager<ApplicationRole> rm, UserManager<User> um)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _roleManager = rm;
+            _userManager = um;
         }
 
         [HttpGet]
@@ -59,8 +60,9 @@ namespace MVC.Controllers
             }
 
 
-            RegisterViewModel registerViewModel = new RegisterViewModel
+            EditUserViewModel editUserViewModel = new EditUserViewModel
             {
+                Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
                 Phonenumber = user.PhoneNumber,
@@ -70,14 +72,32 @@ namespace MVC.Controllers
             };
             
           
-            return View(registerViewModel);  
+            return View(editUserViewModel);
+            
+         }
+        [HttpPost]
+        //[Authorize(Roles = "Admin")] avkommentera denna i prod
+        public async Task<IActionResult> Edit(EditUserViewModel editUserViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(editUserViewModel);
+            }
+
+            User user = await _userRepository.GetUser(editUserViewModel.Id);
+            user.Name = editUserViewModel.Name;
+            user.Email = editUserViewModel.Email;
+            user.PhoneNumber = editUserViewModel.Phonenumber;
+
+            if (editUserViewModel.Password != null) 
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                var result = await _userManager.ResetPasswordAsync(user, token, editUserViewModel.Password);
+            }
             
 
-
-
-
-
+            return RedirectToAction("UserList");
         }
-
     }
 }
