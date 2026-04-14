@@ -20,6 +20,8 @@ builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddSingleton<HatRepository>();
 builder.Services.AddScoped<IHatService, HatService>();
 
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
 builder.Services.AddIdentity<User, ApplicationRole>(options =>
 {
     options.Password.RequiredLength = 8;
@@ -69,3 +71,5 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
+
+
