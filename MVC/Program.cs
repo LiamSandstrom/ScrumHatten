@@ -1,8 +1,8 @@
-using Repository;
+using DAL.Repositories;
+using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using AspNetCore.Identity.MongoDbCore.Infrastructure;
-using AspNetCore.Identity.MongoDbCore.Extensions;
 using Models;
+using Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +10,8 @@ builder.Services.AddControllersWithViews();
 
 var connectionString = builder.Configuration["MongoDB:ConnectionString"];
 builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionString));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddIdentity<User, ApplicationRole>(options =>
 {
