@@ -8,7 +8,6 @@ namespace Models
 {
     public class HatMaterial
     {
-        [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string MaterialId { get; set; }
         public int Amount { get; set; }
