@@ -23,6 +23,8 @@ namespace Repository
             }
         }
 
+
+
         public void AddUser(User user)
         {
             var collection = _database.GetCollection<User>("Users");

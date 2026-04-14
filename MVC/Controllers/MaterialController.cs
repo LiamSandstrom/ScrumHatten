@@ -67,7 +67,7 @@ namespace MVC.Controllers
         public async Task<IActionResult> Material()
         {
             var materials = await _materialRepository.GetAllMaterialsAsync();
-            return View(materials);
+            return View("Material",materials);
         }
 
         [HttpPatch("Material/Restock/{id}")]
