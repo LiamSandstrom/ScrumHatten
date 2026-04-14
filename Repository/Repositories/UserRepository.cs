@@ -11,7 +11,7 @@ namespace DAL.Repositories
         public UserRepository(MongoConnector mc)
         {
 
-            _collection = mc._database.GetCollection<User>("Users");
+            _collection = mc._database.GetCollection<User>("users");
         }
 
         public async Task<List<User>> GetAllUsersAsync()
@@ -37,5 +37,12 @@ namespace DAL.Repositories
             await _collection.InsertOneAsync(user);
             return user;
         }
+
+        public async Task<User> GetUser(Guid id)
+        {
+            return await _collection.Find(u => u.Id == id).FirstOrDefaultAsync();
+             
+        }
+
     }
 }

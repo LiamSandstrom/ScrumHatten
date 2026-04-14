@@ -13,6 +13,8 @@ builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionStrin
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
 builder.Services.AddIdentity<User, ApplicationRole>(options =>
 {
     options.Password.RequiredLength = 8;
@@ -62,3 +64,5 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
+
+
