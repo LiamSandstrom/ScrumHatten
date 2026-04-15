@@ -1,164 +1,407 @@
-﻿@model List<Models.Hat>
+﻿@model MVC.ViewModels.HatIndexViewModel
 @using MVC.ViewModels
 
 @{
     ViewData["Title"] = "Alla hattar";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Alla hattar</h1>
+<style>
+    .hat-page {
+        max-width: 1280px;
+        margin: 0 auto;
+    }
 
-    <button class="btn btn-success"
-            data-bs-toggle="modal"
-            data-bs-target="#addHatModal">
-        Lägg till hatt
-    </button>
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0;
+    }
 
-</div>
+    .clean-btn-primary {
+        background-color: #2563eb;
+        border: 1px solid #2563eb;
+        color: white;
+        border-radius: 8px;
+        padding: 0.42rem 0.85rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
+        .clean-btn-primary:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+            color: white;
+        }
+
+    .clean-btn-outline {
+        background-color: white;
+        border: 1px solid #dbe3ee;
+        color: #334155;
+        border-radius: 8px;
+        padding: 0.4rem 0.8rem;
+        font-weight: 500;
+        font-size: 0.92rem;
+    }
+
+        .clean-btn-outline:hover {
+            background-color: #f8fafc;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+
+    .clean-btn-danger {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        border-radius: 8px;
+        padding: 0.4rem 0.8rem;
+        font-weight: 500;
+        font-size: 0.92rem;
+    }
+
+        .clean-btn-danger:hover {
+            background-color: #fef2f2;
+            border-color: #fca5a5;
+            color: #b91c1c;
+        }
+
+    .hat-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        height: 100%;
+    }
+
+        .hat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .hat-card img {
+            height: 190px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+    .hat-card-body {
+        padding: 0.85rem 0.9rem 0.95rem 0.9rem;
+    }
+
+    .hat-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.35rem;
+    }
+
+    .hat-description {
+        color: #6b7280;
+        margin-bottom: 0.75rem;
+        min-height: 36px;
+        font-size: 0.93rem;
+        line-height: 1.35;
+    }
+
+    .hat-meta {
+        color: #374151;
+        margin-bottom: 0.2rem;
+        font-size: 0.93rem;
+    }
+
+    .hat-material-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.6rem 0.7rem;
+        margin-top: 0.75rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .hat-material-title {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.3rem;
+        font-size: 0.88rem;
+    }
+
+    .hat-material-list {
+        padding-left: 1rem;
+        margin-bottom: 0;
+        color: #475569;
+        font-size: 0.88rem;
+    }
+
+    .clean-alert {
+        border-radius: 12px;
+        border: 1px solid transparent;
+    }
+
+    .clean-modal .modal-content {
+        border-radius: 18px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    }
+
+    .clean-modal .modal-header,
+    .clean-modal .modal-footer {
+        border-color: #f1f5f9;
+    }
+
+    .clean-modal .modal-title {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .form-label-clean {
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.35rem;
+    }
+
+    .section-subtitle {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.75rem;
+    }
+
+    .material-row {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 0.35rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        border: 1px dashed #cbd5e1;
+        border-radius: 18px;
+        color: #64748b;
+        background: #f8fafc;
+    }
+</style>
+
+<div class="hat-page">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title">Alla hattar</h1>
+
+        <button class="clean-btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#addHatModal">
+            Lägg till hatt
+        </button>
     </div>
-}
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success clean-alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
 
-@if (Model == null || !Model.Any())
-{
-    <p>Det finns inga hattar ännu.</p>
-}
-else
-{
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger clean-alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
 
-    <div class="row">
-        @foreach (var hat in Model)
-        {
-            <div class="col-md-4 mb-4">
+    @if (Model == null || !Model.Hats.Any())
+    {
+        <div class="empty-state">
+            <h5 class="mb-2">Det finns inga hattar ännu</h5>
+            <p class="mb-0">Börja med att lägga till en ny hatt.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var hat in Model.Hats)
+            {
+                <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
+                    <div class="hat-card">
+                        <img src="@(string.IsNullOrWhiteSpace(hat.ImageBase64) ? (string.IsNullOrWhiteSpace(hat.ImageUrl) ? "https://via.placeholder.com/300x250" : hat.ImageUrl) : hat.ImageBase64)"
+                             alt="@hat.Name" />
 
-                <div class="card h-100">
+                        <div class="hat-card-body">
+                            <div class="hat-name">@hat.Name</div>
 
-                    <img src="@(string.IsNullOrWhiteSpace(hat.ImageUrl) ? "https://via.placeholder.com/300x250" : hat.ImageUrl)"
-                         class="card-img-top"
-                         style="height:250px; object-fit:cover;" />
+                            <div class="hat-description">
+                                @(string.IsNullOrWhiteSpace(hat.Description) ? "Ingen beskrivning ännu." : hat.Description)
+                            </div>
 
-                    <div class="card-body">
+                            <div class="hat-meta"><strong>Pris:</strong> @hat.Price kr</div>
+                            <div class="hat-meta"><strong>I lager:</strong> @hat.Quantity</div>
 
-                        <h5>@hat.Name</h5>
+                            @if (hat.Materials != null && hat.Materials.Any())
+                            {
+                                <div class="hat-material-box">
+                                    <div class="hat-material-title">Material</div>
+                                    <ul class="hat-material-list">
+                                        @foreach (var hm in hat.Materials)
+                                        {
+                                            var material = Model.Materials.FirstOrDefault(m => m.Id == hm.MaterialId);
+                                            <li>@hm.Amount @(material != null ? material.Name : "Okänt material")</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
 
-                        <p>@hat.Description</p>
-
-                        <p><strong>Pris:</strong> @hat.Price kr</p>
-
-                        <p><strong>I lager:</strong> @hat.Quantity</p>
-
-                        <div class="d-flex gap-2">
-
-                            <button class="btn btn-warning btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editHatModal_@hat.Id">
-                                Redigera
-                            </button>
-
-                            <form asp-action="DeleteHat" method="post">
-                                <input type="hidden" name="id" value="@hat.Id" />
-
-                                <button type="submit"
-                                        class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Är du säker på att du vill ta bort hatten?')">
-                                    Ta bort
+                            <div class="d-flex gap-2 mt-2">
+                                <button class="clean-btn-outline"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editHatModal_@hat.Id">
+                                    Redigera
                                 </button>
+
+                                <form asp-action="DeleteHat" method="post">
+                                    <input type="hidden" name="id" value="@hat.Id" />
+
+                                    <button type="submit"
+                                            class="clean-btn-danger"
+                                            onclick="return confirm('Är du säker på att du vill ta bort hatten?')">
+                                        Ta bort
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade clean-modal" id="editHatModal_@hat.Id" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+                            <form asp-action="UpdateHat" method="post" enctype="multipart/form-data">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Redigera hatt</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <input type="hidden" name="Id" value="@hat.Id" />
+                                    <input type="hidden" name="ImageUrl" value="@hat.ImageUrl" />
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label-clean">Namn</label>
+                                            <input name="Name" class="form-control" value="@hat.Name" required />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label-clean">Pris</label>
+                                            <input name="Price" type="number" class="form-control" value="@hat.Price" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label-clean">Beskrivning</label>
+                                        <textarea name="Description" class="form-control">@hat.Description</textarea>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label-clean">Byt bild</label>
+                                            <input name="ImageFile" type="file" class="form-control" accept="image/*" />
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label-clean">Antal i lager</label>
+                                            <input name="Quantity" type="number" class="form-control" value="@hat.Quantity" required />
+                                        </div>
+                                    </div>
+
+                                    <hr />
+                                    <div class="section-subtitle">Material per hatt</div>
+
+                                    <div id="editMaterialRows_@hat.Id">
+                                        @if (hat.Materials != null && hat.Materials.Any())
+                                        {
+                                            for (int i = 0; i < hat.Materials.Count; i++)
+                                            {
+                                                var hatMaterial = hat.Materials[i];
+
+                                                <div class="row align-items-end material-row">
+                                                    <input type="hidden" name="Materials.Index" value="@i" />
+
+                                                    <div class="col-md-7 mb-2 mb-md-0">
+                                                        <label class="form-label-clean">Material</label>
+                                                        <select name="Materials[@i].MaterialId" class="form-control">
+                                                            <option value="">-- Välj material --</option>
+                                                            @foreach (var material in Model.Materials)
+                                                            {
+                                                                if (material.Id == hatMaterial.MaterialId)
+                                                                {
+                                                                    <option value="@material.Id" selected>@material.Name</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@material.Id">@material.Name</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-3 mb-2 mb-md-0">
+                                                        <label class="form-label-clean">Antal</label>
+                                                        <input name="Materials[@i].Amount"
+                                                               type="number"
+                                                               min="1"
+                                                               class="form-control"
+                                                               value="@hatMaterial.Amount" />
+                                                    </div>
+
+                                                    <div class="col-md-2">
+                                                        <button type="button"
+                                                                class="clean-btn-danger w-100"
+                                                                onclick="removeMaterialRow(this)">
+                                                            Ta bort
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+
+                                    <button type="button"
+                                            class="clean-btn-outline mt-2"
+                                            onclick="addEditMaterialRow('@hat.Id')">
+                                        Lägg till material
+                                    </button>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="clean-btn-outline"
+                                            data-bs-dismiss="modal">
+                                        Avbryt
+                                    </button>
+
+                                    <button type="submit"
+                                            class="clean-btn-primary">
+                                        Spara ändringar
+                                    </button>
+                                </div>
+
                             </form>
 
                         </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            @* REDIGERA HATT  *@
-
-            <div class="modal fade" id="editHatModal_@hat.Id">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-
-                        <form asp-action="UpdateHat" method="post" enctype="multipart/form-data">
-
-                            <div class="modal-header">
-                                <h5 class="modal-title">Redigera hatt</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-
-                            <div class="modal-body">
-
-                                <input type="hidden" name="Id" value="@hat.Id" />
-                                <input type="hidden" name="ImageUrl" value="@hat.ImageUrl" />
-
-                                <div class="mb-3">
-                                    <label>Namn</label>
-                                    <input name="Name" class="form-control" value="@hat.Name" required />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label>Beskrivning</label>
-                                    <textarea name="Description" class="form-control">@hat.Description</textarea>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label>Byt bild</label>
-                                    <input name="ImageFile" type="file" class="form-control" accept="image/*" />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label>Pris</label>
-                                    <input name="Price" type="number" class="form-control" value="@hat.Price" required />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label>Antal i lager</label>
-                                    <input name="Quantity" type="number" class="form-control" value="@hat.Quantity" required />
-                                </div>
-
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button"
-                                        class="btn btn-secondary"
-                                        data-bs-dismiss="modal">
-                                    Avbryt
-                                </button>
-
-                                <button type="submit"
-                                        class="btn btn-warning">
-                                    Spara ändringar
-                                </button>
-                            </div>
-
-                        </form>
-
                     </div>
                 </div>
-            </div>
+            }
+        </div>
+    }
+</div>
 
-        }
-    </div>
-
-
-}
-
-@*  LÄGG TILL HATT *@ 
-
-<div class="modal fade" id="addHatModal">
-    <div class="modal-dialog">
+<div class="modal fade clean-modal" id="addHatModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
             <form asp-action="AddHat" method="post" enctype="multipart/form-data">
@@ -170,51 +413,184 @@ else
 
                 <div class="modal-body">
 
-                    <div class="mb-3">
-                        <label>Namn</label>
-                        <input name="Name" class="form-control" required />
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-clean">Namn</label>
+                            <input name="Name" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-clean">Pris</label>
+                            <input name="Price" type="number" class="form-control" required />
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label>Beskrivning</label>
+                        <label class="form-label-clean">Beskrivning</label>
                         <textarea name="Description" class="form-control"></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label>Bild</label>
-                        <input name="ImageFile" type="file" class="form-control" accept="image/*" />
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-clean">Bild</label>
+                            <input name="ImageFile" type="file" class="form-control" accept="image/*" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label-clean">Antal i lager</label>
+                            <input name="Quantity" type="number" class="form-control" required />
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label>Pris</label>
-                        <input name="Price" type="number" class="form-control" required />
-                    </div>
+                    <hr />
 
-                    <div class="mb-3">
-                        <label>Antal i lager</label>
-                        <input name="Quantity" type="number" class="form-control" required />
-                    </div>
+                    <div class="section-subtitle">Material per hatt</div>
+
+                    <div id="materialRows"></div>
+
+                    <button type="button"
+                            class="clean-btn-outline mt-2"
+                            onclick="addMaterialRow()">
+                        Lägg till material
+                    </button>
 
                 </div>
 
                 <div class="modal-footer">
-
                     <button type="button"
-                            class="btn btn-secondary"
+                            class="clean-btn-outline"
                             data-bs-dismiss="modal">
                         Avbryt
                     </button>
 
                     <button type="submit"
-                            class="btn btn-success">
+                            class="clean-btn-primary">
                         Spara hatt
                     </button>
-
                 </div>
 
             </form>
 
         </div>
     </div>
-
 </div>
+
+@section Scripts {
+    <script>
+        let materialIndex = 0;
+
+        const materialOptions = `
+            <option value="">-- Välj material --</option>
+            @foreach (var material in Model.Materials)
+            {
+                    <option value="@material.Id">@material.Name</option>
+            }
+        `;
+
+        function addMaterialRow() {
+            const container = document.getElementById("materialRows");
+            const currentIndex = materialIndex;
+
+            const row = document.createElement("div");
+            row.className = "row align-items-end material-row";
+
+            row.innerHTML = `
+                <input type="hidden" name="Materials.Index" value="${currentIndex}" />
+
+                <div class="col-md-7 mb-2 mb-md-0">
+                    <label class="form-label-clean">Material</label>
+                    <select name="Materials[${currentIndex}].MaterialId" class="form-control">
+                        ${materialOptions}
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <label class="form-label-clean">Antal</label>
+                    <input name="Materials[${currentIndex}].Amount"
+                           type="number"
+                           min="1"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                            class="clean-btn-danger w-100"
+                            onclick="removeMaterialRow(this)">
+                        Ta bort
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(row);
+            materialIndex++;
+        }
+
+        function removeMaterialRow(button) {
+            const row = button.closest(".material-row");
+            if (row) {
+                row.remove();
+            }
+        }
+
+        const editMaterialIndexes = {};
+
+        function addEditMaterialRow(hatId) {
+            const container = document.getElementById("editMaterialRows_" + hatId);
+
+            if (!container) return;
+
+            if (editMaterialIndexes[hatId] === undefined) {
+                editMaterialIndexes[hatId] = container.querySelectorAll(".material-row").length;
+            }
+
+            const currentIndex = editMaterialIndexes[hatId];
+
+            const row = document.createElement("div");
+            row.className = "row align-items-end material-row";
+
+            row.innerHTML = `
+                <input type="hidden" name="Materials.Index" value="${currentIndex}" />
+
+                <div class="col-md-7 mb-2 mb-md-0">
+                    <label class="form-label-clean">Material</label>
+                    <select name="Materials[${currentIndex}].MaterialId" class="form-control">
+                        ${materialOptions}
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <label class="form-label-clean">Antal</label>
+                    <input name="Materials[${currentIndex}].Amount"
+                           type="number"
+                           min="1"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                            class="clean-btn-danger w-100"
+                            onclick="removeMaterialRow(this)">
+                        Ta bort
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(row);
+            editMaterialIndexes[hatId]++;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            addMaterialRow();
+        });
+
+        const addHatModal = document.getElementById("addHatModal");
+        if (addHatModal) {
+            addHatModal.addEventListener("hidden.bs.modal", function () {
+                const container = document.getElementById("materialRows");
+                container.innerHTML = "";
+                materialIndex = 0;
+                addMaterialRow();
+            });
+        }
+    </script>
+}

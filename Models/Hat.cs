@@ -16,7 +16,7 @@ namespace Models
 
         public string Description { get; set; }
         public string ImageUrl { get; set; }
-     
+        public string? ImageBase64 { get; set; }
 
         public List<HatMaterial> Materials { get; set; } = new();
         public int Quantity { get; set; }
