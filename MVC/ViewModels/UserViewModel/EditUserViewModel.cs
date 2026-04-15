@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace MVC.ViewModels.UserViewModel
 {
@@ -39,5 +40,10 @@ namespace MVC.ViewModels.UserViewModel
 
         [Required(ErrorMessage = "Var god välj en roll")]
         public string selectedRole { get; set; }
+
+        public string selectedRoleID { get; set; }
+
+        public List<ApplicationRole> availableRoles { get; set; } = new();
+
     }
 }

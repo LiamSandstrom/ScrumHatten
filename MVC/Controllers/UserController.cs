@@ -54,11 +54,6 @@ namespace MVC.Controllers
             var selectedRoleTemp = await _roleManager.FindByIdAsync(selectedRoleId);
             string? selectedRoleName = selectedRoleTemp.Name;
 
-            if (selectedRoleName == null)
-            {
-                selectedRoleName = "-";
-            }
-
 
             EditUserViewModel editUserViewModel = new EditUserViewModel
             {
@@ -68,26 +63,55 @@ namespace MVC.Controllers
                 Phonenumber = user.PhoneNumber,
                 Password = "",
                 roles = stringRoles,
-                selectedRole = selectedRoleName
+                selectedRole = selectedRoleName,
+                selectedRoleID = user.Roles.First().ToString(),
+                availableRoles = await _roleRepository.GetAllRolesAsync()
             };
             
           
             return View(editUserViewModel);
             
          }
+        /// <summary>
+        /// Denna metod postar ändringar av användarinformation
+        /// </summary>
+        /// <param name="editUserViewModel"></param>
+        /// <param name="roleManager"></param>
+        /// <returns></returns>
+        /// 
+        //[Authorize(Roles = "Admin")] avkommentera denna i prod !!!
         [HttpPost]
-        //[Authorize(Roles = "Admin")] avkommentera denna i prod
         public async Task<IActionResult> Edit(EditUserViewModel editUserViewModel)
         {
+            User user = await _userRepository.GetUser(editUserViewModel.Id);
+
+            // Bortser från validering av lösenord om input är tomt
+            if (string.IsNullOrWhiteSpace(editUserViewModel.Password))
+            {
+                ModelState.Remove("Password");
+                ModelState.Remove("ConfirmPassword");
+            }
+            
+            // Kör validering
             if (!ModelState.IsValid)
             {
                 return View(editUserViewModel);
             }
 
-            User user = await _userRepository.GetUser(editUserViewModel.Id);
+            // Ändrar infon i databasen
             user.Name = editUserViewModel.Name;
             user.Email = editUserViewModel.Email;
             user.PhoneNumber = editUserViewModel.Phonenumber;
+
+            if (editUserViewModel.selectedRole != null)
+            {
+                user.Roles.Clear();
+                List<ApplicationRole> allRoles = await _roleRepository.GetAllRolesAsync();
+                Guid selectedRole = allRoles.FirstOrDefault(r => r.Name == editUserViewModel.selectedRole).Id;
+                user.Roles.Add(selectedRole);
+                
+            }
+
 
             if (editUserViewModel.Password != null) 
             {
@@ -95,7 +119,9 @@ namespace MVC.Controllers
 
                 var result = await _userManager.ResetPasswordAsync(user, token, editUserViewModel.Password);
             }
-            
+
+            // Kör repo-frågan med ändrade uppgifterna
+            await _userRepository.UpdateUserAsync(user);
 
             return RedirectToAction("UserList");
         }
