@@ -4,6 +4,7 @@ using Models;
 using MVC.ViewModels;
 using Repository;
 using System.Linq;
+using System.IO;
 
 namespace MVC.Controllers
 {
@@ -49,6 +50,7 @@ namespace MVC.Controllers
             }
 
             string imagePath = "";
+            string? imageBase64 = null;
 
             if (model.ImageFile != null && model.ImageFile.Length > 0)
             {
@@ -68,6 +70,14 @@ namespace MVC.Controllers
                 }
 
                 imagePath = "/images/hats/" + fileName;
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    model.ImageFile.CopyTo(memoryStream);
+                    byte[] imageBytes = memoryStream.ToArray();
+                    string base64String = Convert.ToBase64String(imageBytes);
+                    imageBase64 = $"data:{model.ImageFile.ContentType};base64,{base64String}";
+                }
             }
 
             var hatMaterials = model.Materials?
@@ -86,6 +96,7 @@ namespace MVC.Controllers
                 Price = model.Price,
                 Quantity = model.Quantity,
                 ImageUrl = imagePath,
+                ImageBase64 = imageBase64,
                 Materials = hatMaterials
             };
 
@@ -136,6 +147,7 @@ namespace MVC.Controllers
             try
             {
                 string imagePath = ImageUrl;
+                string? imageBase64 = _hatService.GetHatById(Id)?.ImageBase64;
 
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
@@ -153,6 +165,14 @@ namespace MVC.Controllers
                     }
 
                     imagePath = "/images/hats/" + fileName;
+
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        ImageFile.CopyTo(memoryStream);
+                        byte[] imageBytes = memoryStream.ToArray();
+                        string base64String = Convert.ToBase64String(imageBytes);
+                        imageBase64 = $"data:{ImageFile.ContentType};base64,{base64String}";
+                    }
                 }
 
                 var hatMaterials = Materials?
@@ -172,6 +192,7 @@ namespace MVC.Controllers
                     Price = Price,
                     Quantity = Quantity,
                     ImageUrl = imagePath,
+                    ImageBase64 = imageBase64,
                     Materials = hatMaterials
                 };
 
