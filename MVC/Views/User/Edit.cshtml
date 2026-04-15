@@ -3,38 +3,42 @@
 @{
 }
 
-@section Scripts {
+@* @section Scripts {
     <script>
         handleFormSubmit("registerForm")
-    </script>
-}
+    </script> 
+}  *@
 <link rel="stylesheet" href="~/css/login.css" />
 
 
 <div class="loginContainer">
     <form asp-action="Edit" method="post" id="registerForm">
-        <h1 class="h3 mb-3 fw-normal">Redigera   anställd</h1>
+        <h1 class="h3 mb-3 fw-normal">Redigera  anställd</h1>
 
+        <input asp-for="selectedRoleID" type="hidden" />
         <div class="form-floating mb-2">
             <input asp-for="Name" class="form-control" placeholder="Namn" />
             <label asp-for="Name">Namn</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
             <p id="error-Name" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
             <input asp-for="Email" class="form-control" placeholder="namn@exempel.com" />
             <label asp-for="Email">E-post</label>
+            <span asp-validation-for="Email" class="text-danger"></span>
             <p id="error-Email" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
             <input asp-for="Phonenumber" class="form-control" placeholder="Telefonnummer" />
             <label asp-for="Phonenumber">Telefonnummer</label>
+            <span asp-validation-for="Phonenumber" class="text-danger"></span>
             <p id="error-Phonenumber" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
-            <select asp-for="selectedRole" class="form-control" asp-items="@(new SelectList(Model.roles))">
+            <select asp-for="selectedRole" class="form-control" asp-items="@(new SelectList(Model.availableRoles))">
                 <option value="">@Model.selectedRole</option>
             </select>
             <label asp-for="selectedRole">Välj roll</label>
@@ -44,12 +48,15 @@
         <div class="form-floating mb-2">
             <input asp-for="Password" type="password" class="form-control" placeholder="Lösenord" />
             <label asp-for="Password">Lösenord</label>
+            <span asp-validation-for="Password" class="text-danger"></span>
             <p id="error-Password" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-3">
             <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Bekräfta lösenord" />
             <label asp-for="ConfirmPassword">Bekräfta lösenord</label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
             <p id="error-ConfirmPassword" class="error-text"></p>
         </div>
 
@@ -57,4 +64,4 @@
     </form>
 </div>
 
-<script src="/js/account.js"></script>
+@* <script src="/js/account.js"></script> *@
