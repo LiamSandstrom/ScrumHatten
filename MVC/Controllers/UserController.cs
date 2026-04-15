@@ -67,11 +67,11 @@ namespace MVC.Controllers
                 selectedRoleID = user.Roles.First().ToString(),
                 availableRoles = await _roleRepository.GetAllRolesAsync()
             };
-            
-          
+
+
             return View(editUserViewModel);
-            
-         }
+
+        }
         /// <summary>
         /// Denna metod postar ändringar av användarinformation
         /// </summary>
@@ -91,7 +91,7 @@ namespace MVC.Controllers
                 ModelState.Remove("Password");
                 ModelState.Remove("ConfirmPassword");
             }
-            
+
             // Kör validering
             if (!ModelState.IsValid)
             {
@@ -109,11 +109,11 @@ namespace MVC.Controllers
                 List<ApplicationRole> allRoles = await _roleRepository.GetAllRolesAsync();
                 Guid selectedRole = allRoles.FirstOrDefault(r => r.Name == editUserViewModel.selectedRole).Id;
                 user.Roles.Add(selectedRole);
-                
+
             }
 
 
-            if (editUserViewModel.Password != null) 
+            if (editUserViewModel.Password != null)
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -122,6 +122,16 @@ namespace MVC.Controllers
 
             // Kör repo-frågan med ändrade uppgifterna
             await _userRepository.UpdateUserAsync(user);
+
+            return RedirectToAction("UserList");
+        }
+
+
+
+
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _userRepository.DeleteUserAsync(id);
 
             return RedirectToAction("UserList");
         }
