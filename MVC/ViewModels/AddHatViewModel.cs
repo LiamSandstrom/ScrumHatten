@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace MVC.ViewModels
 {
@@ -8,8 +9,8 @@ namespace MVC.ViewModels
         public string Description { get; set; }
         public double Price { get; set; }
         public int Quantity { get; set; }
-
-        // Bildfil från datorn
         public IFormFile ImageFile { get; set; }
+
+        public List<HatMaterialInputViewModel> Materials { get; set; } = new();
     }
 }
