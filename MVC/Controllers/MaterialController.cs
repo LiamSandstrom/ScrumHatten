@@ -54,7 +54,7 @@ namespace MVC.Controllers
             return Ok(price);
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] Material material)
         {
             if (material == null)
@@ -70,7 +70,7 @@ namespace MVC.Controllers
             return View("Material",materials);
         }
 
-        [HttpPatch("Material/Restock/{id}")]
+        [HttpPatch("Restock/{id}")]
         public async Task<IActionResult> Restock(string id, [FromBody] double addedAmount)
         {
             try
