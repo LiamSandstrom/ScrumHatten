@@ -1,37 +1,18 @@
+using Models;
+using BL.Interfaces;
 using Repository;
 public class OrderService : IOrderService
 {
-    private readonly IOrderRepository _repository; 
-    
-    public OrderService(IOrderRepository repository)
+    private const decimal PriorityMultiplier = 1.20m; // 20% moms
+    public decimal CalculateFinalPrice(decimal basePrice, decimal momsRate, bool isPriority)
     {
-        _repository = repository;
-    }
-
-    public async Task<decimal> CalculateOrderTotalAsync(string orderId)
-    {
-        var order = await _repository.GetOrderByIdAsync(orderId);
-        if (order == null) return 0;
-
-        decimal totalBasePrice = 0;
-
-        foreach (var hat in order.Hats)
+        decimal currentPrice = basePrice;
+        if (isPriority)
         {
-            decimal hatPrice = hat.BasePrice;
-
-            if (hat.IsCustom)
-            {
-                hatPrice += order.TimeToMake * HourlyRate;
-            }
-
-            totalBasePrice += hatPrice;
+            currentPrice *= PriorityMultiplier;
         }
+        decimal finalPrice = currentPrice * (1 * momsRate);
+        return finalPrice; 
 
-        decimal totalWithTransport = totalBasePrice + order.TransportPrice;
-        decimal totalWithMoms = totalWithTransport * (1 + order.Moms);
-        decimal finalPrice = totalWithMoms - order.Discount; 
-
-        return finalPrice;
     }
-
 }
