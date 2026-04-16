@@ -8,68 +8,120 @@
 
 <h1>Materialbeställningar</h1>
 
-<h2>Skapa ny beställning</h2>
+<div style="display:flex; gap:30px; align-items:flex-start;">
+    
+    <div style="flex:2;">
+        <h2>Skapa ny beställning</h2>
 
-<form asp-controller="MaterialOrder" asp-action="Create" method="post">
-    <div>
-        <label>Material</label>
-        <select name="Items[0].MaterialId">
-            <option value="">Välj material</option>
-            @if (materials != null)
+        <form asp-controller="MaterialOrder" asp-action="Create" method="post">
+            <div id="materialRows">
+                <div class="material-row" style="margin-bottom:10px;">
+                    <select name="Items[0].MaterialId">
+                        <option value="">Välj material</option>
+                        @if (materials != null)
+                        {
+                            @foreach (var material in materials)
+                            {
+                                <option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option>
+                            }
+                        }
+                    </select>
+
+                    <input type="number" name="Items[0].Quantity" step="0.1" min="0.1" placeholder="Antal" />
+                </div>
+            </div>
+
+            <button type="button" onclick="addMaterialRow()">Lägg till material</button>
+            <button type="submit">Beställ</button>
+        </form>
+
+        <hr />
+
+        <h2>Påbörjade beställningar</h2>
+
+        @if (Model == null || !Model.Any(o => o.Status != "Klar"))
+        {
+            <p>Det finns inga påbörjade beställningar.</p>
+        }
+        else
+        {
+            @foreach (var order in Model.Where(o => o.Status != "Klar").OrderByDescending(o => o.CreatedAt))
             {
-                @foreach (var material in materials)
-                {
-                    <option value="@material.Id">
-                        @material.Name - @material.PricePerUnit kr/@material.Unit
-                    </option>
-                }
+                <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px; background-color:white;">
+                    <p><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                    <p><strong>Status:</strong> @order.Status</p>
+                    <p><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
+
+                    <ul>
+                        @foreach (var item in order.Items)
+                        {
+                            <li>@item.MaterialName - @item.Quantity @* kan bytas till materialets enhet senare *@ - @item.PricePerUnit kr/st</li>
+                        }
+                    </ul>
+
+                    <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post">
+                        <input type="hidden" name="id" value="@order.Id" />
+                        <button type="submit">Markera som klar</button>
+                    </form>
+                </div>
             }
-        </select>
+        }
     </div>
 
-    <div>
-        <label>Antal</label>
-        <input type="number" name="Items[0].Quantity" step="0.1" min="0" />
-    </div>
+    <div style="flex:1;">
+        <h2>Klara beställningar</h2>
 
-    <button type="submit">Beställ</button>
-</form>
-
-<hr />
-
-<h2>Gjorda beställningar</h2>
-
-@if (Model == null || !Model.Any())
-{
-    <p>Det finns inga materialbeställningar ännu.</p>
-}
-else
-{
-    @foreach (var order in Model)
-    {
-        <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px;">
-            <p><strong>Beställnings-ID:</strong> @order.Id</p>
-            <p><strong>Status:</strong> @order.Status</p>
-            <p><strong>Skapad:</strong> @order.CreatedAt</p>
-            <p><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
-
-            <h4>Material i beställningen</h4>
-            <ul>
-                @foreach (var item in order.Items)
-                {
-                    <li>
-                        @item.MaterialName - @item.Quantity st - @item.PricePerUnit kr/st
-                    </li>
-                }
-            </ul>
-
-            @if (order.Status != "Klar")
+        @if (Model == null || !Model.Any(o => o.Status == "Klar"))
+        {
+            <p>Det finns inga klara beställningar.</p>
+        }
+        else
+        {
+            @foreach (var order in Model.Where(o => o.Status == "Klar").OrderByDescending(o => o.CreatedAt))
             {
-                <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post">
-                    <input type="hidden" name="id" value="@order.Id" />
-                    <button type="submit">Markera som klar</button>
-                </form>
+                <div style="border:1px solid #7fbf7f; padding:15px; margin-bottom:15px; border-radius:8px; background-color:rgba(0, 128, 0, 0.15);">
+                    <p><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                    <p><strong>Status:</strong> @order.Status</p>
+                    <p><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
+
+                    <ul>
+                        @foreach (var item in order.Items)
+                        {
+                            <li>@item.MaterialName - @item.Quantity - @item.PricePerUnit kr/st</li>
+                        }
+                    </ul>
+                </div>
             }
-        </div>
+        }
+    </div>
+</div>
+
+<script>
+    let rowIndex = 1;
+
+    function addMaterialRow() {
+        const container = document.getElementById("materialRows");
+
+        const newRow = document.createElement("div");
+        newRow.className = "material-row";
+        newRow.style.marginBottom = "10px";
+
+        newRow.innerHTML = `
+            <select name="Items[${rowIndex}].MaterialId">
+                <option value="">Välj material</option>
+                @if (materials != null)
+                {
+                        foreach (var material in materials)
+                        {
+                                <text><option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option></text>
+                        }
+                }
+            </select>
+
+            <input type="number" name="Items[${rowIndex}].Quantity" step="0.1" min="0.1" placeholder="Antal" />
+        `;
+
+        container.appendChild(newRow);
+        rowIndex++;
     }
-}
+</script>
