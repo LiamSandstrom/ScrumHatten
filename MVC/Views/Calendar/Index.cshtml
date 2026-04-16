@@ -8,16 +8,97 @@
 @section Scripts {
 	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 	<script>
+		var calendar;
+
 		document.addEventListener('DOMContentLoaded', function () {
 			var calendarEl = document.getElementById('calendar');
-			var calendar = new FullCalendar.Calendar(calendarEl, {
+			calendar = new FullCalendar.Calendar(calendarEl, {
 				initialView: 'dayGridMonth',
 				locale: "sv",
-				events: '/Calendar/GetEvents'
-			});
+				headerToolbar:{
+					left: 'prev,next today customPlusButton',
+					center: 'title',
+					right: 'dayGridMonth,timeGridWeek,timeGridDay'	
+				},
+					slotMinTime: "06:00:00",
+					slotMaxTime: "22:00:00",
+
+				customButtons: {
+					customPlusButton: {
+						text: '+',
+						click: function() {
+						$('#eventModal').modal('show');
+						}
+					}
+		},
+		events: '/Calendar/GetEvents',
+		dateClick:function(info) {
+		document.getElementById('eventDate').value = info.dateStr + "T09:00";
+		$('#eventModal').modal('show');
+			}
+		}
+		);
 			calendar.render();
 });
+		function saveEvent() {
+			var eventData={
+		title: document.getElementById('eventTitle').value,
+		start: new Date(document.getElementById('eventDate').value).toISOString(),
+		targetType: document.getElementById('eventTarget').value,
+		targetUserName : document.getElementById('targetUserName').value,
+		color: "#007bff"
+		};
+		fetch('/Calendar/SaveEvent', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(eventData)
+		}).then (response => {
+			if (response.ok) {
+				$('#eventModal').modal('hide');
+				calendar.refetchEvents();
+			} 
+		});	
+	}
+
 	</script>
+	<div class="modal fade" id="eventModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class ="modal-content">
+				<div class= "modal-header">
+					<h5 class="modal-title">Lägg till händelse</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+				<div class="mb-3">
+					<label>Title</label>
+						<input type="text" id="eventTitle" class="form-control" />
+				</div>
+					<div class="mb-3">
+						<label>Date</label>
+						<input type="datetime-local" id="eventDate" class="form-control" />
+					</div>
+					<div class="mb-3">
+						<label>Vem ska se detta?</label>
+						<select id="eventTarget" class="form-control">
+							<option value="public">Alla</option>
+							<option value="private">Bara jag</option>
+							<option value="other">Specifik anställd</option>
+						</select>
+					</div>
+					<div id="otherUserDiv" class="mb-3" style="display:none;">
+						<label>Namn</label>
+						<input type="text" id="targetUserName" class="form-control" />
+					</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+					<button type="button" class="btn btn-primary" onClick="saveEvent()">Spara</button>
+		</div>
+	</div>
+	</div>
+	</div>
 }
 
 
