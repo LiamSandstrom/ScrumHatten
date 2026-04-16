@@ -1,4 +1,10 @@
 using Models;
+using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+
 namespace Repository
 {
     public class OrderRepository : IOrderRepository
@@ -9,9 +15,20 @@ namespace Repository
             _collection = connector._database.GetCollection<Order>("Orders");
         }
 
+        public async Task<Order> GetOrderByIdAsync(string id) =>
+
+            await _collection.Find(o => o.Id == id).FirstOrDefaultAsync();
+
+        public async Task<List<Order>> GetAllOrdersAsync() => 
+            await _collection.Find(_ => true).ToListAsync();
         public async Task CreateOrderAsync(Order newOrder)
         {
             await _collection.InsertOneAsync(newOrder);
+        }
+
+        public async Task UpdateOrderAsync(string id, Order updatedOrder)
+        {
+            await _collection.ReplaceOneAsync(o => o.Id == id, updatedOrder);
         }
 
         public async Task DeleteOrderAsync(string id)
@@ -20,35 +37,42 @@ namespace Repository
 
         }
 
-        public async Task UpdateOrderAsync(string id, Order updatedOrder)
+        public async Task<List<Order>> GetOrderByStatusAsync(string status)
         {
-            await _collection.ReplaceOneAsync(o => o.Id == id, updatedOrder);
+            return await _collection.Find(o => o.Status == status).ToListAsync();
         }
 
-        public async Task GetOrderByStatusAsync(string status)
+        public async Task<List<Order>> GetOrderByMakerIdAsync(Guid makerId)
         {
-            var orders = await _collection.Find(o => o.Status == status).ToListAsync();
-            return orders;
+            return await _collection.Find(o => o.MakerId == makerId).ToListAsync();
         }
 
-        public async Task GetOrderByMakerIdAsync(Guid makerId)
+        public async Task<List<Hat>> GetHatsByOrderIdAsync(string id)
         {
-            var orders = await _collection.Find(o => o.MakerId == makerId).ToListAsync();
-            return orders;
+            var order = await GetOrderByIdAsync(id);
+            return order?.Hats ?? new List<Hat>();
         }
 
-        public async Task<decimal> CalculateTotalPriceByOrderIdAsync(string id)
+        public async Task<List<HatMaterial>> GetMaterialsByOrderIdAsync(string id)
         {
-            var order = await _collection.Find(o => o.Id == id).FirstOrDefaultAsync();
-            if (order == null) return 0;
-
-            // Summera materialkostnad + transport
-            decimal materialCost = order.Materials.Sum(m => m.PricePerUnit * (decimal)m.Quantity);
-            decimal subTotal = materialCost + order.TransportPrice;
-
-            // Moms
-            return subTotal + order.Moms;
+            var order = await GetOrderByIdAsync(id);
+            return order?.Materials ?? new List<HatMaterial>();
         }
+
+        public async Task<decimal> GetTimeToMakeByOrderIdAsync(string id)
+        {
+            var order = await GetOrderByIdAsync(id);
+            return order?.TimeToMake ?? 0;
+        }
+
+        public async Task UpdateOrderStatusAsync(string id, string newStatus)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.Status, newStatus);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+       
     }
 
 
