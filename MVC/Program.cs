@@ -1,12 +1,12 @@
-
+using BL.Interfaces;
+using BL.Services;
 using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Models;
 using Repository;
 using Repository.Repositories;
-using BL.Services;
-using BL.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -16,27 +16,29 @@ builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionStrin
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 builder.Services.AddSingleton<HatRepository>();
 builder.Services.AddScoped<IHatService, HatService>();
 
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
-builder.Services.AddIdentity<User, ApplicationRole>(options =>
-{
-    options.Password.RequiredLength = 8;
-    options.Password.RequireDigit = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.User.RequireUniqueEmail = false;
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-})
-.AddMongoDbStores<User, ApplicationRole, Guid>(
-    builder.Configuration["MongoDB:ConnectionString"],
-    "ScrumHatten"
-)
-.AddDefaultTokenProviders();
+builder
+    .Services.AddIdentity<User, ApplicationRole>(options =>
+    {
+        options.Password.RequiredLength = 8;
+        options.Password.RequireDigit = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.User.RequireUniqueEmail = false;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    })
+    .AddMongoDbStores<User, ApplicationRole, Guid>(
+        builder.Configuration["MongoDB:ConnectionString"],
+        "ScrumHatten"
+    )
+    .AddDefaultTokenProviders();
 
 // Cookie-inställningar
 builder.Services.ConfigureApplicationCookie(options =>
@@ -46,10 +48,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-
 var app = builder.Build();
 
-//Create Roles 
+//Create Roles
 
 if (!app.Environment.IsDevelopment())
 {
@@ -65,11 +66,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();
-
-
