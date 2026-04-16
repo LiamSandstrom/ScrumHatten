@@ -1,0 +1,19 @@
+.orderHattRow {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid black;
+    width: 100%;
+}
+
+.typeDiv {
+    display: flex;
+    flex-direction: column;
+}
+
+#hatList {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+
+    max-height: 400px;
+    overflow: auto;
+}

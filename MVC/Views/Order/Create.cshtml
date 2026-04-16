@@ -1,0 +1,166 @@
+@model MVC.ViewModels.OrderViewModel
+
+<link rel="stylesheet" href="~/css/order.css" />
+
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+    New order
+</button>
+
+<div class="modal fade" id="createOrderModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">New Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-action="Create" method="post">
+                <div class="modal-body">
+
+                    <h6>Hattar</h6>
+
+                    <div id="hatList">
+                        <div id="rows"></div>
+
+
+
+                        <template id="rowTemplate">
+                            <div class="row-item card mb-3 shadow-sm">
+                                <div class="card-body">
+
+                                    <div class="row g-3 align-items-center">
+
+                                        <div class="col-md-3">
+                                            <label class="form-label">Typ</label>
+                                            <select class="form-select type-dropdown">
+                                                <option value="">Välj typ</option>
+                                                <option value="Stock">Lager</option>
+                                                <option value="Custom">Custom</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label">Hatt</label>
+                                            <select class="form-select hat-dropdown">
+                                                <option value="">Välj hatt</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label class="form-label">Antal</label>
+                                            <input type="number" min="1" value="1"
+                                                   class="form-control quantity-input" />
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="d-flex gap-3 align-items-center preview">
+
+                                                <img class="hat-image rounded d-none"
+                                                     style="width:70px;height:70px;object-fit:cover;" />
+
+                                                <div>
+                                                    <div class="fw-bold hat-name"></div>
+                                                    <div class="text-muted small hat-description"></div>
+
+                                                    <div class="hat-price text-muted small"></div>
+
+                                                    <div class="hat-total fw-bold text-primary"></div>
+
+                                                    <div class="hat-quantity small text-muted"></div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <button type="button" class="btn mt-2 btn-outline-danger btn-sm remove-row">
+                                        Ta bort
+                                    </button>
+
+                                </div>
+                            </div>
+                        </template>
+
+                    </div>
+                    <button type="button" class="btn btn-primary mb-1" id="addRow">
+                    Lägg till hatt
+                    </button>
+                    <div class="border-top w-100 my-2"></div>
+
+                    <h6>Information</h6>
+                    <div class="d-flex justify-content-end mb-3" style="display: flex; flex-direction: column; justify-content: center;">
+                    <div style="display:flex;  width: 100%;">
+                            <div class="d-flex gap-2" style="width: 100%; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <div>
+                                    <div style="display: flex; justify-content: flex-start; align-items: flex-start; gap: 8px;">
+                                    <div class="mb-3">
+                                        <label asp-for="TransportPrice" class="form-label">Transport kostnad</label>
+                                        <input asp-for="TransportPrice" class="form-control" type="number" />
+                                    </div>
+                                        <div class="mb-3">
+                                            <label asp-for="TimeToMake" class="form-label">Tid att utföra i timmar</label>
+                                            <input asp-for="TimeToMake" class="form-control" type="number" />
+                                        </div>
+                                </div>
+                                <div style="display:flex; gap: 8px;">
+                                    <div class="mb-3" style="max-width:300px;">
+                                        <label class="form-label">Användare</label>
+
+                                        @Html.DropDownListFor(
+                                        m => m.SelectedUserId,
+                                        Model.Users,
+                                        "Välj en användare",
+                                        new { @class = "form-select" }
+                                        )
+                                    </div>
+                                    <div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="DateToFinish" class="form-label">Färdig</label>
+                                        <input asp-for="DateToFinish" class="form-control" type="date" />
+                                    </div>
+
+
+                                    </div>
+                                    <p>TODO: Customer dropdown...</p>
+                                </div>
+                                <div>
+                            </div>
+
+                        </div>
+                            </div>
+                            <div>
+                            <div class="card p-3 shadow-sm" style="min-width: 250px;">
+                                <div id="orderBreakdown" class="small text-muted mt-2"></div>
+                                <div class="text-muted small" style="font-weight: bold;">Order total</div>
+                                <div id="orderTotal" class="fs-4 fw-bold text-success">0 kr</div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-start; align-items: flex-start; gap: 8px;">
+                                <div class="mb-3 form-check">
+                                    <label asp-for="FastOrder" class="form-check-label">Snabb order</label>
+                                    <input asp-for="FastOrder" class="form-check-input" type="checkbox" />
+                                </div>
+                            </div>
+
+                            </div>
+                    </div>
+                    </div>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/order.js" asp-append-version="true"></script>

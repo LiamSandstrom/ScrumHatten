@@ -1,0 +1,78 @@
+using DAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Models;
+using MVC.ViewModels;
+using Repository.Repositories;
+
+namespace MVC.Controllers
+{
+    public class OrderController : Controller
+    {
+        private IUserRepository userRepository;
+        private HatRepository hatRepository;
+
+        public OrderController(IUserRepository userRepo, HatRepository hatRepo)
+        {
+            userRepository = userRepo;
+            hatRepository = hatRepo;
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+
+            var users = await userRepository.GetAllUsersAsync();
+
+            var hats = hatRepository.GetAllHats();
+
+            Console.WriteLine(hats.Count);
+
+            var orderViewModel = new OrderViewModel
+            {
+                Users = users.Select(u => new SelectListItem
+                {
+                    Value = u.Id.ToString(),
+                    Text = u.Name
+                }).ToList(),
+
+                StockHats = hats.Select(h => new SelectListItem
+                {
+                    Value = h.Id.ToString(),
+                    Text = h.Name
+                }).ToList(),
+            };
+
+
+            return View(orderViewModel);
+        }
+
+        public IActionResult GetHatsByType(string type)
+        {
+            if (type == "Stock")
+            {
+                var hats = hatRepository.GetAllHats();
+
+                return Json(hats.Select(h => new
+                {
+                    id = h.Id,
+                    name = h.Name,
+                    price = h.Price,
+                    description = h.Description,
+                    imageUrl = h.ImageUrl,
+                    quantity = h.Quantity
+                }));
+            }
+
+            if (type == "Custom")
+            {
+                var hats = new List<Hat>();
+
+                return Json(hats);
+            }
+
+            return Json(Array.Empty<object>());
+        }
+    }
+}
