@@ -48,6 +48,12 @@
                     </a>
                 </li>
 
+                <li>
+                    <a asp-controller="MaterialOrder" asp-action="MaterialOrder" class="nav-link text-white">
+                        Beställa material
+                     </a>
+                </li>
+
                 @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
                 {
                     <li>
