@@ -27,10 +27,6 @@ namespace MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            if (!User.Identity!.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Home");
-            }
 
             var model = new RegisterViewModel
             {
