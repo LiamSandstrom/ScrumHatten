@@ -4,12 +4,20 @@
 @{
     ViewData["Title"] = "Materialbeställningar";
     var materials = ViewBag.Materials as List<Material>;
+
+    var completedOrders = Model?
+        .Where(o => o.Status == "Klar")
+        .OrderByDescending(o => o.CreatedAt)
+        .ToList() ?? new List<Models.MaterialOrder>();
+
+    var visibleCompletedOrders = completedOrders.Take(3).ToList();
+    var hiddenCompletedOrders = completedOrders.Skip(3).ToList();
 }
 
 <h1>Materialbeställningar</h1>
 
 <div style="display:flex; gap:30px; align-items:flex-start;">
-    
+
     <div style="flex:2;">
         <h2>Skapa ny beställning</h2>
 
@@ -55,7 +63,7 @@
                     <ul>
                         @foreach (var item in order.Items)
                         {
-                            <li>@item.MaterialName - @item.Quantity @* kan bytas till materialets enhet senare *@ - @item.PricePerUnit kr/st</li>
+                            <li>@item.MaterialName - @item.Quantity - @item.PricePerUnit kr/st</li>
                         }
                     </ul>
 
@@ -71,25 +79,50 @@
     <div style="flex:1;">
         <h2>Klara beställningar</h2>
 
-        @if (Model == null || !Model.Any(o => o.Status == "Klar"))
+        @if (!completedOrders.Any())
         {
             <p>Det finns inga klara beställningar.</p>
         }
         else
         {
-            @foreach (var order in Model.Where(o => o.Status == "Klar").OrderByDescending(o => o.CreatedAt))
+            @foreach (var order in visibleCompletedOrders)
             {
-                <div style="border:1px solid #7fbf7f; padding:15px; margin-bottom:15px; border-radius:8px; background-color:rgba(0, 128, 0, 0.15);">
-                    <p><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
-                    <p><strong>Status:</strong> @order.Status</p>
-                    <p><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
+                <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                    <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                    <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
+                    <p style="margin:0 0 6px 0;"><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
 
-                    <ul>
+                    <ul style="margin:0; padding-left:18px;">
                         @foreach (var item in order.Items)
                         {
-                            <li>@item.MaterialName - @item.Quantity - @item.PricePerUnit kr/st</li>
+                            <li>@item.MaterialName - @item.Quantity</li>
                         }
                     </ul>
+                </div>
+            }
+
+            @if (hiddenCompletedOrders.Any())
+            {
+                <button type="button" onclick="toggleCompletedOrders()" id="toggleButton">
+                    Visa mer
+                </button>
+
+                <div id="moreCompletedOrders" style="display:none; margin-top:10px;">
+                    @foreach (var order in hiddenCompletedOrders)
+                    {
+                        <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                            <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                            <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
+                            <p style="margin:0 0 6px 0;"><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
+
+                            <ul style="margin:0; padding-left:18px;">
+                                @foreach (var item in order.Items)
+                                {
+                                    <li>@item.MaterialName - @item.Quantity</li>
+                                }
+                            </ul>
+                        </div>
+                    }
                 </div>
             }
         }
@@ -123,5 +156,18 @@
 
         container.appendChild(newRow);
         rowIndex++;
+    }
+
+    function toggleCompletedOrders() {
+        const moreOrders = document.getElementById("moreCompletedOrders");
+        const button = document.getElementById("toggleButton");
+
+        if (moreOrders.style.display === "none") {
+            moreOrders.style.display = "block";
+            button.textContent = "Visa mindre";
+        } else {
+            moreOrders.style.display = "none";
+            button.textContent = "Visa mer";
+        }
     }
 </script>
