@@ -6,15 +6,11 @@ namespace MVC.ViewModels
 {
     public class OrderRowViewModel
     {
-        public required string Type { get; set; }
         public int? HatId { get; set; }
         public int Quantity { get; set; }
     }
     public class OrderViewModel
     {
-        [Required, StringLength(100)]
-        public string Name { get; set; }
-
         public List<OrderRowViewModel> Rows { get; set; } = new();
 
         public List<SelectListItem> StockHats { get; set; }
@@ -34,6 +30,9 @@ namespace MVC.ViewModels
 
         public string SelectedUserId { get; set; }
         public List<SelectListItem> Users { get; set; }
+
+        public string SelectedCustomerId { get; set; }
+        public List<SelectListItem> Customers { get; set; }
 
     }
 

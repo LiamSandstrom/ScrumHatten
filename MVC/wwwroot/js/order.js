@@ -84,7 +84,21 @@ function renderPreview(row, hat) {
     row.querySelector(".hat-name").textContent = hat.name || "";
     row.querySelector(".hat-description").textContent = hat.description || "";
     row.querySelector(".hat-price").textContent = `Pris: ${hat.price ?? "-"}`;
-    row.querySelector(".hat-quantity").textContent = `I lager: ${hat.quantity ?? 0}`;
+    const qtyInput = row.querySelector(".quantity-input");
+    const selectedQty = parseInt(qtyInput.value || "0");
+    const stock = hat.quantity ?? 0;
+
+    const el = row.querySelector(".hat-quantity");
+
+    el.textContent = `I lager: ${stock}`;
+
+    if (selectedQty > stock) {
+        el.classList.remove("text-muted");
+        el.classList.add("text-danger", "fw-bold");
+    } else {
+        el.classList.remove("text-danger", "fw-bold");
+        el.classList.add("text-muted");
+    }
 
     updateTotal(row);
     updateOrderTotal();
@@ -99,8 +113,27 @@ function updateTotal(row) {
 
     const el = row.querySelector(".hat-total");
     el.textContent = isNaN(total) ? "" : `Total: ${total.toFixed(2)} kr`;
+
+    const stock = parseInt(row.querySelector(".hat-quantity")?.textContent.replace(/\D/g, "") || "0");
+    const elQty = row.querySelector(".hat-quantity");
+
+    if (qty > stock) {
+        elQty.classList.remove("text-muted");
+        elQty.classList.add("text-danger", "fw-bold");
+    } else {
+        elQty.classList.remove("text-danger", "fw-bold");
+        elQty.classList.add("text-muted");
+    }
 }
 
+function getTransportCost() {
+    const el = document.querySelector("[name='TransportPrice']");
+    return parseFloat(el?.value || "0");
+}
+
+document.querySelector("[name='TransportPrice']")?.addEventListener("input", () => {
+    updateOrderTotal();
+});
 
 function updateOrderTotal() {
     let subtotal = 0;
@@ -112,29 +145,33 @@ function updateOrderTotal() {
         subtotal += price * qty;
     });
 
+    const transport = getTransportCost();
     const isFastOrder = document.querySelector("#FastOrder")?.checked;
 
     let fastOrderAmount = 0;
 
+    let base = subtotal + transport;
+
     if (isFastOrder) {
-        fastOrderAmount = subtotal * 0.20;
+        fastOrderAmount = base * 0.20;
     }
 
-    const afterFast = subtotal + fastOrderAmount;
+    const afterFast = base + fastOrderAmount;
     const vat = afterFast * 0.25;
     const total = afterFast + vat;
 
     document.getElementById("orderTotal").textContent =
         `${total.toFixed(2)} kr`;
 
-    renderBreakdown(subtotal, fastOrderAmount, vat);
+    renderBreakdown(subtotal, transport, fastOrderAmount, vat);
 }
 
-function renderBreakdown(subtotal, fastOrder, vat) {
+function renderBreakdown(subtotal, transport, fastOrder, vat) {
     const el = document.getElementById("orderBreakdown");
 
     let html = `
         <div>Orderpris: ${subtotal.toFixed(2)} kr</div>
+        <div>Transport: ${transport.toFixed(2)} kr</div>
     `;
 
     if (fastOrder > 0) {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models;
 using MVC.ViewModels;
+using Repository;
 using Repository.Repositories;
 
 namespace MVC.Controllers
@@ -10,12 +11,14 @@ namespace MVC.Controllers
     public class OrderController : Controller
     {
         private IUserRepository userRepository;
+        private ICustomerRepository customerRepository;
         private HatRepository hatRepository;
 
-        public OrderController(IUserRepository userRepo, HatRepository hatRepo)
+        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo)
         {
             userRepository = userRepo;
             hatRepository = hatRepo;
+            customerRepository = customerRepo;
         }
 
 
@@ -24,10 +27,7 @@ namespace MVC.Controllers
         {
 
             var users = await userRepository.GetAllUsersAsync();
-
-            var hats = hatRepository.GetAllHats();
-
-            Console.WriteLine(hats.Count);
+            var customers = await customerRepository.GetAllCustomersAsync();
 
             var orderViewModel = new OrderViewModel
             {
@@ -37,11 +37,11 @@ namespace MVC.Controllers
                     Text = u.Name
                 }).ToList(),
 
-                StockHats = hats.Select(h => new SelectListItem
+                Customers = customers.Select(c => new SelectListItem
                 {
-                    Value = h.Id.ToString(),
-                    Text = h.Name
-                }).ToList(),
+                    Value = c.Id,
+                    Text = c.Name
+                }).ToList()
             };
 
 
