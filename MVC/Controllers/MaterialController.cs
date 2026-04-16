@@ -6,8 +6,7 @@ using Repository;
 
 namespace MVC.Controllers
 {
-
-[Route("Material")]
+    [Route("Material")]
     public class MaterialController : Controller
     {
         private readonly IMaterialRepository _materialRepository;
@@ -67,7 +66,7 @@ namespace MVC.Controllers
         public async Task<IActionResult> Material()
         {
             var materials = await _materialRepository.GetAllMaterialsAsync();
-            return View("Material",materials);
+            return View("Material", materials);
         }
 
         [HttpPatch("Material/Restock/{id}")]
@@ -94,15 +93,20 @@ namespace MVC.Controllers
             try
             {
                 await _materialRepository.UpdateNameAsync(updatedMaterial.Id, updatedMaterial.Name);
-                await _materialRepository.UpdatePricePerUnitAsync(updatedMaterial.Id, updatedMaterial.PricePerUnit);
+                await _materialRepository.UpdatePricePerUnitAsync(
+                    updatedMaterial.Id,
+                    updatedMaterial.PricePerUnit
+                );
                 await _materialRepository.UpdateUnitAsync(updatedMaterial.Id, updatedMaterial.Unit);
-                await _materialRepository.ReplaceQuantityAsync(updatedMaterial.Id, updatedMaterial.Quantity);
+                await _materialRepository.ReplaceQuantityAsync(
+                    updatedMaterial.Id,
+                    updatedMaterial.Quantity
+                );
                 return Ok();
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
-
             }
         }
 
@@ -119,9 +123,6 @@ namespace MVC.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-
-
     }
 }
 
