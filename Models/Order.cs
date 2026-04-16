@@ -30,6 +30,9 @@ namespace Models
 
         public Guid MakerId { get; set; }
 
+        public string Status { get; set; }
+        
+
 
 
     }
