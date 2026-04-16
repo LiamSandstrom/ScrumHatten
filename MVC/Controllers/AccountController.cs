@@ -24,7 +24,6 @@ namespace MVC.Controllers
             roleManager = rm;
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Register()
         {

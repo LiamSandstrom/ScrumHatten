@@ -1,0 +1,44 @@
+/*~~*/ /*~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+<button class="btn btn-primary" id="btnCreateOrder">New order</button>
+
+<div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="mb-3">
+        <input asp-for="/**/" id="bob" class="form-control" />
+        <span id="error-Name" class="text-danger error-text"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="/*~~~~~*/" class="form-label"></label>
+    <input asp-for="/*~~~~~*/" class="form-control" type="number" min="1" />
+    <span id="error-HatAmount" class="text-danger error-text"></span>
+</div>
+    </div>
+</div>
+
+/*~~~~*/ /*~~~*/ ~
+    <script>
+        document.getElementById('btnCreateOrder').addEventListener('click', function () {
+                new bootstrap.Modal(document.getElementById('orderModal')).show();
+        });
+
+        document.addEventListener('submit', function (e) {
+            if (!e.target.matches('#createForm')) return;
+            e.preventDefault();
+
+            fetch(e.target.action, {
+                method: 'POST',
+                body: new FormData(e.target)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('orderModal')).hide();
+                    location.reload();
+                }
+            });
+        });
+    </script>
+~
+
