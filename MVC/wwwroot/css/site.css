@@ -173,3 +173,9 @@ body {
     color: var(--error-color);
     height: 12px;
 }
+
+.logoContainer > img {
+    height: 120px;
+}
+
+
