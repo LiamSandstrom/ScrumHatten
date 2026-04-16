@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DAL.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Models;
-using Repository;
 using MVC.ViewModels;
-using DAL.Repositories;
+using Repository;
 
 namespace MVC.Controllers
 {
@@ -37,6 +37,11 @@ namespace MVC.Controllers
             var orderItems = new List<MaterialOrderItem>();
             decimal totalPrice = 0;
 
+            if (model?.Items == null)
+            {
+                return RedirectToAction("MaterialOrder");
+            }
+
             foreach (var item in model.Items)
             {
                 if (string.IsNullOrWhiteSpace(item.MaterialId) || item.Quantity <= 0)
@@ -57,6 +62,11 @@ namespace MVC.Controllers
                 totalPrice += (decimal)item.Quantity * (decimal)material.PricePerUnit;
             }
 
+            if (!orderItems.Any())
+            {
+                return RedirectToAction("MaterialOrder");
+            }
+
             var order = new MaterialOrder
             {
                 Items = orderItems,
@@ -73,10 +83,22 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> MarkAsDone(string id)
         {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return RedirectToAction("MaterialOrder");
+            }
+
             var order = await _materialOrderRepository.GetOrderByIdAsync(id);
 
             if (order == null)
+            {
                 return NotFound();
+            }
+
+            if (order.Status == "Klar")
+            {
+                return RedirectToAction("MaterialOrder");
+            }
 
             foreach (var item in order.Items)
             {
