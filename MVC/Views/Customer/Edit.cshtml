@@ -1,0 +1,85 @@
+﻿@model MVC.ViewModels.CustomerViewModels.EditCustomerViewModel
+@{
+}
+
+@* @section Scripts {
+    <script>
+        handleFormSubmit("registerForm")
+    </script> 
+}  *@
+<link rel="stylesheet" href="~/css/login.css" />
+
+
+<div class="loginContainer">
+    <form asp-action="Edit" method="post" id="registerForm">
+        <h1 class="h3 mb-3 fw-normal">Redigera kund</h1>
+
+        <input asp-for="@Model.CustomerId" type="hidden" />
+        <div class="form-floating mb-2">
+            <input asp-for="Name" class="form-control" placeholder="Namn" />
+            <label asp-for="Name">Namn</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+            <p id="error-Name" class="error-text"></p>
+        </div>
+
+        <div class="form-floating mb-2">
+            <input asp-for="Email" class="form-control" placeholder="namn@exempel.com" />
+            <label asp-for="Email">E-post</label>
+            <span asp-validation-for="Email" class="text-danger"></span>
+            <p id="error-Email" class="error-text"></p>
+        </div>
+        <div class="form-floating mb-2">
+            <input asp-for="PhoneNumber" class="form-control" placeholder="070-000 00 00" />
+            <label asp-for="PhoneNumber">Phone Number</label>
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            <p id="error-Email" class="error-text"></p>
+        </div>
+        <div class="form-floating mb-2">
+            <input asp-for="Adress" class="form-control" placeholder="Hattvägen 12" />
+            <label asp-for="Adress">Adress</label>
+            <span asp-validation-for="Adress" class="text-danger"></span>
+            <p id="error-Email" class="error-text"></p>
+        </div>
+
+        <div class="form-floating mb-2">
+            <input asp-for="ZipCode" class="form-control" placeholder="000 00" />
+            <label asp-for="ZipCode">Postkod</label>
+            <span asp-validation-for="ZipCode" class="text-danger"></span>
+            <p id="error-Phonenumber" class="error-text"></p>
+        </div>
+        
+        <div class="form-floating mb-2">
+            <input asp-for="Country" class="form-control" placeholder="Sverige" />
+            <label asp-for="Country">Land</label>
+            <span asp-validation-for="Country" class="text-danger"></span>
+            <p id="error-Email" class="error-text"></p>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2">Spara uppgifter</button>
+    </form>
+
+    <button class="btn btn-danger w-100 py-2 mt-2" data-bs-toggle="modal" data-bs-target="#deleteUser">Radera kund</button>
+
+    <div class="modal fade" id="deleteUser" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Varning!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Är du säker på att du vill radera kunden permanent?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <form asp-action="Delete" asp-route-id="@Model.CustomerId" method="post">
+                        <button type="submit" class="btn btn-danger">Radera</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* <script src="/js/account.js"></script> *@
