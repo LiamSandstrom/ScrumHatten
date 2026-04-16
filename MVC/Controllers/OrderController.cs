@@ -7,11 +7,22 @@ using Services;
 namespace MVC.Controllers
 {
     
+
+
 [Route("Order")]
+
+
 
 public class OrderController : Controller
 
     {
+        [HttpGet("")]
+public IActionResult Order() 
+{
+    return View();
+}
+
+        
         private readonly IOrderRepository _orderRepository;
 
         public OrderController(IOrderRepository orderRepository)
@@ -37,18 +48,5 @@ public class OrderController : Controller
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
 
-        
-
-
-
-
-        [HttpPost]
-
-        public async Task <IActionResult> UpdateStatus(string id, string status)
-        {
-            await _orderRepository.UpdateOrderStatusAsync(id, status);
-            return Ok("Orderstatus uppdaterad!");
-        }
-
-    }
+}
 }
