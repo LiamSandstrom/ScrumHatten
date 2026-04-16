@@ -17,6 +17,7 @@ builder.Services.AddSingleton<MongoConnector>(new MongoConnector(connectionStrin
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 builder.Services.AddSingleton<HatRepository>();
 builder.Services.AddScoped<IHatService, HatService>();
