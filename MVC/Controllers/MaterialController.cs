@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DAL.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Repository;
 
 namespace MVC.Controllers
 {
