@@ -106,6 +106,7 @@ function renderPreview(row, hat) {
 
 
 function updateTotal(row) {
+    if (!row.dataset.price) return;
     const price = parseFloat(row.dataset.price || "0");
     const qty = parseInt(row.querySelector(".quantity-input").value || "0");
 
