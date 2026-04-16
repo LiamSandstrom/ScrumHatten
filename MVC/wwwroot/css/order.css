@@ -14,6 +14,25 @@
     padding-bottom: 12px;
     margin-bottom: 12px;
 
-    max-height: 400px;
-    overflow: auto;
+    max-height: 320px;
+    overflow-y: scroll;
+}
+
+.smallInput {
+    width: 100px !important;
+}
+
+.left-panel {
+    max-width: 600px;
+}
+
+.right-panel {
+    position: sticky;
+    top: 20px;
+}
+
+
+.removeButton {
+    height: 33px;
+    width: 50px;
 }
