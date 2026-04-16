@@ -1,0 +1,19 @@
+﻿
+.userTableContainer {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.userTableContainer > table {
+    table-layout: auto;
+}
+
+.userListHeader {
+    margin-bottom: 2rem;
+}
+
+.pageContent {
+    display: block;
+    width: 100vh;
+    margin: 2rem auto;
+}
