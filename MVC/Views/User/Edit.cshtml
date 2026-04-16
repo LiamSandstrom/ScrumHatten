@@ -1,42 +1,45 @@
-﻿@model MVC.Models.Account.RegisterViewModel;
+﻿@model MVC.ViewModels.UserViewModel.EditUserViewModel;
 
 @{
 }
 
-@section Scripts {
+@* @section Scripts {
     <script>
         handleFormSubmit("registerForm")
-    </script>
-}
+    </script> 
+}  *@
 <link rel="stylesheet" href="~/css/login.css" />
 
-<h1>Redigera anställd</h1>
 
 <div class="loginContainer">
-    <form asp-action="Register" method="post" id="registerForm">
-        <h1 class="h3 mb-3 fw-normal">Skapa en ny användare</h1>
+    <form asp-action="Edit" method="post" id="registerForm">
+        <h1 class="h3 mb-3 fw-normal">Redigera  anställd</h1>
 
+        <input asp-for="selectedRoleID" type="hidden" />
         <div class="form-floating mb-2">
             <input asp-for="Name" class="form-control" placeholder="Namn" />
             <label asp-for="Name">Namn</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
             <p id="error-Name" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
             <input asp-for="Email" class="form-control" placeholder="namn@exempel.com" />
             <label asp-for="Email">E-post</label>
+            <span asp-validation-for="Email" class="text-danger"></span>
             <p id="error-Email" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
             <input asp-for="Phonenumber" class="form-control" placeholder="Telefonnummer" />
             <label asp-for="Phonenumber">Telefonnummer</label>
+            <span asp-validation-for="Phonenumber" class="text-danger"></span>
             <p id="error-Phonenumber" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-2">
-            <select asp-for="selectedRole" class="form-control" asp-items="@(new SelectList(Model.roles))">
-                <option value="">-- Välj en roll --</option>
+            <select asp-for="selectedRole" class="form-control" asp-items="@(new SelectList(Model.availableRoles))">
+                <option value="">@Model.selectedRole</option>
             </select>
             <label asp-for="selectedRole">Välj roll</label>
             <p id="error-selectedRole" class="error-text"></p>
@@ -45,17 +48,43 @@
         <div class="form-floating mb-2">
             <input asp-for="Password" type="password" class="form-control" placeholder="Lösenord" />
             <label asp-for="Password">Lösenord</label>
+            <span asp-validation-for="Password" class="text-danger"></span>
             <p id="error-Password" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-3">
             <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Bekräfta lösenord" />
             <label asp-for="ConfirmPassword">Bekräfta lösenord</label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
             <p id="error-ConfirmPassword" class="error-text"></p>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 py-2">Spara uppgifter</button>
     </form>
+
+    <button class="btn btn-danger w-100 py-2 mt-2" data-bs-toggle="modal" data-bs-target="#deleteUser">Radera anställd</button>
+
+    <div class="modal fade" id="deleteUser" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Varning!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Är du säker på att du vill radera användaren permanent?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                        <button type="submit" class="btn btn-danger">Radera</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<script src="/js/account.js"></script>
+@* <script src="/js/account.js"></script> *@
