@@ -14,68 +14,81 @@
 </head>
 
 <body>
+@*     @if (User.Identity.IsAuthenticated)
+        { *@
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark" style="padding: 0;">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
 
-    <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark" style="padding: 0;">
-        <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <div class="logoContainer mb-4">
+                    <img src="~/images/comapnylogo.png"/>
+                </div>
 
-            <a asp-controller="Home" asp-action="Index"
-                   class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                <span class="fs-5 d-none d-sm-inline">Menu</span>
-            </a>
 
-            <ul class="nav nav-pills flex-column mb-auto" id="menu">
+                    <ul class="nav nav-pills flex-column mb-auto" id="menu">
 
-                <li class="nav-item">
-                    <a asp-controller="Home" asp-action="Index" class="nav-link text-white">
-                        Home
-                    </a>
-                </li>
-
-                <li>
-                    <a asp-controller="Home" asp-action="Privacy" class="nav-link text-white">
-                        Privacy
-                    </a>
-                </li>
-
-                <li>
-                    <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
-                        Alla hattar
-                    </a>
-                </li>
-                <li>
-                    <a asp-controller="Material" asp-action="Material" class="nav-link text-white">
-                        Alla material
-                    </a>
-                </li>
-
-                @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
-                {
+                        <li class="nav-item">
+                            <a asp-controller="Home" asp-action="Index" class="nav-link text-white">
+                            <i class="bi bi-house"></i>
+                                Hem
+                            </a>
+                        </li>
                     <li>
-                        <a asp-controller="Account" asp-action="Register" class="nav-link text-white">
-                            + Lägg till användare
+                        <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
+                            <i class="bi bi-bag"></i> Ordrar
                         </a>
                     </li>
-                }
-                <li>
-                    <a asp-controller="Account" asp-action="Login" class="nav-link text-white">
-                        Logga in
-                    </a>
-                </li>
-                <li>
-                    <a asp-controller="Account" asp-action="Logout" class="nav-link text-white">
-                        Logga ut
-                    </a>
-                </li>
-                @*  <li>
+                    <li>
+                        <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
+                            <i class="bi bi-calendar"></i> Kalender
+                        </a>
+                    </li>
+                        <li>
+                            <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
+                                <i class="bi bi-mortarboard"></i> Alla hattar
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Material" asp-action="Material" class="nav-link text-white">
+                                <i class="bi bi-circle-square"></i> Alla material
+                            </a>
+                        </li>
+                    <li>
+                        <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
+                            <i class="bi bi-chat"></i> Meddelanden
+                        </a>
+                    </li>
+                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                        {
+                            <div class="dropdown">
+                                <button class="nav-link text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-gear"></i>
+
+                                    Anställda
+                                </button>
+
+                                <ul class="dropdown-menu">
+                                    <li><a asp-action="UserList" asp-controller="User" class="dropdown-item">Se alla anställda</a></li>
+                                    <li><a asp-action="Register" asp-controller="Account" class="dropdown-item">Lägg till ny anställd</a></li>
+                                </ul>
+                            </div>
+                        }
+                   
+                        <li>
+                            <a asp-controller="Account" asp-action="Logout" class="nav-link text-white">
+                               <i class="bi bi-x-circle"></i> Logga ut
+                            </a>
+                        </li>
+                        @*  <li>
                             <a asp-controller="Home" asp-action="Privacy" class="nav-link text-white">
                                 Privacy
                             </a>
                         </li> *@
 
-            </ul>
+                    </ul>
 
-        </div>
-    </div>
+                </div>
+            </div>
+        @* } *@
 
     <div class="mainContainer">
         @RenderBody()

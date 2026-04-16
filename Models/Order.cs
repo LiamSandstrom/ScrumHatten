@@ -26,9 +26,11 @@ namespace Models
 
         public decimal Moms {  get; set; }
 
-        public Boolean FastOrder { get; set; }  
+        public Boolean FastOrder { get; set; }
 
-        
+        public Guid MakerId { get; set; }
+
+
 
     }
 }
