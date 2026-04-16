@@ -7,7 +7,7 @@
 
 <style>
     .hat-page {
-        max-width: 1280px;
+        max-width: 1100px;
         margin: 0 auto;
     }
 
@@ -23,9 +23,9 @@
         border: 1px solid #2563eb;
         color: white;
         border-radius: 8px;
-        padding: 0.42rem 0.85rem;
+        padding: 0.42rem 0.9rem;
         font-weight: 500;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
     }
 
         .clean-btn-primary:hover {
@@ -36,12 +36,12 @@
 
     .clean-btn-outline {
         background-color: white;
-        border: 1px solid #dbe3ee;
+        border: 1px solid #cbd5e1;
         color: #334155;
         border-radius: 8px;
         padding: 0.4rem 0.8rem;
         font-weight: 500;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
     }
 
         .clean-btn-outline:hover {
@@ -53,11 +53,11 @@
     .clean-btn-danger {
         background-color: white;
         border: 1px solid #e2e8f0;
-        color: #64748b;
+        color: #475569;
         border-radius: 8px;
         padding: 0.4rem 0.8rem;
         font-weight: 500;
-        font-size: 0.92rem;
+        font-size: 0.9rem;
     }
 
         .clean-btn-danger:hover {
@@ -78,17 +78,17 @@
 
         .hat-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
         }
 
         .hat-card img {
-            height: 190px;
+            height: 180px;
             object-fit: cover;
             width: 100%;
         }
 
     .hat-card-body {
-        padding: 0.85rem 0.9rem 0.95rem 0.9rem;
+        padding: 0.85rem;
     }
 
     .hat-name {
@@ -100,39 +100,39 @@
 
     .hat-description {
         color: #6b7280;
-        margin-bottom: 0.75rem;
-        min-height: 36px;
-        font-size: 0.93rem;
+        margin-bottom: 0.7rem;
+        min-height: 38px;
+        font-size: 0.9rem;
         line-height: 1.35;
     }
 
     .hat-meta {
         color: #374151;
         margin-bottom: 0.2rem;
-        font-size: 0.93rem;
+        font-size: 0.9rem;
     }
 
     .hat-material-box {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 10px;
-        padding: 0.6rem 0.7rem;
-        margin-top: 0.75rem;
-        margin-bottom: 0.85rem;
+        padding: 0.55rem 0.65rem;
+        margin-top: 0.7rem;
+        margin-bottom: 0.8rem;
     }
 
     .hat-material-title {
         font-weight: 600;
         color: #334155;
-        margin-bottom: 0.3rem;
-        font-size: 0.88rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.85rem;
     }
 
     .hat-material-list {
         padding-left: 1rem;
         margin-bottom: 0;
         color: #475569;
-        font-size: 0.88rem;
+        font-size: 0.84rem;
     }
 
     .clean-alert {
@@ -163,25 +163,25 @@
     }
 
     .section-subtitle {
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         color: #334155;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.7rem;
     }
 
     .material-row {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 0.75rem 0.35rem;
-        margin-bottom: 0.75rem;
+        border-radius: 10px;
+        padding: 0.7rem 0.3rem;
+        margin-bottom: 0.7rem;
     }
 
     .empty-state {
         text-align: center;
-        padding: 3rem 1rem;
+        padding: 2.5rem 1rem;
         border: 1px dashed #cbd5e1;
-        border-radius: 18px;
+        border-radius: 16px;
         color: #64748b;
         background: #f8fafc;
     }
@@ -233,7 +233,11 @@
                             <div class="hat-name">@hat.Name</div>
 
                             <div class="hat-description">
-                                @(string.IsNullOrWhiteSpace(hat.Description) ? "Ingen beskrivning ännu." : hat.Description)
+                                @{
+                                    var beskrivning = string.IsNullOrWhiteSpace(hat.Description) ? "Ingen beskrivning ännu." : hat.Description;
+                                    var kortBeskrivning = beskrivning.Length > 55 ? beskrivning.Substring(0, 55) + "..." : beskrivning;
+                                }
+                                @kortBeskrivning
                             </div>
 
                             <div class="hat-meta"><strong>Pris:</strong> @hat.Price kr</div>
@@ -242,7 +246,7 @@
                             @if (hat.Materials != null && hat.Materials.Any())
                             {
                                 <div class="hat-material-box">
-                                    <div class="hat-material-title">Material</div>
+                                    <div class="hat-material-title">Material per hatt</div>
                                     <ul class="hat-material-list">
                                         @foreach (var hm in hat.Materials)
                                         {
@@ -253,7 +257,7 @@
                                 </div>
                             }
 
-                            <div class="d-flex gap-2 mt-2">
+                            <div class="d-flex gap-2">
                                 <button class="clean-btn-outline"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editHatModal_@hat.Id">
@@ -483,7 +487,7 @@
             <option value="">-- Välj material --</option>
             @foreach (var material in Model.Materials)
             {
-                    <option value="@material.Id">@material.Name</option>
+                        <option value="@material.Id">@material.Name</option>
             }
         `;
 
