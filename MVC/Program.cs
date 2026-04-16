@@ -21,6 +21,8 @@ builder.Services.AddSingleton<HatRepository>();
 builder.Services.AddScoped<IHatService, HatService>();
 
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddIdentity<User, ApplicationRole>(options =>
 {
