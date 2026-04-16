@@ -1,0 +1,62 @@
+﻿@model MVC.ViewModels.CustomerViewModels.CreateCustomerViewModel;
+@{
+}
+
+
+
+<link rel="stylesheet" href="~/css/login.css" />
+
+<div class="loginContainer">
+    <form asp-action="CreateCustomer" method="post" id="registerForm">
+        <h1 class="h3 mb-3 fw-normal">Lägg till en ny kund</h1>
+
+        <div class="form-floating mb-2">
+            <input asp-for="Name" class="form-control" placeholder="Hatt Hattsson" />
+            <label asp-for="Name">Namn</label>
+            <p id="error-Name" class="error-text"></p>
+            <span asp-validation-for="Name" class="text-danger"></span>
+           
+        </div>
+
+        <div class="form-floating mb-2">
+            <input asp-for="Email" class="form-control" placeholder="namn@exempel.com" />
+            <label asp-for="Email">E-post</label>
+            <p id="error-Email" class="error-text"></p>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-2">
+            <input asp-for="PhoneNumber" class="form-control" placeholder="070-000 00 00" />
+            <label asp-for="PhoneNumber">Telefonnummer</label>
+            <p id="error-Phonenumber" class="error-text"></p>
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+
+
+        <div class="form-floating mb-2">
+            <input asp-for="Adress" class="form-control" placeholder="Hattvägen 12" />
+            <label asp-for="Adress">Adress</label>
+            <p id="error-Name" class="error-text"></p>
+            <span asp-validation-for="Adress" class="text-danger"></span>
+        </div>
+                
+
+        <div class="form-floating mb-2">
+            <input asp-for="ZipCode" class="form-control" placeholder="000 00" />
+            <label asp-for="ZipCode">Postnummer</label>
+            <p id="error-Name" class="error-text"></p>
+            <span asp-validation-for="ZipCode" class="text-danger"></span>
+        </div>      
+
+        <div class="form-floating mb-2">
+            <input asp-for="Country" class="form-control" placeholder="Sverige" />
+            <label asp-for="Country">Land</label>
+            <p id="error-Name" class="error-text"></p>
+            <span asp-validation-for="Country" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2">Registrera kund</button>
+    </form>
+</div>
+
+

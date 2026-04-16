@@ -38,10 +38,12 @@
                         </a>
                     </li>
                     <li>
-                        <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
+                        <a asp-controller="Calendar" asp-action="Index" class="nav-link text-white">
                             <i class="bi bi-calendar"></i> Kalender
                         </a>
                     </li>
+
+              
                         <li>
                             <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
                                 <i class="bi bi-mortarboard"></i> Alla hattar
@@ -72,6 +74,21 @@
                                 </ul>
                             </div>
                         }
+
+                <div class="dropdown">
+                    <button class="nav-link text-white dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-gear"></i>
+
+                        Kunder
+                    </button>
+
+                    <ul class="dropdown-menu">
+                        <li><a asp-action="CustomerList" asp-controller="Customer" class="dropdown-item">Se alla kunder</a></li>
+                        <li><a asp-action="Create" asp-controller="Customer" class="dropdown-item">Lägg till ny kund</a></li>
+                    </ul>
+                </div>
+
+
                    
                         <li>
                             <a asp-controller="Account" asp-action="Logout" class="nav-link text-white">
