@@ -1,0 +1,47 @@
+﻿@model MVC.ViewModels.CustomerViewModels.CustomerListViewModel
+@{
+}
+
+<link rel="stylesheet" href="~/css/user.css" />
+
+<div class="pageContent">
+    <h1 class="userListHeader">Anställda</h1>
+
+    <div class="userTableContainer">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Namn</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Telefonnummer</th>
+                    <th scope="col">Adress</th>
+                    <th scope="col">Postnummer</th>
+                    <th scope="col">Land</th>
+                    
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @for (
+                
+                            int i = 0; i < Model.allCustomers.Count; i++)
+                {
+                    <tr>
+                        <th scope="row">@i</th>
+                        <td>@Model.allCustomers[i].Name</td>
+                        <td>@Model.allCustomers[i].Email </td>
+                        <td>@Model.allCustomers[i].PhoneNumber</td>
+                        <td>@Model.allCustomers[i].Adress</td>
+                        <td>@Model.allCustomers[i].ZipCode</td>
+                        <td>@Model.allCustomers[i].Country</td>
+
+
+                        <td><a asp-action="Edit" asp-route-id="@Model.allCustomers[i].Id">Redigera</a></td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
