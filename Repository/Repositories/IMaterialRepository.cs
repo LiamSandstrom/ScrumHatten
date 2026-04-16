@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Models;
 
-namespace Repository
+namespace DAL.Repositories
 {
     public interface IMaterialRepository
     {

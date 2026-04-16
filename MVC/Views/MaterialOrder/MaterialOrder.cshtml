@@ -1,0 +1,75 @@
+﻿@model List<Models.MaterialOrder>
+@using Models
+
+@{
+    ViewData["Title"] = "Materialbeställningar";
+    var materials = ViewBag.Materials as List<Material>;
+}
+
+<h1>Materialbeställningar</h1>
+
+<h2>Skapa ny beställning</h2>
+
+<form asp-controller="MaterialOrder" asp-action="Create" method="post">
+    <div>
+        <label>Material</label>
+        <select name="Items[0].MaterialId">
+            <option value="">Välj material</option>
+            @if (materials != null)
+            {
+                @foreach (var material in materials)
+                {
+                    <option value="@material.Id">
+                        @material.Name - @material.PricePerUnit kr/@material.Unit
+                    </option>
+                }
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Antal</label>
+        <input type="number" name="Items[0].Quantity" step="0.1" min="0" />
+    </div>
+
+    <button type="submit">Beställ</button>
+</form>
+
+<hr />
+
+<h2>Gjorda beställningar</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Det finns inga materialbeställningar ännu.</p>
+}
+else
+{
+    @foreach (var order in Model)
+    {
+        <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px;">
+            <p><strong>Beställnings-ID:</strong> @order.Id</p>
+            <p><strong>Status:</strong> @order.Status</p>
+            <p><strong>Skapad:</strong> @order.CreatedAt</p>
+            <p><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
+
+            <h4>Material i beställningen</h4>
+            <ul>
+                @foreach (var item in order.Items)
+                {
+                    <li>
+                        @item.MaterialName - @item.Quantity st - @item.PricePerUnit kr/st
+                    </li>
+                }
+            </ul>
+
+            @if (order.Status != "Klar")
+            {
+                <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post">
+                    <input type="hidden" name="id" value="@order.Id" />
+                    <button type="submit">Markera som klar</button>
+                </form>
+            }
+        </div>
+    }
+}

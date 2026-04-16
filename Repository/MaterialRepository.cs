@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Models;
 using System.Security.Cryptography.X509Certificates;
+using DAL.Repositories;
 
 namespace Repository
 {
