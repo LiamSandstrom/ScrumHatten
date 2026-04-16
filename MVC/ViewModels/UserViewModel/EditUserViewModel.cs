@@ -1,9 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace MVC.Models.Account
+namespace MVC.ViewModels.UserViewModel
 {
-    public class RegisterViewModel
+    public class EditUserViewModel
     {
+
+        [Required(ErrorMessage = "UserId is missing")]
+        public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Please Enter a Name")]
         [StringLength(30)]
@@ -17,8 +21,8 @@ namespace MVC.Models.Account
         public string Email { get; set; }
 
 
-        [Required(ErrorMessage ="Please enter an phone number")]
-        [Phone(ErrorMessage ="Please eneter a valid phone number")]
+        [Required(ErrorMessage = "Please enter an phone number")]
+        [Phone(ErrorMessage = "Please eneter a valid phone number")]
         public string Phonenumber { get; set; }
 
 
@@ -32,12 +36,14 @@ namespace MVC.Models.Account
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
 
-
         public List<string> roles { get; set; } = new();
 
         [Required(ErrorMessage = "Var god välj en roll")]
         public string selectedRole { get; set; }
 
+        public string selectedRoleID { get; set; }
+
+        public List<ApplicationRole> availableRoles { get; set; } = new();
 
     }
 }
