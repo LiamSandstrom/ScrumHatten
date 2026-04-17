@@ -1,5 +1,4 @@
-﻿@model MVC.ViewModels.UserViewModel.EditUserViewModel;
-
+﻿@model MVC.ViewModels.CustomerViewModels.EditCustomerViewModel
 @{
 }
 
@@ -13,9 +12,9 @@
 
 <div class="loginContainer">
     <form asp-action="Edit" method="post" id="registerForm">
-        <h1 class="h3 mb-3 fw-normal">Redigera  anställd</h1>
+        <h1 class="h3 mb-3 fw-normal">Redigera kund</h1>
 
-        <input asp-for="selectedRoleID" type="hidden" />
+        <input asp-for="@Model.CustomerId" type="hidden" />
         <div class="form-floating mb-2">
             <input asp-for="Name" class="form-control" placeholder="Namn" />
             <label asp-for="Name">Namn</label>
@@ -29,41 +28,37 @@
             <span asp-validation-for="Email" class="text-danger"></span>
             <p id="error-Email" class="error-text"></p>
         </div>
+        <div class="form-floating mb-2">
+            <input asp-for="PhoneNumber" class="form-control" placeholder="070-000 00 00" />
+            <label asp-for="PhoneNumber">Phone Number</label>
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            <p id="error-Email" class="error-text"></p>
+        </div>
+        <div class="form-floating mb-2">
+            <input asp-for="Adress" class="form-control" placeholder="Hattvägen 12" />
+            <label asp-for="Adress">Adress</label>
+            <span asp-validation-for="Adress" class="text-danger"></span>
+            <p id="error-Email" class="error-text"></p>
+        </div>
 
         <div class="form-floating mb-2">
-            <input asp-for="Phonenumber" class="form-control" placeholder="Telefonnummer" />
-            <label asp-for="Phonenumber">Telefonnummer</label>
-            <span asp-validation-for="Phonenumber" class="text-danger"></span>
+            <input asp-for="ZipCode" class="form-control" placeholder="000 00" />
+            <label asp-for="ZipCode">Postkod</label>
+            <span asp-validation-for="ZipCode" class="text-danger"></span>
             <p id="error-Phonenumber" class="error-text"></p>
         </div>
-
+        
         <div class="form-floating mb-2">
-            <select asp-for="selectedRole" class="form-control" asp-items="@(new SelectList(Model.availableRoles))">
-                <option value="">@Model.selectedRole</option>
-            </select>
-            <label asp-for="selectedRole">Välj roll</label>
-            <p id="error-selectedRole" class="error-text"></p>
-        </div>
-
-        <div class="form-floating mb-2">
-            <input asp-for="Password" type="password" class="form-control" placeholder="Lösenord" />
-            <label asp-for="Password">Lösenord</label>
-            <span asp-validation-for="Password" class="text-danger"></span>
-            <p id="error-Password" class="error-text"></p>
-        </div>
-
-        <div class="form-floating mb-3">
-            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Bekräfta lösenord" />
-            <label asp-for="ConfirmPassword">Bekräfta lösenord</label>
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-
-            <p id="error-ConfirmPassword" class="error-text"></p>
+            <input asp-for="Country" class="form-control" placeholder="Sverige" />
+            <label asp-for="Country">Land</label>
+            <span asp-validation-for="Country" class="text-danger"></span>
+            <p id="error-Email" class="error-text"></p>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 py-2">Spara uppgifter</button>
     </form>
 
-    <button class="btn btn-danger w-100 py-2 mt-2" data-bs-toggle="modal" data-bs-target="#deleteUser">Radera anställd</button>
+    <button class="btn btn-danger w-100 py-2 mt-2" data-bs-toggle="modal" data-bs-target="#deleteUser">Radera kund</button>
 
     <div class="modal fade" id="deleteUser" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -73,11 +68,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Är du säker på att du vill radera användaren permanent?
+                    Är du säker på att du vill radera kunden permanent?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                    <form asp-action="Delete" asp-route-id="@Model.CustomerId" method="post">
                         <button type="submit" class="btn btn-danger">Radera</button>
                     </form>
                 </div>

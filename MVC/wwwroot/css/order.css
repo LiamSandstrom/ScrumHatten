@@ -1,0 +1,38 @@
+.orderHattRow {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid black;
+    width: 100%;
+}
+
+.typeDiv {
+    display: flex;
+    flex-direction: column;
+}
+
+#hatList {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+
+    max-height: 320px;
+    overflow-y: scroll;
+}
+
+.smallInput {
+    width: 100px !important;
+}
+
+.left-panel {
+    max-width: 600px;
+}
+
+.right-panel {
+    position: sticky;
+    top: 20px;
+}
+
+
+.removeButton {
+    height: 33px;
+    width: 50px;
+}
