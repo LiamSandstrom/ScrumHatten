@@ -114,6 +114,13 @@ public async Task UpdateFastOrderAsync(string id, bool isFastOrder)
         var update = Builders<Order>.Update.Set(o => o.FastOrder, isFastOrder);
         await _collection.UpdateOneAsync(filter, update);
 }
+
+public async Task SetIsDeliveredAsync(string id, bool isDelivered)
+    {
+        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+        var update = Builders<Order>.Update.Set(o => o.IsDelivered, isDelivered);
+        await _collection.UpdateOneAsync(filter, update);
     }
+}
 }
 
