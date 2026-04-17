@@ -35,6 +35,8 @@ namespace Models
         
         public Priority Priority { get; set; }
 
+        public bool IsDelivered { get; set; }
+
 
 
     }
