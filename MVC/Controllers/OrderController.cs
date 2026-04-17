@@ -148,7 +148,7 @@ namespace MVC.Controllers
                 return Json(ModelStateErrorResponse("Validering misslyckades"));
             }
 
-            var allHats = hatRepository.GetAllHats();
+            var allHats = await hatRepository.GetAllHats();
 
             var orderHats = model.Rows
                 .Where(r => r.HatId != null)
@@ -160,6 +160,15 @@ namespace MVC.Controllers
                 })
                 .ToList();
 
+            decimal hatSubtotal = orderHats
+            .GroupBy(h => h.Id)
+            .Sum(g => (decimal)g.First().Price * g.Count());
+
+            decimal subtotalWithTransport = hatSubtotal + model.TransportPrice;
+            decimal fastOrderSurcharge = model.FastOrder ? subtotalWithTransport * 0.20m : 0m;
+            decimal afterFast = subtotalWithTransport + fastOrderSurcharge;
+            decimal finalPrice = afterFast * 1.25m;
+
             var order = new Order
             {
                 FastOrder = model.FastOrder,
@@ -170,7 +179,8 @@ namespace MVC.Controllers
                 MakerId = Guid.TryParse(model.SelectedUserId, out var guid) ? guid : Guid.Empty,
                 OrderDate = DateTime.Now,
                 Status = Status.Pending,
-                Hats = orderHats
+                Hats = orderHats,
+                FinalPrice = finalPrice
             };
 
             await orderRepository.CreateOrderAsync(order);
@@ -179,11 +189,11 @@ namespace MVC.Controllers
         }
 
         [HttpGet("GetHatsByType")]
-        public IActionResult GetHatsByType(string type)
+        public async Task<IActionResult> GetHatsByType(string type)
         {
             if (type == "Stock")
             {
-                var hats = hatRepository.GetAllHats();
+                var hats = await hatRepository.GetAllStandardHatsAsync();
 
                 return Json(hats.Select(h => new
                 {
@@ -198,9 +208,17 @@ namespace MVC.Controllers
 
             if (type == "Custom")
             {
-                var hats = new List<Hat>();
+                var hats = await hatRepository.GetAllCustomHatsAsync();
+                return Json(hats.Select(h => new
+                {
+                    id = h.Id,
+                    name = h.Name,
+                    price = h.Price,
+                    description = h.Description,
+                    imageUrl = h.ImageUrl,
+                    quantity = h.Quantity
+                }));
 
-                return Json(hats);
             }
 
             return Json(Array.Empty<object>());
