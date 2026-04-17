@@ -1,1 +1,68 @@
-<h1>Hej</h1>
+@using Models
+@model List<Order>
+
+@{
+    ViewData["Title"] = "Orderhantering";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 text-white p-3 bg-dark rounded shadow">
+        <h1 class="h3 mb-0">Hantering av Ordrar</h1>
+        <div class="text-end">
+            <span class="badge bg-light text-dark">Antal ordrar i flödet: @Model.Count</span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card bg-light shadow-sm">
+                <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between align-items-center">
+                     INKOMMANDE
+                    <span class="badge rounded-pill bg-white text-dark">@Model.Count(o => o.Status == Status.Pending)</span>
+                </div>
+                <div class="card-body kanban-column" id="pending-list">
+                    @foreach (var order in Model.Where(o => o.Status == Status.Pending))
+                    {
+                        @Html.Partial("_OrderCard", order)
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light shadow-sm">
+                <div class="card-header bg-primary text-white fw-bold d-flex justify-content-between align-items-center">
+                     PÅGÅENDE
+                    <span class="badge rounded-pill bg-white text-primary">@Model.Count(o => o.Status == Status.InProgress)</span>
+                </div>
+                <div class="card-body kanban-column" id="inprogress-list">
+                    @foreach (var order in Model.Where(o => o.Status == Status.InProgress))
+                    {
+                        @Html.Partial("_OrderCard", order)
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light shadow-sm">
+                <div class="card-header bg-success text-white fw-bold d-flex justify-content-between align-items-center">
+                     KLARA
+                    <span class="badge rounded-pill bg-white text-success">@Model.Count(o => o.Status == Status.Completed)</span>
+                </div>
+                <div class="card-body kanban-column" id="completed-list">
+                    @foreach (var order in Model.Where(o => o.Status == Status.Completed))
+                    {
+                        @Html.Partial("_OrderCard", order)
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Stil för Kanban-kolumnerna */
+    .kanban-column {
+        min-height: 75vh;
+        max-height: 75vh;
