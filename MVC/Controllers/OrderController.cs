@@ -22,7 +22,7 @@ namespace MVC.Controllers
             var mockOrders = new List<Order>
             {
                 new Order { 
-                    Id = "65f1a2b3c4d5e6f7a8b9c001", // Simulerat MongoDB-id
+                    Id = "65f1a2b3c4d5e6f4", // Simulerat MongoDB-id
                     DateToFinish = DateTime.Now.AddDays(2), 
                     FastOrder = true, 
                     Status = Status.Pending, 
@@ -30,7 +30,7 @@ namespace MVC.Controllers
                     Hats = new List<Hat> { new Hat(), new Hat(), new Hat() } // 3 hattar
                 },
                 new Order { 
-                    Id = "65f1a2b3c4d5e6f7a8b9c002", 
+                    Id = "65f1a2b3c4d5egrrg57", 
                     DateToFinish = DateTime.Now.AddDays(5), 
                     FastOrder = false, 
                     Status = Status.InProgress, 
@@ -38,7 +38,7 @@ namespace MVC.Controllers
                     Hats = new List<Hat> { new Hat() } // 1 hatt
                 },
                 new Order { 
-                    Id = "65f1a2b3c4d5e6f7a8b9c003", 
+                    Id = "65f1a2b3c4d5e6", 
                     DateToFinish = DateTime.Now.AddDays(1), 
                     FastOrder = false, 
                     Status = Status.Completed, 
@@ -46,12 +46,22 @@ namespace MVC.Controllers
                     Hats = new List<Hat> { new Hat(), new Hat() } // 2 hattar
                 },
                 new Order { 
-                    Id = "65f1a2b3c4d5e6f7a8b9c004", 
+                    Id = "65f1a2b3c4d5e6", 
                     DateToFinish = DateTime.Now.AddDays(10), 
                     FastOrder = false, 
                     Status = Status.Pending, 
                     Priority = Priority.Medium,
                     Hats = new List<Hat> { new Hat(), new Hat(), new Hat(), new Hat() } // 4 hattar
+                },
+                new Order
+                {
+                    Id = "65f2394795hjf",
+                    DateToFinish = DateTime.Now.AddDays(-3),
+                    FastOrder = false,
+                    Status = Status.Delivered,
+                    Priority = Priority.Low,
+                    Hats = new List<Hat> { new Hat() } // 1 hatt
+
                 }
             };
 
