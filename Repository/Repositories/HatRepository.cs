@@ -24,6 +24,18 @@ namespace Repository.Repositories
             }
         }
 
+        public async Task<List<Hat>> GetAllCustomHatsAsync()
+        {
+            var customHats = await _hatCollection.Find(h => h.CustomHat == true).ToListAsync();
+            return customHats;
+        }
+
+        public async Task<List<Hat>> GetAllStandardHatsAsync()
+        {
+            var standardHats = await _hatCollection.Find(h => h.CustomHat == false).ToListAsync();
+            return standardHats;
+        }
+
         public void AddHat(Hat hat)
         {
             _hatCollection.InsertOne(hat);
@@ -45,3 +57,4 @@ namespace Repository.Repositories
         }
     }
 }
+
