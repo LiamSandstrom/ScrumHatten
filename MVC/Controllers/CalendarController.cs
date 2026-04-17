@@ -44,11 +44,11 @@ namespace MVC.Controllers
 
             if (input.TargetType == "public")
             {
-                input.TargetUserName = null;
+                //input.TargetUserName = null;
             }
             else if (input.TargetType == "private")
             {
-                input.TargetUserName = currentUserID;
+                //input.TargetUserName = currentUserID;
             }
 
             _calendarRepository.AddEvent(input);

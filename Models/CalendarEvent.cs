@@ -16,6 +16,6 @@ namespace Models
         public DateTime? End { get; set; }
         public string Color { get; set; } = "#007bff";
         public string TargetType { get; set; } = "private"; // "public" or "private"
-        public string TargetUserName { get; set; }
+        public List<string> TargetUserNames { get; set; } = new List<string>();
     }
 }
