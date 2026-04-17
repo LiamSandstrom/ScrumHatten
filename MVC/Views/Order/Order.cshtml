@@ -6,21 +6,16 @@
 }
 
 <div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 text-white p-3 bg-dark rounded shadow">
-        <h1 class="h3 mb-0">Hantering av Ordrar</h1>
-        <div class="text-end">
-            <span class="badge bg-light text-dark">Antal ordrar i flödet: @Model.Count</span>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Produktionsflöde</h1>
+        <span class="badge bg-dark">Totalt: @Model.Count ordrar</span>
     </div>
 
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card bg-light shadow-sm">
-                <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between align-items-center">
-                     INKOMMANDE
-                    <span class="badge rounded-pill bg-white text-dark">@Model.Count(o => o.Status == Status.Pending)</span>
-                </div>
-                <div class="card-body kanban-column" id="pending-list">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="card bg-light border-0">
+                <div class="card-header bg-warning text-dark fw-bold"> INKOMMANDE</div>
+                <div class="card-body p-2 kanban-col" id="pending">
                     @foreach (var order in Model.Where(o => o.Status == Status.Pending))
                     {
                         @Html.Partial("_OrderCard", order)
@@ -29,13 +24,10 @@
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card bg-light shadow-sm">
-                <div class="card-header bg-primary text-white fw-bold d-flex justify-content-between align-items-center">
-                     PÅGÅENDE
-                    <span class="badge rounded-pill bg-white text-primary">@Model.Count(o => o.Status == Status.InProgress)</span>
-                </div>
-                <div class="card-body kanban-column" id="inprogress-list">
+        <div class="col-md-3">
+            <div class="card bg-light border-0">
+                <div class="card-header bg-primary text-white fw-bold"> PÅGÅENDE</div>
+                <div class="card-body p-2 kanban-col" id="inprogress">
                     @foreach (var order in Model.Where(o => o.Status == Status.InProgress))
                     {
                         @Html.Partial("_OrderCard", order)
@@ -44,13 +36,10 @@
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card bg-light shadow-sm">
-                <div class="card-header bg-success text-white fw-bold d-flex justify-content-between align-items-center">
-                     KLARA
-                    <span class="badge rounded-pill bg-white text-success">@Model.Count(o => o.Status == Status.Completed)</span>
-                </div>
-                <div class="card-body kanban-column" id="completed-list">
+        <div class="col-md-3">
+            <div class="card bg-light border-0">
+                <div class="card-header bg-success text-white fw-bold"> KLARA</div>
+                <div class="card-body p-2 kanban-col" id="completed">
                     @foreach (var order in Model.Where(o => o.Status == Status.Completed))
                     {
                         @Html.Partial("_OrderCard", order)
@@ -58,11 +47,32 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-3">
+            <div class="card bg-light border-0">
+                <div class="card-header bg-success text-white fw-bold"> Levererade</div>
+                <div class="card-body p-2 kanban-col" id="completed">
+                    @foreach (var order in Model.Where(o => o.Status == Status.Delivered))
+                    {
+                        @Html.Partial("_OrderCard", order)
+                    }
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <style>
-    /* Stil för Kanban-kolumnerna */
-    .kanban-column {
-        min-height: 75vh;
-        max-height: 75vh;
+    .kanban-col {
+        min-height: 70vh;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+    .order-card {
+        transition: transform 0.2s;
+    }
+    .order-card:hover {
+        transform: scale(1.02);
+    }
+</style>
