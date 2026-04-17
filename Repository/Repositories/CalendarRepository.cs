@@ -26,7 +26,6 @@ namespace DAL.Repositories
         {
             _eventCollection.InsertOne(calendarEvent);
         }
-        public List<CalendarEvent> GetEvents(string userId)
         public List<CalendarEvent> GetEvents(string userName)
         {
 <<<<<<< HEAD

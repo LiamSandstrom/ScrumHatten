@@ -28,7 +28,6 @@ namespace MVC.Controllers
         [HttpPost]
         public IActionResult SaveEvent([FromBody] CalendarEvent input)
         {
-            var currentUserID = User.Identity.Name;
             var currentUserName = User.Identity.Name;
 
             if (string.IsNullOrEmpty(input.Title))
