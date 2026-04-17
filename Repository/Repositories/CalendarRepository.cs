@@ -21,20 +21,28 @@ namespace DAL.Repositories
                 throw new Exception("Mongo database is NULL");
 
             _eventCollection = mc._database.GetCollection<CalendarEvent>("Calendar");
-            //_eventCollection = mc._database.GetCollection<CalendarEvent>("Calendar");
         }
         public void AddEvent(CalendarEvent calendarEvent)
         {
             _eventCollection.InsertOne(calendarEvent);
         }
         public List<CalendarEvent> GetEvents(string userId)
+        public List<CalendarEvent> GetEvents(string userName)
         {
+<<<<<<< HEAD
             return new List<CalendarEvent>();
             //     return _eventCollection
             // .Find(e =>
             //     (e.TargetType != null && e.TargetType == "public") ||
             //     e.TargetUserNames == userId)
             // .ToList();
+=======
+            return _eventCollection
+                .Find(e =>
+                    (e.TargetType != null && e.TargetType == "public") ||
+                    (e.TargetUserNames != null && e.TargetUserNames.Any(x=> x == userName)))
+                .ToList();
+>>>>>>> Ellen-Branch
         }
     }
 }
