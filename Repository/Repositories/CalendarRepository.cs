@@ -28,20 +28,11 @@ namespace DAL.Repositories
         }
         public List<CalendarEvent> GetEvents(string userName)
         {
-<<<<<<< HEAD
-            return new List<CalendarEvent>();
-            //     return _eventCollection
-            // .Find(e =>
-            //     (e.TargetType != null && e.TargetType == "public") ||
-            //     e.TargetUserNames == userId)
-            // .ToList();
-=======
             return _eventCollection
                 .Find(e =>
                     (e.TargetType != null && e.TargetType == "public") ||
                     (e.TargetUserNames != null && e.TargetUserNames.Any(x=> x == userName)))
                 .ToList();
->>>>>>> Ellen-Branch
         }
     }
 }

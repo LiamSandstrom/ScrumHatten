@@ -39,13 +39,10 @@ namespace MVC.Controllers
 
             if (input.TargetType == "public")
             {
-<<<<<<< HEAD
-                //input.TargetUserName = null;
             }
             else if (input.TargetType == "private")
             {
-                //input.TargetUserName = currentUserID;
-=======
+ 
                 input.TargetUserNames = new List<string>();
             }
             else if (input.TargetType == "private")
@@ -59,7 +56,6 @@ namespace MVC.Controllers
 
                 if (input.TargetUserNames == null || !input.TargetUserNames.Any())
                     return BadRequest("No users selected");
->>>>>>> Ellen-Branch
             }
 
             _calendarRepository.AddEvent(input);
