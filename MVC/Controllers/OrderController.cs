@@ -26,7 +26,7 @@ namespace MVC.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult Order()
+        public async Task<IActionResult> Order()
         {
             // Vi skapar temporär data för att simulera databasen
             var mockOrders = new List<Order>
@@ -60,13 +60,71 @@ namespace MVC.Controllers
                     DateToFinish = DateTime.Now.AddDays(10),
                     FastOrder = false,
                     Status = Status.Pending,
+                },
+                new Order {
+                    Id = "65f1a2b3c4d5e6f4", // Simulerat MongoDB-id
+                    DateToFinish = DateTime.Now.AddDays(2),
+                    FastOrder = true,
+                    Status = Status.Pending,
+                    Priority = Priority.High,
+                    Hats = new List<Hat> { new Hat(), new Hat(), new Hat() } // 3 hattar
+                },
+                new Order {
+                    Id = "65f1a2b3c4d5egrrg57",
+                    DateToFinish = DateTime.Now.AddDays(5),
+                    FastOrder = false,
+                    Status = Status.InProgress,
+                    Priority = Priority.Medium,
+                    Hats = new List<Hat> { new Hat() } // 1 hatt
+                },
+                new Order {
+                    Id = "65f1a2b3c4d5e6",
+                    DateToFinish = DateTime.Now.AddDays(1),
+                    FastOrder = false,
+                    Status = Status.Completed,
+                    Priority = Priority.Low,
+                    Hats = new List<Hat> { new Hat(), new Hat() } // 2 hattar
+                },
+                new Order {
+                    Id = "65f1a2b3c4d5e6",
+                    DateToFinish = DateTime.Now.AddDays(10),
+                    FastOrder = false,
+                    Status = Status.Pending,
                     Priority = Priority.Medium,
                     Hats = new List<Hat> { new Hat(), new Hat(), new Hat(), new Hat() } // 4 hattar
+                },
+                new Order
+                {
+                    Id = "65f2394795hjf",
+                    DateToFinish = DateTime.Now.AddDays(-3),
+                    FastOrder = false,
+                    Status = Status.Delivered,
+                    Priority = Priority.Low,
+                    Hats = new List<Hat> { new Hat() } // 1 hatt
+
                 }
             };
 
-            // VIKTIGAST: Vi skickar med listan in i vyn
-            return View(mockOrders);
+            var users = await userRepository.GetAllUsersAsync();
+            var customers = await customerRepository.GetAllCustomersAsync();
+
+            var orderViewModel = new OrderViewModel
+            {
+                OrderList = mockOrders,
+                Users = users.Select(u => new SelectListItem
+                {
+                    Value = u.Id.ToString(),
+                    Text = u.Name
+                }).ToList(),
+
+                Customers = customers.Select(c => new SelectListItem
+                {
+                    Value = c.Id,
+                    Text = c.Name
+                }).ToList()
+            };
+
+            return View(orderViewModel);
         }
 
         [HttpGet("Orders/{id}")]
@@ -86,7 +144,8 @@ namespace MVC.Controllers
             await orderRepository.CreateOrderAsync(order);
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
-        [HttpGet]
+
+        [HttpGet("Create")]
         public async Task<IActionResult> Create()
         {
 
@@ -112,6 +171,7 @@ namespace MVC.Controllers
             return View(orderViewModel);
         }
 
+        [HttpGet("GetHatsByType")]
         public IActionResult GetHatsByType(string type)
         {
             if (type == "Stock")
