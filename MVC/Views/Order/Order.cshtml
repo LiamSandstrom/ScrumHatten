@@ -52,7 +52,7 @@
         <div class="col-md-3">
             <div class="card bg-light border-0">
                 <div class="card-header bg-success text-white fw-bold"> Levererade</div>
-                <div class="card-body p-2 kanban-col" id="completed">
+                <div class="card-body p-2 kanban-col" id="delivered">
                     @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Delivered))
                     {
                         @Html.Partial("_OrderCard", order)
@@ -314,3 +314,9 @@
         transform: scale(1.02);
     }
 </style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <script src="~/js/kanban.js"></script>
+}
