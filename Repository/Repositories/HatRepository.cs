@@ -12,11 +12,11 @@ namespace Repository.Repositories
             _hatCollection = mongoConnector._database.GetCollection<Hat>("Hats");
         }
 
-        public List<Hat> GetAllHats()
+        public async Task<List<Hat>> GetAllHats()
         {
             try
             {
-                return _hatCollection.Find(_ => true).ToList();
+                return await _hatCollection.Find(_ => true).ToListAsync();
             }
             catch
             {
@@ -36,25 +36,24 @@ namespace Repository.Repositories
             return standardHats;
         }
 
-        public void AddHat(Hat hat)
+        public async Task AddHat(Hat hat)
         {
-            _hatCollection.InsertOne(hat);
+            await _hatCollection.InsertOneAsync(hat);
         }
 
-        public Hat? GetHatById(string id)
+        public async Task<Hat?> GetHatById(string id)
         {
-            return _hatCollection.Find(h => h.Id == id).FirstOrDefault();
+            return await _hatCollection.Find(h => h.Id == id).FirstOrDefaultAsync();
         }
 
-        public void DeleteHat(string id)
+        public async Task DeleteHat(string id)
         {
-            _hatCollection.DeleteOne(h => h.Id == id);
+            await _hatCollection.DeleteOneAsync(h => h.Id == id);
         }
 
-        public void UpdateHat(Hat hat)
+        public async Task UpdateHat(Hat hat)
         {
-            _hatCollection.ReplaceOne(h => h.Id == hat.Id, hat);
+            await _hatCollection.ReplaceOneAsync(h => h.Id == hat.Id, hat);
         }
     }
 }
-
