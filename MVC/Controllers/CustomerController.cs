@@ -65,6 +65,7 @@ namespace MVC.Controllers
                 PhoneNumber = customer.PhoneNumber,
                 Adress = customer.Adress,
                 ZipCode = customer.ZipCode,
+                City = customer.City,
                 Country = customer.Country,
             };
 
@@ -82,6 +83,7 @@ namespace MVC.Controllers
                 PhoneNumber = vm.PhoneNumber,
                 Adress = vm.Adress,
                 ZipCode = vm.ZipCode,
+                City = vm.City,
                 Country = vm.Country,
             };
 
@@ -126,6 +128,7 @@ namespace MVC.Controllers
                 Email = vm.Email,
                 Adress = vm.Adress,
                 ZipCode = vm.ZipCode,
+                City = vm.City,
                 Country = vm.Country
 
             };
