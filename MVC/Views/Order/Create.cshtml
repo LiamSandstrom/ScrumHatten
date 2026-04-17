@@ -1,0 +1,245 @@
+@model MVC.ViewModels.OrderViewModel
+
+<link rel="stylesheet" href="~/css/order.css" />
+
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+    Ny order
+</button>
+
+<h1>
+    ENDAST hur det ser ut i NY ORDER, ingen funkionallitet!
+</h1>
+
+<div class="modal fade" id="createOrderModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Ny order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form asp-action="Create" method="post">
+
+                <div class="modal-body">
+
+                    <!-- ===================== HATTAR ===================== -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <h6 class="mb-3">Hattar</h6>
+
+                                    <div id="hatList">
+                                        <div id="rows"></div>
+
+                                        <template id="rowTemplate">
+                                            <div class="row-item card mb-3 shadow-sm">
+                                                <div class="card-body">
+
+                                                    <div class="row g-3 align-items-center">
+
+                                                        <div class="col-12 col-sm-6 col-lg-3">
+                                                            <label class="form-label">Typ</label>
+                                                            <select class="form-select type-dropdown">
+                                                                <option value="">Välj typ</option>
+                                                                <option value="Stock">Lager</option>
+                                                                <option value="Custom">Custom</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-12 col-sm-6 col-lg-3">
+                                                            <label class="form-label">Hatt</label>
+                                                            <select class="form-select hat-dropdown">
+                                                                <option value="">Välj hatt</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-12 col-sm-6 col-lg-2">
+                                                            <label class="form-label">Antal</label>
+                                                            <input type="number" min="1" value="1"
+                                                                   class="form-control quantity-input" />
+                                                        </div>
+
+                                                        <div class="col-12 col-sm-6 col-lg-4">
+                                                            <div class="d-flex gap-3 align-items-center">
+
+                                                                <img class="hat-image rounded d-none"
+                                                                     style="width:80px;height:80px;object-fit: contain;" />
+
+                                                                <div>
+                                                                    <div class="fw-bold hat-name"></div>
+                                                                    <div class="text-muted small hat-description"></div>
+                                                                    <div class="hat-price small text-muted"></div>
+                                                                    <div class="hat-quantity small text-muted"></div>
+                                                                    <div class="fw-bold text-primary hat-total"></div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-danger mt-2 remove-row">
+                                                        Ta bort
+                                                    </button>
+
+                                                </div>
+                                            </div>
+                                        </template>
+
+                                    </div>
+
+                                    <button type="button" class="btn btn-primary btn-sm mt-2" id="addRow">
+                                        Lägg till hatt
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 g-3">
+
+                        <!-- ===================== Detaljer ===================== -->
+                        <div class="col-12 col-lg-6">
+
+                            <div class="card h-100">
+                                <div class="card-body">
+
+                                    <h6 class="mb-3">Detaljer</h6>
+
+                                    <div class="row g-3">
+
+                                        <div class="col-12 col-sm-6">
+                                            <label asp-for="TransportPrice" class="form-label">
+                                                Transportkostnad
+                                            </label>
+                                            <div class="input-group">
+                                                <input asp-for="TransportPrice" class="form-control" type="number" />
+                                                <span class="input-group-text">kr</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-sm-6">
+                                            <label asp-for="TimeToMake" class="form-label">
+                                                Tid att utföra
+                                            </label>
+                                            <div class="input-group">
+                                                <input asp-for="TimeToMake" class="form-control" type="number" />
+                                                <span class="input-group-text">timmar</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label asp-for="DateToFinish" class="form-label">
+                                                Klart datum
+                                            </label>
+                                            <input asp-for="DateToFinish" class="form-control" type="date" />
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- ===================== Order summary ===================== -->
+                        <div class="col-12 col-lg-6">
+
+                            <div class="card h-100">
+                                <div class="card-body">
+
+                                    <h6 class="mb-3">Order översikt</h6>
+
+                                    <div id="orderBreakdown" class="small text-muted"></div>
+
+                                    <div class="mt-2 text-muted small fw-bold">
+                                        Totalt
+                                    </div>
+
+                                    <div id="orderTotal" class="fs-4 fw-bold text-success">
+                                        0 kr
+                                    </div>
+
+                                    <div class="form-check mt-3">
+                                        <input asp-for="FastOrder" class="form-check-input" type="checkbox" />
+                                        <label asp-for="FastOrder" class="form-check-label">
+                                            Snabborder
+                                        </label>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ===================== LEVERANS ===================== -->
+                    <div class="row">
+
+                        <div class="col-12 col-lg-6">
+
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <h6 class="mb-3">Personer</h6>
+
+                                    <div class="row g-3">
+
+                                        <div class="col-12">
+                                            <label class="form-label">Utförare</label>
+
+                                            @Html.DropDownListFor(
+                                                m => m.SelectedUserId,
+                                                Model.Users,
+                                                "Välj Utförare",
+                                                new { @class = "form-select" }
+                                            )
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">Kund</label>
+
+                                            @Html.DropDownListFor(
+                                                m => m.SelectedUserId,
+                                                Model.Customers,
+                                                "Välj Kund",
+                                                new { @class = "form-select" }
+                                            )
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ===================== Knappar ===================== -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Avbryt
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Skapa
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="~/js/order.js" asp-append-version="true"></script>
