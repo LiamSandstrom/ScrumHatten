@@ -4,10 +4,11 @@ namespace BL.Interfaces
 {
     public interface IHatService
     {
-        List<Hat> GetAllHats();
-        void AddHat(Hat hat);
-        Hat? GetHatById(string id);
-        void DeleteHat(string id);
-        void UpdateHat(Hat hat);
+        Task<List<Hat>> GetAllHats();
+        Task AddHat(Hat hat);
+        Task<Hat?> GetHatById(string id);
+        Task DeleteHat(string id);
+        Task UpdateHat(Hat hat);
     }
 }
+
