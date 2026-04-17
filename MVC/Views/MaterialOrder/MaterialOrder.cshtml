@@ -1,0 +1,173 @@
+﻿@model List<Models.MaterialOrder>
+@using Models
+
+@{
+    ViewData["Title"] = "Materialbeställningar";
+    var materials = ViewBag.Materials as List<Material>;
+
+    var completedOrders = Model?
+        .Where(o => o.Status == "Klar")
+        .OrderByDescending(o => o.CreatedAt)
+        .ToList() ?? new List<Models.MaterialOrder>();
+
+    var visibleCompletedOrders = completedOrders.Take(3).ToList();
+    var hiddenCompletedOrders = completedOrders.Skip(3).ToList();
+}
+
+<h1>Materialbeställningar</h1>
+
+<div style="display:flex; gap:30px; align-items:flex-start;">
+
+    <div style="flex:2;">
+        <h2>Skapa ny beställning</h2>
+
+        <form asp-controller="MaterialOrder" asp-action="Create" method="post">
+            <div id="materialRows">
+                <div class="material-row" style="margin-bottom:10px;">
+                    <select name="Items[0].MaterialId">
+                        <option value="">Välj material</option>
+                        @if (materials != null)
+                        {
+                            @foreach (var material in materials)
+                            {
+                                <option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option>
+                            }
+                        }
+                    </select>
+
+                    <input type="number" name="Items[0].Quantity" step="0.1" min="0.1" placeholder="Antal" />
+                </div>
+            </div>
+
+            <button type="button" onclick="addMaterialRow()">Lägg till material</button>
+            <button type="submit">Beställ</button>
+        </form>
+
+        <hr />
+
+        <h2>Påbörjade beställningar</h2>
+
+        @if (Model == null || !Model.Any(o => o.Status != "Klar"))
+        {
+            <p>Det finns inga påbörjade beställningar.</p>
+        }
+        else
+        {
+            @foreach (var order in Model.Where(o => o.Status != "Klar").OrderByDescending(o => o.CreatedAt))
+            {
+                <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px; background-color:white;">
+                    <p><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                    <p><strong>Status:</strong> @order.Status</p>
+                    <p><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
+
+                    <ul>
+                        @foreach (var item in order.Items)
+                        {
+                            <li>@item.MaterialName - @item.Quantity - @item.PricePerUnit kr/st</li>
+                        }
+                    </ul>
+
+                    <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post">
+                        <input type="hidden" name="id" value="@order.Id" />
+                        <button type="submit">Markera som klar</button>
+                    </form>
+                </div>
+            }
+        }
+    </div>
+
+    <div style="flex:1;">
+        <h2>Klara beställningar</h2>
+
+        @if (!completedOrders.Any())
+        {
+            <p>Det finns inga klara beställningar.</p>
+        }
+        else
+        {
+            @foreach (var order in visibleCompletedOrders)
+            {
+                <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                    <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                    <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
+                    <p style="margin:0 0 6px 0;"><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
+
+                    <ul style="margin:0; padding-left:18px;">
+                        @foreach (var item in order.Items)
+                        {
+                            <li>@item.MaterialName - @item.Quantity</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (hiddenCompletedOrders.Any())
+            {
+                <button type="button" onclick="toggleCompletedOrders()" id="toggleButton">
+                    Visa mer
+                </button>
+
+                <div id="moreCompletedOrders" style="display:none; margin-top:10px;">
+                    @foreach (var order in hiddenCompletedOrders)
+                    {
+                        <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                            <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                            <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
+                            <p style="margin:0 0 6px 0;"><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
+
+                            <ul style="margin:0; padding-left:18px;">
+                                @foreach (var item in order.Items)
+                                {
+                                    <li>@item.MaterialName - @item.Quantity</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+    let rowIndex = 1;
+
+    function addMaterialRow() {
+        const container = document.getElementById("materialRows");
+
+        const newRow = document.createElement("div");
+        newRow.className = "material-row";
+        newRow.style.marginBottom = "10px";
+
+        newRow.innerHTML = `
+            <select name="Items[${rowIndex}].MaterialId">
+                <option value="">Välj material</option>
+                @if (materials != null)
+                {
+                        foreach (var material in materials)
+                        {
+                                <text><option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option></text>
+                        }
+                }
+            </select>
+
+            <input type="number" name="Items[${rowIndex}].Quantity" step="0.1" min="0.1" placeholder="Antal" />
+        `;
+
+        container.appendChild(newRow);
+        rowIndex++;
+    }
+
+    function toggleCompletedOrders() {
+        const moreOrders = document.getElementById("moreCompletedOrders");
+        const button = document.getElementById("toggleButton");
+
+        if (moreOrders.style.display === "none") {
+            moreOrders.style.display = "block";
+            button.textContent = "Visa mindre";
+        } else {
+            moreOrders.style.display = "none";
+            button.textContent = "Visa mer";
+        }
+    }
+</script>
