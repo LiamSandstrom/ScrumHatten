@@ -47,6 +47,14 @@
             <span asp-validation-for="ZipCode" class="text-danger"></span>
             <p id="error-Phonenumber" class="error-text"></p>
         </div>
+
+        <div class="form-floating mb-2">
+            <input asp-for="City" class="form-control" placeholder="Örebäst" />
+            <label asp-for="City">Stad</label>
+            <span asp-validation-for="City" class="text-danger"></span>
+            <p id="error-City" class="error-text"></p>
+        </div>
+        
         
         <div class="form-floating mb-2">
             <input asp-for="Country" class="form-control" placeholder="Sverige" />
