@@ -198,5 +198,31 @@ namespace MVC.Controllers
 
             return Json(Array.Empty<object>());
         }
+
+        [HttpPost("UpdateStatus")]
+        public async Task<IActionResult> UpdateStatus([FromForm] string id, [FromForm] string status)
+        {
+            try
+            {
+                // 1. Konvertera strängen (t.ex. "pending") till din Enum Status
+                // 'true' gör att den struntar i om det är stora eller små bokstäver
+                if (Enum.TryParse<Status>(status, true, out var parsedStatus))
+                {
+                    // Här kommer du senare lägga in:
+                    // await _orderRepository.UpdateStatusAsync(id, parsedStatus);
+
+                    return Ok(new { message = "Status uppdaterad!" });
+                }
+
+                // Om konverteringen misslyckas hamnar vi här
+                return BadRequest("Ogiltig status-typ.");
+            }
+            catch (Exception ex)
+            {
+                // Om något annat går fel (t.ex. databasfel senare)
+                return StatusCode(500, $"Internt serverfel: {ex.Message}");
+            }
+        }
+
     }
 }
