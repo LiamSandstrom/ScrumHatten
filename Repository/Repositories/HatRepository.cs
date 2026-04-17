@@ -32,7 +32,7 @@ namespace Repository.Repositories
 
         public async Task<List<Hat>> GetAllStandardHatsAsync()
         {
-            var standardHats = await _hatCollection.Find(h => h.CustomHat == false).ToListAsync();
+            var standardHats = await _hatCollection.Find(h => h.CustomHat != true).ToListAsync();
             return standardHats;
         }
 
