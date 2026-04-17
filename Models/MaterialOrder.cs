@@ -1,39 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Models
 {
     public class MaterialOrder
     {
-
-
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
+        public string? Id { get; set; }
 
-        [BsonElement("Amount")]
-        public double Amount { get; set; }
+        public List<MaterialOrderItem> Items { get; set; } = new();
 
+        public string Status { get; set; } = "Påbörjad";
 
-        [BsonElement("Price")]
-        public decimal Price { get; set; }
+        public decimal TotalPrice { get; set; }
 
-
-        // Lägg till Material
-
-        // Lägg in anställd
-
-
-
-        public MaterialOrder(double amount, decimal price, HatMaterial hatMaterial)
-        {
-            Amount = amount;
-            Price = price;
-            hatMaterial = hatMaterial;
-        }
-
-
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
