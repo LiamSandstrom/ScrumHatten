@@ -92,5 +92,42 @@ namespace Repository
             var filter = Builders<Customer>.Filter.Eq(c => c.Id, customer.Id);
             await _collection.ReplaceOneAsync(filter, customer);
         }
+
+
+
+        public async Task<List<String>> GetAllCitiesAsync()
+        {
+
+
+            var citites = await _collection
+                .Distinct<string>("City", FilterDefinition<Customer>.Empty)
+                .ToListAsync();
+
+            return citites;
+
+        }
+
+        public async Task<List<String>> GetAllCountriesAsync()
+        {
+            var countries = await _collection
+                .Distinct<string>("Country", FilterDefinition<Customer>.Empty)
+                .ToListAsync();
+
+            return countries;
+
+        }
+
+        public async Task<List<Customer>> GetCustomerByCity(string city)
+        {
+            var filter = Builders<Customer>.Filter.Eq(c => c.City, city);
+            return await _collection.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<Customer>> GetCustomerByCountry(string country)
+        {
+            var filter = Builders<Customer>.Filter.Eq(c => c.Country, country);
+            return await _collection.Find(filter).ToListAsync();
+        }
+
     }
 }
