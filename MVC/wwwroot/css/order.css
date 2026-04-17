@@ -14,7 +14,7 @@
     padding-bottom: 12px;
     margin-bottom: 12px;
 
-    max-height: 300px;
+    max-height: 210px;
     overflow-y: scroll;
     -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
@@ -37,4 +37,37 @@
 .removeButton {
     height: 33px;
     width: 50px;
+}
+
+#createOrderModal .modal-body {
+    font-size: 0.875rem;
+}
+
+#createOrderModal .form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+#createOrderModal .form-control,
+#createOrderModal .form-select {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+#createOrderModal .card-body {
+    padding: 0.75rem;
+}
+
+#createOrderModal h6 {
+    font-size: 0.9rem;
+}
+
+#createOrderModal .btn {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+}
+
+#createOrderModal .hat-image {
+    width: 60px !important;
+    height: 60px !important;
 }

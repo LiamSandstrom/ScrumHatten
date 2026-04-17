@@ -1,15 +1,15 @@
-@using Models
-@model MVC.ViewModels.OrderViewModel
-@{
-    ViewData["Title"] = "Orderhantering";
-}
+/*~~*/ /*~~*/
+/*~~*/ /*~~~~~~~~~~~~~~~~~~~~~~~~~*/
+~~
+    /*~~~~~~~~~~~~~*/ ~ /*~~~~~~~~~~~~~*/
+~
 <link rel="stylesheet" href="~/css/order.css" />
 
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Produktionsflöde</h1>
         <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
-            <span class="badge bg-dark">Totalt: @Model.OrderList.Count ordrar</span>
+            <span class="badge bg-dark">Totalt: /*~~~~~~~~~~~~~~~~~~*/ ordrar</span>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOrderModal">
                 Ny order
             </button>
@@ -20,10 +20,10 @@
             <div class="card bg-light border-0">
                 <div class="card-header custom-header-brown text-white fw-bold"> INKOMMANDE</div>
                 <div class="card-body p-2 kanban-col" id="pending">
-                    @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Pending))
-                    {
-                        @Html.Partial("_OrderCard", order)
-                    }
+                    /*~~~~*/ /**/ /*~*/ ~~ /*~~~~~~~~~~~~~~~~~~~*/ ~~ /*~~~~*/ ~~ /*~~~~~~~~~~~~*/
+                    ~
+                        /*~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~*/
+                    ~
                 </div>
             </div>
         </div>
@@ -31,10 +31,10 @@
             <div class="card bg-light border-0">
                 <div class="card-header custom-header-brown text-white fw-bold"> PÅGÅENDE</div>
                 <div class="card-body p-2 kanban-col" id="inprogress">
-                    @foreach (var order in Model.OrderList.Where(o => o.Status == Status.InProgress))
-                    {
-                        @Html.Partial("_OrderCard", order)
-                    }
+                    /*~~~~*/ /**/ /*~*/ ~~ /*~~~~~~~~~~~~~~~~~~~*/ ~~ /*~~~~*/ ~~ /*~~~~~~~~~~~~~~~*/
+                    ~
+                        /*~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~*/
+                    ~
                 </div>
             </div>
         </div>
@@ -42,10 +42,10 @@
             <div class="card bg-light border-0">
                 <div class="card-header custom-header-brown text-white fw-bold"> KLARA</div>
                 <div class="card-body p-2 kanban-col" id="completed">
-                    @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Completed))
-                    {
-                        @Html.Partial("_OrderCard", order)
-                    }
+                    /*~~~~*/ /**/ /*~*/ ~~ /*~~~~~~~~~~~~~~~~~~~*/ ~~ /*~~~~*/ ~~ /*~~~~~~~~~~~~~~*/
+                    ~
+                        /*~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~*/
+                    ~
                 </div>
             </div>
         </div>
@@ -53,10 +53,10 @@
             <div class="card bg-light border-0">
                 <div class="card-header custom-header-brown text-white fw-bold"> Levererade</div>
                 <div class="card-body p-2 kanban-col" id="delivered">
-                    @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Delivered))
-                    {
-                        @Html.Partial("_OrderCard", order)
-                    }
+                    /*~~~~*/ /**/ /*~*/ ~~ /*~~~~~~~~~~~~~~~~~~~*/ ~~ /*~~~~*/ ~~ /*~~~~~~~~~~~~~~*/
+                    ~
+                        /*~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~*/
+                    ~
                 </div>
             </div>
         </div>
@@ -100,7 +100,7 @@
                                                                 <option value="Stock">Lager</option>
                                                                 <option value="Custom">Custom</option>
                                                             </select>
-                                                            <p class="error-text"></p>
+                                                            <p class="error-text cant"></p>
                                                         </div>
 
                                                         <div class="col-12 col-sm-6 col-lg-3">
@@ -172,8 +172,7 @@
                                         <div class="col-12 col-sm-6">
                                             <label class="form-label">Transportkostnad</label>
                                             <div class="input-group">
-                                                <input name="TransportPrice" class="form-control" type="number" min="0"
-                                                       value="0" />
+                                                <input name="TransportPrice" class="form-control" type="number" min="0" value="0" />
                                                 <span class="input-group-text">kr</span>
                                             </div>
                                             <p id="error-TransportPrice" class="error-text"></p>
@@ -182,8 +181,7 @@
                                         <div class="col-12 col-sm-6">
                                             <label class="form-label">Tid att utföra</label>
                                             <div class="input-group">
-                                                <input name="TimeToMake" class="form-control" type="number" min="0"
-                                                       value="0" />
+                                                <input name="TimeToMake" class="form-control" type="number" min="0" value="0" />
                                                 <span class="input-group-text">timmar</span>
                                             </div>
                                             <p id="error-TimeToMake" class="error-text"></p>
@@ -191,9 +189,7 @@
 
                                         <div class="col-12">
                                             <label class="form-label">Klart datum</label>
-                                            <input name="DateToFinish" class="form-control" type="date"
-                                                   min="@DateTime.Today.ToString("yyyy-MM-dd")"
-                                                   value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                            <input name="DateToFinish" class="form-control" type="date" value="/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/" />
                                             <p id="error-DateToFinish" class="error-text"></p>
                                         </div>
 
@@ -217,8 +213,7 @@
                                     <div id="orderTotal" class="fs-4 fw-bold text-success">0 kr</div>
 
                                     <div class="form-check mt-3">
-                                        <input name="FastOrder" id="FastOrder" class="form-check-input" type="checkbox"
-                                               value="true" />
+                                        <input name="FastOrder" id="FastOrder" class="form-check-input" type="checkbox" value="true" />
                                         <label class="form-check-label" for="FastOrder">Snabborder</label>
                                     </div>
 
@@ -230,36 +225,43 @@
 
                     <!-- ===================== PERSONER ===================== -->
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-12 col-lg-6">
                             <div class="card">
                                 <div class="card-body">
+
                                     <h6 class="mb-3">Personer</h6>
+
                                     <div class="row g-3">
-                                        <div class="col-12 col-sm-6">
+
+                                        <div class="col-12">
                                             <label class="form-label">Utförare</label>
-                                            @Html.DropDownListFor(
-                                            m => m.SelectedUserId,
-                                            Model.Users,
-                                            "Välj Utförare",
-                                            new { @class = "form-select" }
-                                            )
+                                            /*~~~~~~~~~~~~~~~~~~*/
+                                                ~ ~~ /*~~~~~~~~~~~~~*/
+                                                /*~~~~~~~~*/
+                                                /*~*/ /*~~~~~~*/
+                                                ~~~ ~ /*~~*/ ~ /*~~~~~~~~~*/ ~
+                                            ~
                                             <p id="error-SelectedUserId" class="error-text"></p>
                                         </div>
-                                        <div class="col-12 col-sm-6">
+
+                                        <div class="col-12">
                                             <label class="form-label">Kund</label>
-                                            @Html.DropDownListFor(
-                                            m => m.SelectedCustomerId,
-                                            Model.Customers,
-                                            "Välj Kund",
-                                            new { @class = "form-select" }
-                                            )
+                                            /*~~~~~~~~~~~~~~~~~~*/
+                                                ~ ~~ /*~~~~~~~~~~~~~~~~~*/
+                                                /*~~~~~~~~~~~~*/
+                                                /*~*/ /*~~*/
+                                                ~~~ ~ /*~~*/ ~ /*~~~~~~~~~*/ ~
+                                            ~
                                             <p id="error-SelectedCustomerId" class="error-text"></p>
                                         </div>
+
                                     </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <!-- GENERELLT FEL -->
                     <div id="formError" class="text-danger mt-3 d-none"></div>
 
@@ -276,11 +278,13 @@
         </div>
     </div>
 </div>
+<script src="~/js/order.js" asp-append-version="true"></script>
+<script src="/js/account.js"></script>
 
 <style>
+
     .custom-header-brown {
-        background-color: #7d563b;
-        !important;
+        background-color: #7d563b; !important;
         border-bottom: 2px solid #4E342E;
         text-align: center;
         letter-spacing: 1px;
@@ -305,10 +309,10 @@
         text-transform: uppercase;
         letter-spacing: 2px;
         font-size: 1.5rem;
-        color: #4E342E;
+        color: #4E342E; 
     }
-
-
+    
+   
     h1::after {
         content: "";
         display: block;
@@ -319,19 +323,10 @@
         border-radius: 2px;
     }
 </style>
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="~/js/kanban.js"></script>
-    <script src="~/js/order.js" asp-append-version="true"></script>
-    <script src="~/js/account.js"></script>
-    <script>
-        handleFormSubmit("createOrderForm");
 
-        document.getElementById("createOrderForm").addEventListener("submit", async () => {
-        if (rowValidationFailed) return;
-        await new Promise(r => setTimeout(r, 500));
-        const modal = document.getElementById("createOrderModal");
-        bootstrap.Modal.getInstance(modal)?.hide();
-        }, false);
-    </script>
-}
+/*~~~~*/ /*~~~*/ ~
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <script src="~/js/kanban.js"></script>
+~
+

@@ -10,7 +10,7 @@ using Services;
 namespace MVC.Controllers
 {
     [Route("Order")]
-    public class OrderController : Controller
+    public class OrderController : BaseController
     {
         private readonly IOrderRepository orderRepository;
         private IUserRepository userRepository;
@@ -137,38 +137,45 @@ namespace MVC.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] Order order)
+        public async Task<IActionResult> Create(OrderViewModel model)
         {
-            if (order == null)
-                return BadRequest("Ordern kan inte vara null!");
-            await orderRepository.CreateOrderAsync(order);
-            return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
-        }
+            var ignoreFields = new[] { "OrderList", "Users", "Customers", "StockHats", "CustomHats", "Moms" };
+            foreach (var field in ignoreFields)
+                ModelState.Remove(field);
 
-        [HttpGet("Create")]
-        public async Task<IActionResult> Create()
-        {
-
-            var users = await userRepository.GetAllUsersAsync();
-            var customers = await customerRepository.GetAllCustomersAsync();
-
-            var orderViewModel = new OrderViewModel
+            if (!ModelState.IsValid)
             {
-                Users = users.Select(u => new SelectListItem
-                {
-                    Value = u.Id.ToString(),
-                    Text = u.Name
-                }).ToList(),
+                return Json(ModelStateErrorResponse("Validering misslyckades"));
+            }
 
-                Customers = customers.Select(c => new SelectListItem
+            var allHats = hatRepository.GetAllHats();
+
+            var orderHats = model.Rows
+                .Where(r => r.HatId != null)
+                .SelectMany(r =>
                 {
-                    Value = c.Id,
-                    Text = c.Name
-                }).ToList()
+                    var hat = allHats.FirstOrDefault(h => h.Id == r.HatId);
+                    if (hat == null) return Enumerable.Empty<Hat>();
+                    return Enumerable.Repeat(hat, r.Quantity);
+                })
+                .ToList();
+
+            var order = new Order
+            {
+                FastOrder = model.FastOrder,
+                TransportPrice = model.TransportPrice,
+                DateToFinish = model.DateToFinish,
+                TimeToMake = model.TimeToMake,
+                CustomerId = model.SelectedCustomerId,
+                MakerId = Guid.TryParse(model.SelectedUserId, out var guid) ? guid : Guid.Empty,
+                OrderDate = DateTime.Now,
+                Status = Status.Pending,
+                Hats = orderHats
             };
 
+            await orderRepository.CreateOrderAsync(order);
 
-            return View(orderViewModel);
+            return Json(CreateResponse(true, message: "Order skapad!", notify: true, redirectUrl: "refresh"));
         }
 
         [HttpGet("GetHatsByType")]

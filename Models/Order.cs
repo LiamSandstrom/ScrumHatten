@@ -17,22 +17,23 @@ namespace Models
 
         public List<Hat> Hats { get; set; } = new();
 
-        public decimal TimeToMake { get; set; } 
+        public decimal TimeToMake { get; set; }
 
         public DateTime DateToFinish { get; set; }
 
-        public DateTime OrderDate { get; set; }  
+        public DateTime OrderDate { get; set; }
 
-        public decimal TransportPrice { get; set; } 
+        public decimal TransportPrice { get; set; }
 
         public decimal FinalPrice { get; set; }
 
         public Boolean FastOrder { get; set; }
 
         public Guid MakerId { get; set; }
+        public string CustomerId { get; set; }
 
         public Status Status { get; set; }
-        
+
         public Priority Priority { get; set; }
 
         public bool IsDelivered { get; set; }
