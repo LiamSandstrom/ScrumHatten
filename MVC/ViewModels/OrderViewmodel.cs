@@ -12,6 +12,7 @@ namespace MVC.ViewModels
     public class OrderViewModel
     {
         public List<OrderRowViewModel> Rows { get; set; } = new();
+        public List<Order> OrderList { get; set; }
 
         public List<SelectListItem> StockHats { get; set; }
         public List<SelectListItem> CustomHats { get; set; }
