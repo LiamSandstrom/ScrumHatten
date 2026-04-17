@@ -21,35 +21,35 @@ namespace MVC.Controllers
             // Vi skapar temporär data för att simulera databasen
             var mockOrders = new List<Order>
             {
-                new Order { 
+                new Order {
                     Id = "65f1a2b3c4d5e6f4", // Simulerat MongoDB-id
-                    DateToFinish = DateTime.Now.AddDays(2), 
-                    FastOrder = true, 
-                    Status = Status.Pending, 
+                    DateToFinish = DateTime.Now.AddDays(2),
+                    FastOrder = true,
+                    Status = Status.Pending,
                     Priority = Priority.High,
                     Hats = new List<Hat> { new Hat(), new Hat(), new Hat() } // 3 hattar
                 },
-                new Order { 
-                    Id = "65f1a2b3c4d5egrrg57", 
-                    DateToFinish = DateTime.Now.AddDays(5), 
-                    FastOrder = false, 
-                    Status = Status.InProgress, 
+                new Order {
+                    Id = "65f1a2b3c4d5egrrg57",
+                    DateToFinish = DateTime.Now.AddDays(5),
+                    FastOrder = false,
+                    Status = Status.InProgress,
                     Priority = Priority.Medium,
                     Hats = new List<Hat> { new Hat() } // 1 hatt
                 },
-                new Order { 
-                    Id = "65f1a2b3c4d5e6", 
-                    DateToFinish = DateTime.Now.AddDays(1), 
-                    FastOrder = false, 
-                    Status = Status.Completed, 
+                new Order {
+                    Id = "65f1a2b3c4d5e6",
+                    DateToFinish = DateTime.Now.AddDays(1),
+                    FastOrder = false,
+                    Status = Status.Completed,
                     Priority = Priority.Low,
                     Hats = new List<Hat> { new Hat(), new Hat() } // 2 hattar
                 },
-                new Order { 
-                    Id = "65f1a2b3c4d5e6", 
-                    DateToFinish = DateTime.Now.AddDays(10), 
-                    FastOrder = false, 
-                    Status = Status.Pending, 
+                new Order {
+                    Id = "65f1a2b3c4d5e6",
+                    DateToFinish = DateTime.Now.AddDays(10),
+                    FastOrder = false,
+                    Status = Status.Pending,
                     Priority = Priority.Medium,
                     Hats = new List<Hat> { new Hat(), new Hat(), new Hat(), new Hat() } // 4 hattar
                 },
@@ -86,5 +86,31 @@ namespace MVC.Controllers
             await _orderRepository.CreateOrderAsync(order);
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
+
+        [HttpPost("UpdateStatus")]
+public async Task<IActionResult> UpdateStatus([FromForm] string id, [FromForm] string status)
+{
+    try 
+    {
+        // 1. Konvertera strängen (t.ex. "pending") till din Enum Status
+        // 'true' gör att den struntar i om det är stora eller små bokstäver
+        if (Enum.TryParse<Status>(status, true, out var parsedStatus))
+        {
+            // Här kommer du senare lägga in:
+            // await _orderRepository.UpdateStatusAsync(id, parsedStatus);
+            
+            return Ok(new { message = "Status uppdaterad!" });
+        }
+
+        // Om konverteringen misslyckas hamnar vi här
+        return BadRequest("Ogiltig status-typ.");
+    }
+    catch (Exception ex)
+    {
+        // Om något annat går fel (t.ex. databasfel senare)
+        return StatusCode(500, $"Internt serverfel: {ex.Message}");
+    }
+}
+
     }
 }
