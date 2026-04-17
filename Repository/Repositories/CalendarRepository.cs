@@ -29,11 +29,12 @@ namespace DAL.Repositories
         }
         public List<CalendarEvent> GetEvents(string userId)
         {
-            return _eventCollection
-        .Find(e =>
-            (e.TargetType != null && e.TargetType == "public") ||
-            e.TargetUserName == userId)
-        .ToList();
+            return new List<CalendarEvent>();
+            //     return _eventCollection
+            // .Find(e =>
+            //     (e.TargetType != null && e.TargetType == "public") ||
+            //     e.TargetUserNames == userId)
+            // .ToList();
         }
     }
 }
