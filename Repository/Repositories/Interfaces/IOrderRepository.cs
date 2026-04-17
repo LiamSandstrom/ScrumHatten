@@ -26,5 +26,7 @@ namespace Repository
         Task SetStatusAsync(string id, Status newStatus);
         Task SetFastOrderAsync(string id, bool isFastOrder);
 
+        Task SetIsDeliveredAsync(string id, bool isDelivered);
+
     }
 }
