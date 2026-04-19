@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MVC.ViewModels.CustomerViewModels;
 using Repository;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MVC.Controllers
 {
@@ -15,34 +16,109 @@ namespace MVC.Controllers
         }
 
 
-
-
-
-
         [HttpGet("CustomerList")]
-        public async Task<IActionResult> CustomerList()
-        {
+        public async Task<IActionResult> CustomerList(CustomerListViewModel vmIn)
+        
+         {
+
+
             List<Customer> customerList = new List<Customer>();
             customerList = await _customerRepository.GetAllCustomersAsync();
 
+            List<String> cities = await _customerRepository.GetAllCitiesAsync();
+            List<String> countries = await _customerRepository.GetAllCountriesAsync();
+
+          
 
             CustomerListViewModel vm = new CustomerListViewModel()
             {
-                allCustomers = customerList
+                allCustomers = customerList,
+                allCities = cities,
+                allCountries = countries
             };
 
             return View(vm);
         }
 
+        [HttpGet("FilteredCustomerList")]
+        public async Task<IActionResult> FilteredCustomerList(string selectedCity, string selectedCountry)
+        {
+
+            List<String> cities = await _customerRepository.GetAllCitiesAsync();
+            List<String> countries = await _customerRepository.GetAllCountriesAsync();
+
+            if (selectedCity == null & selectedCountry == null)
+            {
+                return RedirectToAction(nameof(CustomerList));
+            }
+            else if (selectedCity == null && selectedCountry != null)
+            {
+                List<Customer> filteredList = await _customerRepository.GetCustomerByCountry(selectedCountry);
+                CustomerListViewModel newVm = new CustomerListViewModel
+                {
+                    allCustomers = filteredList,
+                    allCities = cities,
+                    allCountries = countries
+                   
+                };
+
+                return View(nameof(CustomerList), newVm);
+
+            }
+            else if (selectedCountry == null && selectedCity != null)
+            {
+                List<Customer> filteredList = await _customerRepository.GetCustomerByCity(selectedCity);
+                CustomerListViewModel newVm = new CustomerListViewModel
+                {
+                    allCustomers = filteredList,
+                    allCities = cities,
+                    allCountries = countries
+                };
+
+                return View(nameof(CustomerList), newVm);
+            }
+            else
+            {
+                List<Customer> filteredListCity = await _customerRepository.GetCustomerByCity(selectedCity);
+                List<Customer> filteredListCountry = await _customerRepository.GetCustomerByCountry(selectedCountry);
+                List<Customer> combinedList = filteredListCity.Join(
+                                                filteredListCountry,
+                                                c1 => new { c1.City, c1.Country },
+                                                c2 => new { c2.City, c2.Country },
+                                                (c1, c2) => c1) 
+                                                .ToList();
+
+                CustomerListViewModel newVm = new CustomerListViewModel
+                {
+                    allCustomers = combinedList,
+                    allCities = cities,
+                    allCountries = countries
+                };
+                return View(nameof(CustomerList), newVm);
 
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> Index()
-        //{
-        //    var customers = await _customerRepository.GetAllCustomersAsync();
-        //    return View(customers);
-        //}
+
+            }
+        }
+
+        [HttpGet(nameof(Search))]
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            // En liten validering för att inte söka efter bara en eller två chars.
+            if (searchTerm != null && searchTerm.Length > 3)
+            {
+                List<Customer> result = await _customerRepository.GetCustomerByStringMatch(searchTerm);
+
+                return Json(result);
+            }
+            else
+            {
+                return Content("Insufficent search term :(");
+            }
+
+        }
+
 
         [HttpGet("Create")]
         public IActionResult Create()
