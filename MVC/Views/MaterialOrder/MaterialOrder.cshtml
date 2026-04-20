@@ -6,9 +6,9 @@
     var materials = ViewBag.Materials as List<Material>;
 
     var completedOrders = Model?
-        .Where(o => o.Status == "Klar")
-        .OrderByDescending(o => o.CreatedAt)
-        .ToList() ?? new List<Models.MaterialOrder>();
+    .Where(o => o.Status == "Klar")
+    .OrderByDescending(o => o.CreatedAt)
+    .ToList() ?? new List<Models.MaterialOrder>();
 
     var visibleCompletedOrders = completedOrders.Take(3).ToList();
     var hiddenCompletedOrders = completedOrders.Skip(3).ToList();
@@ -33,7 +33,8 @@
                             {
                                 @foreach (var material in materials)
                                 {
-                                    <option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option>
+                                    <option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit
+                                    </option>
                                 }
                             }
                         </select>
@@ -58,8 +59,10 @@
             {
                 @foreach (var order in Model.Where(o => o.Status != "Klar").OrderByDescending(o => o.CreatedAt))
                 {
-                    <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px; background-color:white;">
+                    <div
+                        style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px; background-color:white;">
                         <p><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                        <p><strong>Ordernummer:</strong> @order.Id</p> 
                         <p><strong>Status:</strong> @order.Status</p>
                         <p><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
 
@@ -90,8 +93,10 @@
             {
                 @foreach (var order in visibleCompletedOrders)
                 {
-                    <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                    <div
+                        style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                         <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                        <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
                         <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
                         <p style="margin:0 0 6px 0;"><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
 
@@ -101,8 +106,15 @@
                                 <li>@item.MaterialName - @item.Quantity</li>
                             }
                         </ul>
+
+                        <a asp-controller="MaterialOrder" asp-action="Print" asp-route-id="@order.Id" target="_blank">
+                            Skriv ut
+                        </a>
                     </div>
+
                 }
+
+
 
                 @if (hiddenCompletedOrders.Any())
                 {
@@ -111,10 +123,13 @@
                     </button>
 
                     <div id="moreCompletedOrders" style="display:none; margin-top:10px;">
+
                         @foreach (var order in hiddenCompletedOrders)
                         {
-                            <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                            <div
+                                style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                                 <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
+                                <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
                                 <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
                                 <p style="margin:0 0 6px 0;"><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
 
@@ -124,6 +139,10 @@
                                         <li>@item.MaterialName - @item.Quantity</li>
                                     }
                                 </ul>
+                                <a asp-controller="MaterialOrder" asp-action="Print" asp-route-id="@order.Id" target="_blank"
+                                style="display:inline-block; margin-top:10px; padding:6px 12px; background-color:#dcdcdc; color:black; text-decoration:none; border-radius:4px;">
+                                    Skriv ut
+                                </a>
                             </div>
                         }
                     </div>
@@ -149,10 +168,10 @@
                 <option value="">Välj material</option>
                 @if (materials != null)
                 {
-                        foreach (var material in materials)
-                        {
-                                <text><option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option></text>
-                        }
+                            foreach (var material in materials)
+                            {
+                                        <text><option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option></text>
+                            }
                 }
             </select>
 
