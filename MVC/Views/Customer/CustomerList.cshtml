@@ -3,42 +3,77 @@
 }
 
 <link rel="stylesheet" href="~/css/user.css" />
+<script defer src="~/js/customer.js"></script>
 
 <div class="pageContent">
-    <h1 class="userListHeader">Kunder</h1>
 
-    <div class="userTableContainer">
-        <table class="table table-hover">
+    <div class="customerListHeader mt-5">
+        <h1 class="userListHeaderTitle">Kunder</h1>
+        <input class="form-control" id="searchField" placeholder="Sök efter kund..."/>
+        <button class="btn btn-primary filterButton" type="button" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi bi-funnel"></i>Filtrera</button>
+    </div>
+
+    <!--Filter modal-->
+    <form asp-action="FilteredCustomerList" method="get">
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Filtrera kunder</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+           
+                    <div class="form-floating my-3">
+                        <select asp-for="SelectedCity" class="form-select" asp-items="@(new SelectList(Model.allCities))">
+                            <option value="">Stad</option>
+                        </select>
+                        <label asp-for="SelectedCity">Välj stad</label>
+                    </div>
+                    <div class="form-floating my-3">
+                        <select asp-for="SelectedCountry" class="form-select" asp-items="@(new SelectList(Model.allCountries))">
+                            <option value="">Land</option>
+                        </select>
+                        <label asp-for="SelectedCountry">Välj land</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="submit" class="btn btn-primary">Filtrera</button>
+                 
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+    <!--Items list-->
+    <div class="userTableContainer mt-5">
+        <table class="table table-hover" id="personTable">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
+                    <th scope="col"></th>
                     <th scope="col">Namn</th>
                     <th scope="col">E-mail</th>
                     <th scope="col">Telefonnummer</th>
                     <th scope="col">Adress</th>
                     <th scope="col">Postnummer</th>
                     <th scope="col">Stad</th>
-
                     <th scope="col">Land</th>
                     
                 </tr>
             </thead>
-            <tbody class="table-group-divider">
-                @for (
-                
-                            int i = 0; i < Model.allCustomers.Count; i++)
+            <tbody class="table-group-divider" id="tableBody">
+                @for (int i = 0; i < Model.allCustomers.Count; i++)
                 {
-                    <tr>
-                        <th scope="row">@i</th>
-                        <td>@Model.allCustomers[i].Name</td>
-                        <td>@Model.allCustomers[i].Email </td>
-                        <td>@Model.allCustomers[i].PhoneNumber</td>
-                        <td>@Model.allCustomers[i].Adress</td>
-                        <td>@Model.allCustomers[i].ZipCode</td>
-                        <td>@Model.allCustomers[i].City</td>
-                        <td>@Model.allCustomers[i].Country</td>
-
-
+                    <tr class="tableRow">
+                        <th class="tableCell" scope="row">@(i + 1)</th>
+                        <td class="tableCell">@Model.allCustomers[i].Name</td>
+                        <td class="tableCell">@Model.allCustomers[i].Email </td>
+                        <td class="tableCell">@Model.allCustomers[i].PhoneNumber</td>
+                        <td class="tableCell">@Model.allCustomers[i].Adress</td>
+                        <td class="tableCell">@Model.allCustomers[i].ZipCode</td>
+                        <td class="tableCell">@Model.allCustomers[i].City</td>
+                        <td class="tableCell">@Model.allCustomers[i].Country</td>
                         <td><a asp-action="Edit" asp-route-id="@Model.allCustomers[i].Id">Redigera</a></td>
                     </tr>
 
@@ -48,3 +83,4 @@
     </div>
 
 </div>
+
