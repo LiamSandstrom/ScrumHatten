@@ -28,8 +28,18 @@ namespace MVC.ViewModels.CustomerViewModels
         [StringLength(100)]
         public string ZipCode { get; set; }
 
+
+        [Required(ErrorMessage = "Vänligen ange en stad")]
+        [StringLength(100)]
+        public string City { get; set; }
+
         [Required(ErrorMessage = "Vänligen ange ett land")]
         [StringLength(100)]
         public string Country { get; set; }
+
+
+
     }
+
+
 }
