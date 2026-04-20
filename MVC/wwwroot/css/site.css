@@ -161,6 +161,13 @@ body {
     font-weight: 600;
 }
 
+.notification p {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
 .notify-success {}
 
 .notify-error {
@@ -174,8 +181,6 @@ body {
     height: 12px;
 }
 
-.logoContainer > img {
+.logoContainer>img {
     height: 120px;
 }
-
-
