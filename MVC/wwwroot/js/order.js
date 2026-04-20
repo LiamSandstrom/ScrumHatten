@@ -264,3 +264,124 @@ function clearPreview(row) {
     row.querySelector(".hat-total").textContent = "";
     row.dataset.price = "";
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const modalEl = document.getElementById('orderDetailModal');
+    let orderModal = modalEl ? new bootstrap.Modal(modalEl) : null;
+
+    // Öppna modal vid klick på orderkort
+    document.querySelectorAll('.kanban-col').forEach(column => {
+        column.addEventListener('click', function(e) {
+            const card = e.target.closest('.order-card');
+            if (card && orderModal) {
+                const orderId = card.getAttribute('data-id');
+                orderModal.show();
+                fetchOrderDetails(orderId);
+            }
+        });
+    });
+
+    // "Ta mig an"-knappen
+    document.getElementById('btnAssignToMe')?.addEventListener('click', function () {
+        const orderId = document.getElementById('detailOrderId').value;
+        if (orderId) assignOrderToMe(orderId);
+    });
+
+    document.getElementById('btnReleaseOrder')?.addEventListener('click', function () {
+        const orderId = document.getElementById('detailOrderId').value;
+        if (orderId) releaseOrder(orderId);
+    });
+});
+
+// ─── ASYNC API CALLS ───────────────────────────────────────
+async function fetchOrderDetails(id) {
+    try {
+        const response = await fetch(`/Order/Orders/${id}`);
+        const order = await response.json();
+        
+       
+        document.getElementById('detailOrderIdDisplay').textContent = id.slice(-5);
+        document.getElementById('detailOrderId').value = id;
+
+        
+        if (order.customer) {
+            document.getElementById('detailCustomerName').textContent = order.customer.name || "Namn saknas";
+            document.getElementById('detailCustomerEmail').innerHTML = `<i class="bi bi-envelope"></i> ${order.customer.email || '-'}`;
+            document.getElementById('detailCustomerPhone').innerHTML = `<i class="bi bi-telephone"></i> ${order.customer.phoneNumber || '-'}`;
+            
+            
+            document.getElementById('detailCustomerAdress').textContent = order.customer.adress || ""; 
+            document.getElementById('detailCustomerZip').textContent = order.customer.zipCode || "";
+            document.getElementById('detailCustomerCity').textContent = order.customer.city || "";
+            document.getElementById('detailCustomerCountry').textContent = order.customer.country || "";
+        } else {
+            document.getElementById('detailCustomerName').textContent = "Ingen kund kopplad";
+            document.getElementById('detailCustomerEmail').textContent = "";
+            document.getElementById('detailCustomerPhone').textContent = "";
+            document.getElementById('detailCustomerAdress').textContent = "Adressuppgifter saknas";
+            document.getElementById('detailCustomerZip').textContent = "";
+            document.getElementById('detailCustomerCity').textContent = "";
+            document.getElementById('detailCustomerCountry').textContent = "";
+        }
+
+        // --- HATTAR ---
+        const list = document.getElementById('detailHatsList');
+        list.innerHTML = order.hats?.map(h => 
+            `<li class="list-group-item d-flex justify-content-between">
+                ${h.name} <span>${h.quantity || 1} st</span>
+            </li>`
+        ).join('') || "Inga hattar valda";
+
+        // --- PRIS ---
+        document.getElementById('detailTotalPrice').textContent = `${(order.finalPrice || 0).toLocaleString('sv-SE')} kr`;
+
+        // --- KNAPP-LOGIK ---
+        const btn = document.getElementById('btnAssignToMe');
+        const btnRelease = document.getElementById('btnReleaseOrder');  
+        const isTaken = order.makerId && order.makerId !== "00000000-0000-0000-0000-000000000000";
+
+        if (isTaken) {
+            btn.innerHTML = `<i class="bi bi-person-check"></i> Hanteras av ${order.makerName}`;
+            btn.disabled = true;
+            btn.classList.replace('btn-success', 'btn-outline-secondary');
+            if (btnRelease) btnRelease.classList.remove('d-none');
+        } else {
+            btn.innerHTML = `<i class="bi bi-person-plus"></i> Ta mig an`;
+            btn.disabled = false;
+            btn.classList.replace('btn-outline-secondary', 'btn-success');
+            if (btnRelease) btnRelease.classList.add('d-none');
+        }
+
+    } catch (err) { 
+        console.error("Fel vid hämtning av orderdetaljer:", err); 
+    }
+}
+async function assignOrderToMe(orderId) {
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+    const response = await fetch(`/Order/AssignToMe?orderId=${orderId}`, {
+        method: 'POST',
+        headers: { 'RequestVerificationToken': token }
+    });
+    if (response.ok) location.reload();
+}
+
+async function releaseOrder(orderId) {
+
+    if (!confirm("Är du säker på att du vill släppa denna order?")) return;
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+    try {
+        const response = await fetch(`/Order/ReleaseOrder?orderId=${orderId}`, {
+            method: 'POST',
+            headers: { 'RequestVerificationToken': token }
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert("Kunde inte släppa ordern.");
+        }
+    } catch (err) {
+        console.error("Fel:", err);
+    }
+}
