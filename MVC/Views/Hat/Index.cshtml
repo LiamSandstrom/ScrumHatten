@@ -83,7 +83,7 @@
 
         .hat-card img {
             height: 180px;
-            object-fit: cover;
+            object-fit: contain;
             width: 100%;
         }
 
@@ -226,8 +226,10 @@
             {
                 <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                     <div class="hat-card">
-                        <img src="@(string.IsNullOrWhiteSpace(hat.ImageBase64) ? (string.IsNullOrWhiteSpace(hat.ImageUrl) ? "https://via.placeholder.com/300x250" : hat.ImageUrl) : hat.ImageBase64)"
-                             alt="@hat.Name" />
+                        <img src="@(string.IsNullOrWhiteSpace(hat.ImageUrl) ? "/images/placeholder-hat.png" : hat.ImageUrl)"
+                             alt="@hat.Name" 
+                             class="img-fluid"
+                             onerror="this.src'/images/placeholder-hat.png';"/>
 
                         <div class="hat-card-body">
                             <div class="hat-name">@hat.Name</div>
