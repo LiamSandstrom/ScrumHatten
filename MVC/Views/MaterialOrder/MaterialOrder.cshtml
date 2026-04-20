@@ -43,8 +43,12 @@
                     </div>
                 </div>
 
-                <button type="button" onclick="addMaterialRow()">Lägg till material</button>
-                <button type="submit">Beställ</button>
+                <button type="button" class="btn btn-outline-primary me-2" onclick="addMaterialRow()">
+                        Lägg till material
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    Beställ
+                </button>
             </form>
 
             <hr />
@@ -60,7 +64,10 @@
                 @foreach (var order in Model.Where(o => o.Status != "Klar").OrderByDescending(o => o.CreatedAt))
                 {
                     <div
-                        style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px; background-color:white;">
+                        style="border:1px solid #ccc; 
+                        padding:15px; margin-bottom:15px;
+                        border-radius:8px; 
+                        background-color:white;">
                         <p><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                         <p><strong>Ordernummer:</strong> @order.Id</p> 
                         <p><strong>Status:</strong> @order.Status</p>
@@ -75,7 +82,9 @@
 
                         <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post">
                             <input type="hidden" name="id" value="@order.Id" />
-                            <button type="submit">Markera som klar</button>
+                            <button type="submit" class="btn btn-success">
+                            Markera som klar
+                            </button>
                         </form>
                     </div>
                 }
@@ -94,7 +103,11 @@
                 @foreach (var order in visibleCompletedOrders)
                 {
                     <div
-                        style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                        style="border:1px solid
+                         #7fbf7f; padding:8px;
+                          margin-bottom:10px; 
+                          border-radius:6px; 
+                          background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                         <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                         <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
                         <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
@@ -107,7 +120,11 @@
                             }
                         </ul>
 
-                        <a asp-controller="MaterialOrder" asp-action="Print" asp-route-id="@order.Id" target="_blank">
+                       <a asp-controller="MaterialOrder"
+                            asp-action="Print"
+                            asp-route-id="@order.Id"
+                            target="_blank"
+                            class="btn btn-primary mt-2">
                             Skriv ut
                         </a>
                     </div>
@@ -118,8 +135,8 @@
 
                 @if (hiddenCompletedOrders.Any())
                 {
-                    <button type="button" onclick="toggleCompletedOrders()" id="toggleButton">
-                        Visa mer
+                    <button type="button" class="btn btn-secondary mt-2" onclick="toggleCompletedOrders()" id="toggleButton">
+                    Visa mer
                     </button>
 
                     <div id="moreCompletedOrders" style="display:none; margin-top:10px;">
@@ -139,9 +156,12 @@
                                         <li>@item.MaterialName - @item.Quantity</li>
                                     }
                                 </ul>
-                                <a asp-controller="MaterialOrder" asp-action="Print" asp-route-id="@order.Id" target="_blank"
-                                style="display:inline-block; margin-top:10px; padding:6px 12px; background-color:#dcdcdc; color:black; text-decoration:none; border-radius:4px;">
-                                    Skriv ut
+                                <a asp-controller="MaterialOrder"
+                                asp-action="Print"
+                                asp-route-id="@order.Id"
+                                target="_blank"
+                                class="btn btn-primary mt-2">
+                                Skriv ut
                                 </a>
                             </div>
                         }
