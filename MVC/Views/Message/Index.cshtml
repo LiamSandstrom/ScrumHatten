@@ -11,9 +11,17 @@
     <div class="row bg-white shadow rounded overflow-hidden" style="height: 100vh;">
         
         <div class="col-md-4 border-end p-0 bg-light d-flex flex-column h-100">
-            <div class="p-3 border-bottom bg-white">
-                <h4 class="mb-0">Kollegor</h4>
-            </div>
+            <div class="p-3 border-bottom bg-white flex-shrink-0">
+    <div class="d-flex align-items-center justify-content-between gap-2">
+        <h4 class="mb-0">Kollegor</h4>
+        <div class="input-group input-group-sm" style="max-width: 150px;">
+            <span class="input-group-text bg-light border-end-0">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" id="userSearch" class="form-control border-start-0 ps-0" placeholder="Sök..." aria-label="Sök kollega">
+        </div>
+    </div>
+</div>
             <div class="list-group list-group-flush overflow-auto flex-grow-1" style="background: transparent;">
                 @if (ViewBag.Users != null)
                 {
@@ -119,6 +127,53 @@
         if (chatBox) {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+
+        document.getElementById('userSearch').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let userItems = document.querySelectorAll('.list-group-item');
+
+    userItems.forEach(function(item) {
+        // Vi hämtar namnet från h6-taggen inuti länken
+        let name = item.querySelector('h6').textContent.toLowerCase();
+        
+        if (name.includes(filter)) {
+            item.style.display = ""; // Visa
+        } else {
+            item.style.display = "none"; // Dölj
+        }
+    });
+});
+
+// 1. Scrolla till botten direkt vid start
+        const chatBox = document.getElementById("chatContainer");
+        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+
+        // 2. Funktion för att hämta nya meddelanden
+        function refreshChat() {
+            const selectedUserId = "@ViewBag.SelectedUserId";
+            
+            // Kör bara om en chatt faktiskt är öppen
+            if (selectedUserId) {
+                // Vi laddar om innehållet i chatContainer genom att hämta sidan igen "i bakgrunden"
+                fetch(window.location.href)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newMessages = doc.getElementById('chatContainer').innerHTML;
+                        
+                        // Om innehållet ändrats, uppdatera och scrolla
+                        const currentChat = document.getElementById('chatContainer');
+                        if (currentChat.innerHTML !== newMessages) {
+                            currentChat.innerHTML = newMessages;
+                            currentChat.scrollTop = currentChat.scrollHeight;
+                        }
+                    });
+            }
+        }
+
+        // 3. Fråga efter nya meddelanden var 3:e sekund
+        setInterval(refreshChat, 3000);
     </script>
 }
 
@@ -154,4 +209,18 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
+    /* Tar bort den blåa ramen när man klickar i sökfältet för en mjukare look */
+#userSearch:focus {
+    box-shadow: none;
+    border-color: #dee2e6;
+}
+
+/* Ser till att sökikonen och fältet ser ut som en enhet */
+.input-group-text {
+    border-radius: 20px 0 0 20px;
+}
+#userSearch {
+    border-radius: 0 20px 20px 0;
+}
 </style>
