@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using MongoDB.Bson;
 using MongoDB.Driver.Linq;
 using MVC.Models.Account;
 using MVC.ViewModels.Account;
@@ -65,15 +66,17 @@ namespace MVC.Controllers
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return Json(CreateResponse(
                         success: true,
-                        message: "Registration successful!",
+                        message: "Lyckad registrering!",
                         redirectUrl: Url.Action("Index", "Home") ?? "/",
                         notify: true
                     ));
                 }
 
+                string errs = result.Errors.Aggregate("", (acc, s) => acc + s.Description);
+
                 return Json(CreateResponse(
                       success: false,
-                      message: "Registration failed",
+                      message: errs,
                       notify: true
                   ));
 
@@ -83,7 +86,7 @@ namespace MVC.Controllers
             {
                 return Json(CreateResponse(
                   success: false,
-                  message: "An error occurred during registration. Please try again.",
+                  message: "Ett error händ vid registreringen. Försök igen.",
                   notify: true
               ));
             }
@@ -107,7 +110,7 @@ namespace MVC.Controllers
             if (!ModelState.IsValid)
             {
 
-                return Json(ModelStateErrorResponse(ModelState.ErrorCount.ToString()));
+                return Json(ModelStateErrorResponse("Ogiltig inloggning"));
             }
 
             try
@@ -130,9 +133,10 @@ namespace MVC.Controllers
 
                 return Json(CreateResponse(
                     success: false,
+                    message: "Ogiltig inloggning",
                     errors: new Dictionary<string, string>
                     {
-                        ["Password"] = "Ogiltigt username or password"
+                        ["Password"] = "Ogiltigt användarnamn eller lösenord"
                     },
                     notify: true
                 ));
@@ -164,14 +168,14 @@ namespace MVC.Controllers
         [Authorize(Roles = "Admin, User")]
         public IActionResult Protected()
         {
-            return Json(ModelStateErrorResponse("Logged in only"));
+            return Json(ModelStateErrorResponse("Endast inloggade"));
         }
 
 
         [Authorize(Roles = "Admin")]
         public IActionResult AdminOnly()
         {
-            return Json(ModelStateErrorResponse("Admin only"));
+            return Json(ModelStateErrorResponse("Endast Admin"));
         }
     }
 }
