@@ -16,7 +16,7 @@
         @foreach (var item in Model)
         {
             <div class="col">
-                <div class="card h-100 shadow-sm position-relative">
+                <div class="card h-100 shadow-sm position-relative material-card">
                     <a href="javascript:void(0)" onclick="editMaterial('@item.Id')"
                            class="position-absolute top-0 end-0 m-2 text-warning" style="text-decoration: none;"
                            title="Redigera material">
@@ -188,3 +188,6 @@
     <script src="~/js/material.js"></script>
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/material.css" asp-append-version="true" />
+}
