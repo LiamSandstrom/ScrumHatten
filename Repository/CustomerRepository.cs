@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Repository
@@ -76,6 +77,27 @@ namespace Repository
             return await _collection.Find(_ => true).ToListAsync();
         }
 
+        public async Task<List<Customer>> GetCustomerByStringMatch(string searchTerm)
+        {
+            if (searchTerm == null)
+            {
+                searchTerm = string.Empty;
+            }
+            var query = new BsonRegularExpression(searchTerm, "i");
+
+            var filter = Builders<Customer>.Filter.Or(
+                Builders<Customer>.Filter.Regex(x => x.Name, query),
+                Builders<Customer>.Filter.Regex(x => x.Email, query),
+                Builders<Customer>.Filter.Regex(x => x.PhoneNumber, query),
+                Builders<Customer>.Filter.Regex(x => x.Adress, query),
+                Builders<Customer>.Filter.Regex(x => x.City, query),
+                Builders<Customer>.Filter.Regex(x => x.ZipCode, query),
+                Builders<Customer>.Filter.Regex(x => x.Country, query)
+                );
+
+            return await _collection.Find(filter).Limit(20).ToListAsync();
+        }
+
         public async Task AddCustomerAsync(Customer customer)
         {
             await _collection.InsertOneAsync(customer);
@@ -92,8 +114,6 @@ namespace Repository
             var filter = Builders<Customer>.Filter.Eq(c => c.Id, customer.Id);
             await _collection.ReplaceOneAsync(filter, customer);
         }
-
-
 
         public async Task<List<String>> GetAllCitiesAsync()
         {

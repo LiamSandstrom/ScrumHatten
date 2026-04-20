@@ -109,5 +109,25 @@ namespace MVC.Controllers
 
             return RedirectToAction("MaterialOrder");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Print(string id)
+
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return RedirectToAction("MaterialOrder");
+            }
+
+            var order = await _materialOrderRepository.GetOrderByIdAsync(id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View(order);
+        }
+        
     }
 }
