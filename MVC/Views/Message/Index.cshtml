@@ -7,113 +7,77 @@
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
-<div class="container mt-4">
-    <div class="row bg-white shadow rounded overflow-hidden" style="height: 100vh;">
-        
-        <div class="col-md-4 border-end p-0 bg-light d-flex flex-column h-100">
-            <div class="p-3 border-bottom bg-white flex-shrink-0">
-    <div class="d-flex align-items-center justify-content-between gap-2">
-        <h4 class="mb-0">Kollegor</h4>
-        <div class="input-group input-group-sm" style="max-width: 150px;">
-            <span class="input-group-text bg-light border-end-0">
-                <i class="bi bi-search text-muted"></i>
-            </span>
-            <input type="text" id="userSearch" class="form-control border-start-0 ps-0" placeholder="Sök..." aria-label="Sök kollega">
-        </div>
-    </div>
-</div>
-            <div class="list-group list-group-flush overflow-auto flex-grow-1" style="background: transparent;">
-                @if (ViewBag.Users != null)
-                {
-                   @foreach (var user in (IEnumerable<User>)ViewBag.Users)
-{
-    <a asp-action="Index" asp-route-id="@user.Id" 
-       class="list-group-item list-group-item-action py-3 @(ViewBag.SelectedUserId?.ToString() == user.Id.ToString() ? "active shadow-sm" : "")">
-        <div class="d-flex align-items-center">
-            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                @* Tar första bokstaven i Name-fältet *@
-                @(string.IsNullOrEmpty(user.Name) ? "?" : user.Name[0].ToString())
-            </div>
-            <div>
-                <h6 class="mb-0">@user.Name</h6>
-                <small class="@(ViewBag.SelectedUserId?.ToString() == user.Id.ToString() ? "text-white-50" : "text-muted")">Anställd</small>
-            </div>
-        </div>
-    </a>
+@section Styles {
+    <link rel="stylesheet" href="~/css/message.css" />
 }
+
+<div class="container-fluid p-0"> 
+    <div class="row g-0 bg-white shadow-sm chat-main-container">
+        
+        <div class="col-md-3 border-end p-0 bg-light contact-list-column">
+            <div class="p-3 border-bottom bg-white flex-shrink-0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Kollegor</h5>
+                    <input type="text" id="userSearch" class="form-control form-control-sm rounded-pill w-50" placeholder="Sök...">
+                </div>
+            </div>
+            
+            <div class="list-group list-group-flush scrollable-content">
+                @foreach (var user in (IEnumerable<User>)ViewBag.Users)
+                {
+                    bool isSelected = ViewBag.SelectedUserId?.ToString() == user.Id.ToString();
+                    <a asp-action="Index" asp-route-id="@user.Id" class="list-group-item list-group-item-action py-3 @(isSelected ? "active border-primary" : "")">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; flex-shrink: 0;">
+                                @(user.Name?[0].ToString().ToUpper() ?? "?")
+                            </div>
+                            <div class="text-truncate">
+                                <h6 class="mb-0 text-truncate">@user.Name</h6>
+                                <small class="@(isSelected ? "text-white-50" : "text-muted")">Anställd</small>
+                            </div>
+                        </div>
+                    </a>
                 }
             </div>
         </div>
 
-        <div class="col-md-8 p-0 d-flex flex-column">
+        <div class="col-md-9 p-0 chat-window-column bg-white">
             @if (ViewBag.SelectedUserId != null)
             {
-                <div class="p-3 border-bottom bg-white">
+                <div class="p-3 border-bottom bg-white flex-shrink-0">
                     <h5 class="mb-0">Chatt med @ViewBag.SelectedUserName</h5>
                 </div>
 
-                <div class="chat-box flex-grow-1 p-4 bg-white overflow-auto" style="height: 500px;" id="chatContainer">
-                    @if (!Model.Any())
+                <div class="scrollable-content p-4" id="chatContainer">
+                    @foreach (var msg in Model.OrderBy(m => m.Timestamp))
                     {
-                        <div class="text-center mt-5 text-muted">
-                            <p>Inga tidigare meddelanden. Skriv något för att starta konversationen!</p>
-                        </div>
-                    }
-                    else
-                    {
-                        foreach (var msg in Model)
-                        {
-                            bool isSentByMe = msg.SenderId == currentUserId;
-
-                            <div class="mb-3 d-flex @(isSentByMe ? "justify-content-end" : "justify-content-start")">
-                                <div class="p-3 rounded shadow-sm @(isSentByMe ? "bg-primary text-white" : "bg-light border text-dark")" style="max-width: 75%;">
-                                    <div class="d-flex justify-content-between align-items-start gap-3">
-                                        <div style="word-break: break-word;">
-                                            <p class="mb-1">@msg.Content</p>
-                                        </div>
-                                        
-                                        @if (!isSentByMe) 
-                                        {
-                                            <form asp-action="DeleteMessage" method="post" onsubmit="return confirm('Vill du radera meddelandet?')">
-                                                <input type="hidden" name="id" value="@msg.Id" />
-                                                <button type="submit" class="btn btn-link text-danger p-0 border-0">
-                                                    <i class="bi bi-trash" style="font-size: 14px;"></i>
-                                                </button>
-                                            </form>
-                                        }
-                                    </div>
-
-                                    <div class="mt-1 d-flex justify-content-between align-items-center" style="font-size: 0.7rem; opacity: 0.8;">
-                                        <span>@msg.Timestamp.ToString("HH:mm")</span>
-                                        @if (isSentByMe)
-                                        {
-                                            <span class="ms-2">
-                                                <i class="bi @(msg.IsRead ? "bi-check2-all text-info" : "bi-check2")"></i>
-                                                @(msg.IsRead ? "Läst" : "Skickat")
-                                            </span>
-                                        }
-                                    </div>
+                        bool isSentByMe = msg.SenderId.ToString() == currentUserId;
+                        <div class="w-100 d-flex mb-3 @(isSentByMe ? "justify-content-end" : "justify-content-start")">
+                            <div class="msg-bubble @(isSentByMe ? "sent" : "received")">
+                                <p class="mb-1">@msg.Content</p>
+                                <div class="text-end" style="font-size: 0.65rem; opacity: 0.8;">
+                                    @msg.Timestamp.ToString("HH:mm")
                                 </div>
                             </div>
-                        }
+                        </div>
                     }
                 </div>
 
-                <div class="p-3 border-top bg-light mt-auto">
+                <div class="chat-input-area">
                     <form asp-action="SendMessage" method="post" class="d-flex gap-2">
                         <input type="hidden" name="receiverId" value="@ViewBag.SelectedUserId" />
-                        <input type="text" name="content" class="form-control" placeholder="Skriv ett meddelande..." required autocomplete="off" />
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="bi bi-send"></i>
+                        <input type="text" name="content" class="form-control rounded-pill" placeholder="Skriv ett meddelande..." required autocomplete="off" />
+                        <button type="submit" class="btn btn-primary rounded-circle px-3">
+                            <i class="bi bi-send-fill"></i>
                         </button>
                     </form>
                 </div>
             }
             else
             {
-                <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
-                    <i class="bi bi-chat-dots" style="font-size: 5rem;"></i>
-                    <p class="mt-3">Välj en kollega i listan för att börja chatta.</p>
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted bg-light">
+                    <i class="bi bi-chat-dots" style="font-size: 4rem; opacity: 0.2;"></i>
+                    <p>Välj en kollega för att börja chatta.</p>
                 </div>
             }
         </div>
@@ -121,117 +85,8 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/message.js"></script>
     <script>
-        // Scrolla automatiskt till botten av chatten vid laddning
-        var chatBox = document.getElementById("chatContainer");
-        if (chatBox) {
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        document.getElementById('userSearch').addEventListener('keyup', function() {
-    let filter = this.value.toLowerCase();
-    let userItems = document.querySelectorAll('.list-group-item');
-
-    userItems.forEach(function(item) {
-        // Vi hämtar namnet från h6-taggen inuti länken
-        let name = item.querySelector('h6').textContent.toLowerCase();
-        
-        if (name.includes(filter)) {
-            item.style.display = ""; // Visa
-        } else {
-            item.style.display = "none"; // Dölj
-        }
-    });
-});
-
-// 1. Scrolla till botten direkt vid start
-        function scrollToBottom() {
-            const chatBox = document.getElementById("chatContainer");
-            if (chatBox) {
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-        }
-
-        // Kör scroll direkt när sidan laddas
-        scrollToBottom();
-
-        function refreshChat() {
-            const selectedUserId = "@ViewBag.SelectedUserId";
-            
-            if (selectedUserId && selectedUserId !== "") {
-                // Vi hämtar hela sidan i bakgrunden
-                fetch(window.location.href)
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        
-                        // Hämta det nya innehållet i chatboxen
-                        const newNode = doc.getElementById('chatContainer');
-                        const currentNode = document.getElementById('chatContainer');
-                        
-                        if (newNode && currentNode) {
-                            // Kolla om vi har fått fler meddelanden (jämför HTML-längd eller antal barn)
-                            if (newNode.innerHTML.trim() !== currentNode.innerHTML.trim()) {
-                                currentNode.innerHTML = newNode.innerHTML;
-                                scrollToBottom();
-                                console.log("Chatten uppdaterad!");
-                            }
-                        }
-                    })
-                    .catch(err => console.error("Kunde inte hämta nya meddelanden:", err));
-            }
-        }
-
-        // Kör refresh var 3:e sekund
-        setInterval(refreshChat, 3000);
+        initMessaging("@ViewBag.SelectedUserId");
     </script>
 }
-
-<style>
-    .chat-box { scroll-behavior: smooth; }
-    .chat-box::-webkit-scrollbar { width: 6px; }
-    .chat-box::-webkit-scrollbar-track { background: #f1f1f1; }
-    .chat-box::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-    .list-group-item.active { border-left: 5px solid #0056b3 !important; }
-    .chat-box { 
-        background-color: #ffffff;
-        scroll-behavior: smooth;
-    }
-
-    /* Snyggare scrollbars */
-    .overflow-auto::-webkit-scrollbar {
-        width: 6px;
-    }
-    .overflow-auto::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    .overflow-auto::-webkit-scrollbar-thumb {
-        background: #ced4da;
-        border-radius: 10px;
-    }
-    .overflow-auto::-webkit-scrollbar-thumb:hover {
-        background: #adb5bd;
-    }
-
-    /* Förhindrar att långa namn trycker ut layouten */
-    .text-truncate {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /* Tar bort den blåa ramen när man klickar i sökfältet för en mjukare look */
-#userSearch:focus {
-    box-shadow: none;
-    border-color: #dee2e6;
-}
-
-/* Ser till att sökikonen och fältet ser ut som en enhet */
-.input-group-text {
-    border-radius: 20px 0 0 20px;
-}
-#userSearch {
-    border-radius: 0 20px 20px 0;
-}
-</style>
