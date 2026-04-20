@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IO;
+using System.Linq;
 using BL.Interfaces;
+using DAL.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using MVC.ViewModels;
-using System.Linq;
-using System.IO;
-using DAL.Repositories;
 
 namespace MVC.Controllers
 {
@@ -14,7 +14,11 @@ namespace MVC.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMaterialRepository _materialRepository;
 
-        public HatController(IHatService hatService, IWebHostEnvironment webHostEnvironment, IMaterialRepository materialRepository)
+        public HatController(
+            IHatService hatService,
+            IWebHostEnvironment webHostEnvironment,
+            IMaterialRepository materialRepository
+        )
         {
             _hatService = hatService;
             _webHostEnvironment = webHostEnvironment;
@@ -25,17 +29,12 @@ namespace MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var hats = _hatService.GetAllHats() ?? new List<Hat>();
+            var hats = await _hatService.GetAllHats() ?? new List<Hat>();
             var materials = await _materialRepository.GetAllMaterialsAsync();
 
-            var model = new HatIndexViewModel
-            {
-                Hats = hats,
-                Materials = materials
-            };
+            var model = new HatIndexViewModel { Hats = hats, Materials = materials };
 
             return View(model);
-
 
             ///LÄGG TILL HATT
         }
@@ -61,7 +60,8 @@ namespace MVC.Controllers
                     Directory.CreateDirectory(folderPath);
                 }
 
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+                string fileName =
+                    Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
                 string fullPath = Path.Combine(folderPath, fileName);
 
                 using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -80,14 +80,12 @@ namespace MVC.Controllers
                 }
             }
 
-            var hatMaterials = model.Materials?
-                .Where(m => !string.IsNullOrWhiteSpace(m.MaterialId) && m.Amount > 0)
-                .Select(m => new HatMaterial
-                {
-                    MaterialId = m.MaterialId,
-                    Amount = m.Amount
-                })
-                .ToList() ?? new List<HatMaterial>();
+            var hatMaterials =
+                model
+                    .Materials?.Where(m => !string.IsNullOrWhiteSpace(m.MaterialId) && m.Amount > 0)
+                    .Select(m => new HatMaterial { MaterialId = m.MaterialId, Amount = m.Amount })
+                    .ToList()
+                ?? new List<HatMaterial>();
 
             Hat newHat = new Hat
             {
@@ -97,7 +95,7 @@ namespace MVC.Controllers
                 Quantity = model.Quantity,
                 ImageUrl = imagePath,
                 ImageBase64 = imageBase64,
-                Materials = hatMaterials
+                Materials = hatMaterials,
             };
 
             try
@@ -134,24 +132,30 @@ namespace MVC.Controllers
         //REDIGERA HATT
 
         [HttpPost]
-        public IActionResult UpdateHat(
-    string Id,
-    string Name,
-    string Description,
-    double Price,
-    int Quantity,
-    string ImageUrl,
-    IFormFile? ImageFile,
-    List<HatMaterialInputViewModel> Materials)
+        public async Task<IActionResult> UpdateHat(
+            string Id,
+            string Name,
+            string Description,
+            double Price,
+            int Quantity,
+            string ImageUrl,
+            IFormFile? ImageFile,
+            List<HatMaterialInputViewModel> Materials
+        )
         {
             try
             {
                 string imagePath = ImageUrl;
-                string? imageBase64 = _hatService.GetHatById(Id)?.ImageBase64;
+                var existingHat = await _hatService.GetHatById(Id);
+                string? imageBase64 = existingHat?.ImageBase64;
 
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "hats");
+                    string folderPath = Path.Combine(
+                        _webHostEnvironment.WebRootPath,
+                        "images",
+                        "hats"
+                    );
 
                     if (!Directory.Exists(folderPath))
                         Directory.CreateDirectory(folderPath);
@@ -175,14 +179,16 @@ namespace MVC.Controllers
                     }
                 }
 
-                var hatMaterials = Materials?
-                    .Where(m => !string.IsNullOrWhiteSpace(m.MaterialId) && m.Amount > 0)
-                    .Select(m => new HatMaterial
-                    {
-                        MaterialId = m.MaterialId,
-                        Amount = m.Amount
-                    })
-                    .ToList() ?? new List<HatMaterial>();
+                var hatMaterials =
+                    Materials
+                        ?.Where(m => !string.IsNullOrWhiteSpace(m.MaterialId) && m.Amount > 0)
+                        .Select(m => new HatMaterial
+                        {
+                            MaterialId = m.MaterialId,
+                            Amount = m.Amount,
+                        })
+                        .ToList()
+                    ?? new List<HatMaterial>();
 
                 Hat updatedHat = new Hat
                 {
@@ -193,7 +199,7 @@ namespace MVC.Controllers
                     Quantity = Quantity,
                     ImageUrl = imagePath,
                     ImageBase64 = imageBase64,
-                    Materials = hatMaterials
+                    Materials = hatMaterials,
                 };
 
                 _hatService.UpdateHat(updatedHat);

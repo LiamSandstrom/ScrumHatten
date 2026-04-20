@@ -13,47 +13,70 @@ namespace MVC.Controllers
     public class CalendarController : Controller
     {
         private readonly ICalendarRepository _calendarRepository;
+        private readonly IUserRepository _collection;
 
-        public CalendarController(ICalendarRepository calendarRepository)
+
+        public CalendarController(ICalendarRepository calendarRepository,IUserRepository collection)
         {
             _calendarRepository = calendarRepository;
+            _collection = collection;
         }
         public IActionResult Index()
         {
             return View();
         }
-        [HttpGet]
-        public JsonResult GetEvents()
-        {
-            var currentUserID = User.Identity.Name;
-            var events = _calendarRepository.GetEvents(currentUserID);
-            return Json(events);
-        }
         [HttpPost]
         public IActionResult SaveEvent([FromBody] CalendarEvent input)
         {
-            var currentUserID = User.Identity.Name;
+            var currentUserName = User.Identity.Name;
 
             if (string.IsNullOrEmpty(input.Title))
                 return BadRequest("Title is required");
 
             input.Start = input.Start == default ? DateTime.Now : input.Start;
 
-            input.End ??= null;
             input.Color ??= "#007bff";
 
             if (input.TargetType == "public")
             {
-                //input.TargetUserName = null;
             }
             else if (input.TargetType == "private")
             {
-                //input.TargetUserName = currentUserID;
+ 
+                input.TargetUserNames = new List<string>();
+            }
+            else if (input.TargetType == "private")
+            {
+                input.TargetUserNames = new List<string> { currentUserName };
+            }
+            else if (input.TargetType == "other")
+            {
+                if (!User.IsInRole("Admin"))
+                    return Unauthorized();
+
+                if (input.TargetUserNames == null || !input.TargetUserNames.Any())
+                    return BadRequest("No users selected");
             }
 
             _calendarRepository.AddEvent(input);
 
             return Json(new { success = true });
         }
+        [HttpGet]
+        public async Task<JsonResult> GetUsers()
+        {
+            var users = await _collection.GetAllUsersAsync();
+            return Json(users);
+        }
+        [HttpGet]
+        public JsonResult GetEvents()
+        {
+            var currentUserName = User.Identity.Name;
+
+            var events = _calendarRepository.GetEvents(currentUserName);
+
+            return Json(events);
+        }
+
     }
 }
