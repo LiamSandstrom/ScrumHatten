@@ -10,13 +10,13 @@
     <form asp-action="Login" method="post" id="loginForm">
         <h1 class="h3 mb-3 fw-normal">Logga in</h1>
 
-        <div class="form-floating">
+        <div class="form-floating mb-2">
             <input asp-for="Email" type="email" class="form-control" id="floatingInput" placeholder="namn@exempel.com">
             <label for="floatingInput">Email</label>
             <p id="error-Email" class="error-text"></p>
         </div>
 
-        <div class="form-floating">
+        <div class="form-floating mb-2">
             <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Lösenord">
             <label for="floatingPassword">Lösenord</label>
             <p id="error-Password" class="error-text"></p>
