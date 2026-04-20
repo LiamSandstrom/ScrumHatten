@@ -12,11 +12,11 @@ namespace Repository.Repositories
             _hatCollection = mongoConnector._database.GetCollection<Hat>("Hats");
         }
 
-        public List<Hat> GetAllHats()
+        public async Task<List<Hat>> GetAllHats()
         {
             try
             {
-                return _hatCollection.Find(_ => true).ToList();
+                return await _hatCollection.Find(_ => true).ToListAsync();
             }
             catch
             {
@@ -24,24 +24,36 @@ namespace Repository.Repositories
             }
         }
 
-        public void AddHat(Hat hat)
+        public async Task<List<Hat>> GetAllCustomHatsAsync()
         {
-            _hatCollection.InsertOne(hat);
+            var customHats = await _hatCollection.Find(h => h.CustomHat == true).ToListAsync();
+            return customHats;
         }
 
-        public Hat? GetHatById(string id)
+        public async Task<List<Hat>> GetAllStandardHatsAsync()
         {
-            return _hatCollection.Find(h => h.Id == id).FirstOrDefault();
+            var standardHats = await _hatCollection.Find(h => h.CustomHat != true).ToListAsync();
+            return standardHats;
         }
 
-        public void DeleteHat(string id)
+        public async Task AddHat(Hat hat)
         {
-            _hatCollection.DeleteOne(h => h.Id == id);
+            await _hatCollection.InsertOneAsync(hat);
         }
 
-        public void UpdateHat(Hat hat)
+        public async Task<Hat?> GetHatById(string id)
         {
-            _hatCollection.ReplaceOne(h => h.Id == hat.Id, hat);
+            return await _hatCollection.Find(h => h.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task DeleteHat(string id)
+        {
+            await _hatCollection.DeleteOneAsync(h => h.Id == id);
+        }
+
+        public async Task UpdateHat(Hat hat)
+        {
+            await _hatCollection.ReplaceOneAsync(h => h.Id == hat.Id, hat);
         }
     }
 }
