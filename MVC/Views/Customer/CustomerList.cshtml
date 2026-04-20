@@ -48,7 +48,7 @@
     </form>
     <!--Items list-->
     <div class="userTableContainer mt-5">
-        <table class="table table-hover">
+        <table class="table table-hover" id="personTable">
             <thead>
                 <tr>
                     <th scope="col"></th>
@@ -58,27 +58,22 @@
                     <th scope="col">Adress</th>
                     <th scope="col">Postnummer</th>
                     <th scope="col">Stad</th>
-
                     <th scope="col">Land</th>
                     
                 </tr>
             </thead>
-            <tbody class="table-group-divider">
-                @for (
-                
-                            int i = 0; i < Model.allCustomers.Count; i++)
+            <tbody class="table-group-divider" id="tableBody">
+                @for (int i = 0; i < Model.allCustomers.Count; i++)
                 {
-                    <tr>
-                        <th scope="row">@( i + 1 )</th>
-                        <td>@Model.allCustomers[i].Name</td>
-                        <td>@Model.allCustomers[i].Email </td>
-                        <td>@Model.allCustomers[i].PhoneNumber</td>
-                        <td>@Model.allCustomers[i].Adress</td>
-                        <td>@Model.allCustomers[i].ZipCode</td>
-                        <td>@Model.allCustomers[i].City</td>
-                        <td>@Model.allCustomers[i].Country</td>
-
-
+                    <tr class="tableRow">
+                        <th class="tableCell" scope="row">@i</th>
+                        <td class="tableCell">@Model.allCustomers[i].Name</td>
+                        <td class="tableCell">@Model.allCustomers[i].Email </td>
+                        <td class="tableCell">@Model.allCustomers[i].PhoneNumber</td>
+                        <td class="tableCell">@Model.allCustomers[i].Adress</td>
+                        <td class="tableCell">@Model.allCustomers[i].ZipCode</td>
+                        <td class="tableCell">@Model.allCustomers[i].City</td>
+                        <td class="tableCell">@Model.allCustomers[i].Country</td>
                         <td><a asp-action="Edit" asp-route-id="@Model.allCustomers[i].Id">Redigera</a></td>
                     </tr>
 
