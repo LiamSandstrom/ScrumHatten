@@ -54,7 +54,13 @@ public async Task<IActionResult> Index(string? id) // Måste matcha asp-route-co
     }
 
     // 3. Skicka meddelandelistan till vyn
-    return View(messages);
+    // I din Index-metod i controllern:
+messages = await _messageRepo.GetConversationAsync(currentUserId, id);
+
+// Sortera så att de äldsta är först (överst) och de nyaste sist (nederst)
+var sortedMessages = messages.OrderBy(m => m.Timestamp).ToList();
+
+return View(sortedMessages);
 }
     
 
