@@ -1,0 +1,30 @@
+@model Models.MaterialOrder
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8" />
+    <title>Materialbeställning</title>
+</head>
+<body>
+    <h1>Materialbeställning</h1>
+
+    <p><strong>Datum:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+    <p><strong>Status:</strong> @Model.Status</p>
+    <p><strong>Slutsumma:</strong> @Model.TotalPrice kr</p>
+
+    <h2>Material</h2>
+    <ul>
+        @foreach (var item in Model.Items)
+        {
+            <li>@item.MaterialName - @item.Quantity - @item.PricePerUnit kr</li>
+        }
+    </ul>
+
+    <button onclick="window.print()">Skriv ut</button>
+</body>
+</html>
