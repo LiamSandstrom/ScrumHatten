@@ -9,45 +9,81 @@
 	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 	<script>
 		var calendar;
-
 		document.addEventListener('DOMContentLoaded', function () {
-			var calendarEl = document.getElementById('calendar');
-			calendar = new FullCalendar.Calendar(calendarEl, {
-				initialView: 'dayGridMonth',
-				locale: "sv",
-				headerToolbar:{
-					left: 'prev,next today customPlusButton',
-					center: 'title',
-					right: 'dayGridMonth,timeGridWeek,timeGridDay'	
-				},
-					slotMinTime: "06:00:00",
-					slotMaxTime: "22:00:00",
 
-				customButtons: {
-					customPlusButton: {
-						text: '+',
-						click: function() {
-						$('#eventModal').modal('show');
-						}
-					}
+		var calendarEl = document.getElementById('calendar');
+
+		var isAdmin = @User.IsInRole("Admin").ToString().ToLower();
+
+		calendar = new FullCalendar.Calendar(calendarEl, {
+		initialView: 'dayGridMonth',
+		locale: "sv",
+
+		headerToolbar: {
+		left: 'prev,next today customPlusButton',
+		center: 'title',
+		right: 'dayGridMonth,timeGridWeek,timeGridDay'
 		},
+
+		slotMinTime: "06:00:00",
+		slotMaxTime: "22:00:00",
+
+		customButtons: {
+		customPlusButton: {
+		text: '+',
+		click: function () {
+		$('#eventModal').modal('show');
+		}}},
+
 		events: '/Calendar/GetEvents',
-		dateClick:function(info) {
+
+		dateClick: function (info) {
 		document.getElementById('eventDate').value = info.dateStr + "T09:00";
 		$('#eventModal').modal('show');
-			}
 		}
-		);
-			calendar.render();
-});
+		});
+
+		calendar.render();
+		var targetSelect = document.getElementById('eventTarget');
+
+		if (targetSelect && !isAdmin) {
+		var otherOption = targetSelect.querySelector('option[value="other"]');
+		if (otherOption) otherOption.remove();
+		}
+		$('#eventModal').on('show.bs.modal', function () {
+
+		fetch('/Calendar/GetUsers')
+		.then(res => res.json())
+		.then(users => {
+
+		var container = document.getElementById('userList');
+
+		if (!container) return;
+
+		container.innerHTML = users.map(u => `
+		<div>
+		<input type="checkbox"
+		class="user-checkbox"
+		value="${u.name}" />
+		${u.name}
+		</div>
+		`).join('');
+		});
+		});
+		});
+
 		function saveEvent() {
-			var eventData={
+		var selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked'))
+		.map(cb => cb.value);
+
+		var eventData={
 		title: document.getElementById('eventTitle').value,
 		start: new Date(document.getElementById('eventDate').value).toISOString(),
 		targetType: document.getElementById('eventTarget').value,
-		targetUserName : document.getElementById('targetUserName').value,
+		targetUserNames: selectedUsers,
 		color: "#007bff"
 		};
+
 		fetch('/Calendar/SaveEvent', {
 			method: 'POST',
 			headers: {
@@ -87,9 +123,7 @@
 							<option value="other">Specifik anställd</option>
 						</select>
 					</div>
-					<div id="otherUserDiv" class="mb-3" style="display:none;">
-						<label>Välj anställd</label>
-						<div id="userList" class="border p-2 rounded"></div>
+					<div id="userList" class="border p-2 rounded"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
