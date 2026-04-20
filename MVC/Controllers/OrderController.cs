@@ -107,6 +107,7 @@ namespace MVC.Controllers
 
             var users = await userRepository.GetAllUsersAsync();
             var customers = await customerRepository.GetAllCustomersAsync();
+            var hats = await hatRepository.GetAllStandardHatsAsync();
 
             var orderViewModel = new OrderViewModel
             {
@@ -121,7 +122,13 @@ namespace MVC.Controllers
                 {
                     Value = c.Id,
                     Text = c.Name
-                }).ToList()
+                }).ToList(),
+
+                Hats = hats.Select(h => new SelectListItem
+                {
+                    Value = h.Id.ToString(),
+                    Text = h.Name
+                }).ToList(),
             };
 
             return View(orderViewModel);
@@ -204,21 +211,6 @@ namespace MVC.Controllers
                     imageUrl = h.ImageUrl,
                     quantity = h.Quantity
                 }));
-            }
-
-            if (type == "Custom")
-            {
-                var hats = await hatRepository.GetAllCustomHatsAsync();
-                return Json(hats.Select(h => new
-                {
-                    id = h.Id,
-                    name = h.Name,
-                    price = h.Price,
-                    description = h.Description,
-                    imageUrl = h.ImageUrl,
-                    quantity = h.Quantity
-                }));
-
             }
 
             return Json(Array.Empty<object>());

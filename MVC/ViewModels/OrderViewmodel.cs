@@ -21,8 +21,7 @@ namespace MVC.ViewModels
 
         [ValidateNever]
         public List<Order> OrderList { get; set; }
-        public List<SelectListItem> StockHats { get; set; } = new();
-        public List<SelectListItem> CustomHats { get; set; } = new();
+        public List<SelectListItem> Hats { get; set; } = new();
 
         [Range(0, double.MaxValue, ErrorMessage = "Ogiltig tid")]
         public decimal TimeToMake { get; set; }
