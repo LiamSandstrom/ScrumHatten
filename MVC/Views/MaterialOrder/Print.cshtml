@@ -1,0 +1,100 @@
+@model Models.MaterialOrder
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8" />
+    <title>Materialbeställning</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            color: black;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        .order-info {
+            margin-bottom: 25px;
+        }
+
+        .order-info p {
+            margin: 6px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .print-button {
+            margin-top: 25px;
+            padding: 10px 16px;
+            border: none;
+            background-color: #dcdcdc;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        @@media print {
+            .print-button {
+                display: none;
+            }
+
+            body {
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Materialbeställning</h1>
+
+    <div class="order-info">
+        <p><strong>Datum:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+        <p><strong>Ordernummer:</strong> @Model.Id</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+        <p><strong>Slutsumma:</strong> @Model.TotalPrice kr</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Material</th>
+                <th>Antal</th>
+                <th>Pris per styck</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.MaterialName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.PricePerUnit kr</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button class="print-button" onclick="window.print()">Skriv ut</button>
+</body>
+</html>
