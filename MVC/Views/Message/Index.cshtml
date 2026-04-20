@@ -1,0 +1,157 @@
+@using Models
+@model List<Message>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Meddelanden";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+<div class="container mt-4">
+    <div class="row bg-white shadow rounded overflow-hidden" style="height: 100vh;">
+        
+        <div class="col-md-4 border-end p-0 bg-light d-flex flex-column h-100">
+            <div class="p-3 border-bottom bg-white">
+                <h4 class="mb-0">Kollegor</h4>
+            </div>
+            <div class="list-group list-group-flush overflow-auto flex-grow-1" style="background: transparent;">
+                @if (ViewBag.Users != null)
+                {
+                   @foreach (var user in (IEnumerable<User>)ViewBag.Users)
+{
+    <a asp-action="Index" asp-route-id="@user.Id" 
+       class="list-group-item list-group-item-action py-3 @(ViewBag.SelectedUserId?.ToString() == user.Id.ToString() ? "active shadow-sm" : "")">
+        <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                @* Tar första bokstaven i Name-fältet *@
+                @(string.IsNullOrEmpty(user.Name) ? "?" : user.Name[0].ToString())
+            </div>
+            <div>
+                <h6 class="mb-0">@user.Name</h6>
+                <small class="@(ViewBag.SelectedUserId?.ToString() == user.Id.ToString() ? "text-white-50" : "text-muted")">Anställd</small>
+            </div>
+        </div>
+    </a>
+}
+                }
+            </div>
+        </div>
+
+        <div class="col-md-8 p-0 d-flex flex-column">
+            @if (ViewBag.SelectedUserId != null)
+            {
+                <div class="p-3 border-bottom bg-white">
+                    <h5 class="mb-0">Chatt med @ViewBag.SelectedUserName</h5>
+                </div>
+
+                <div class="chat-box flex-grow-1 p-4 bg-white overflow-auto" style="height: 500px;" id="chatContainer">
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center mt-5 text-muted">
+                            <p>Inga tidigare meddelanden. Skriv något för att starta konversationen!</p>
+                        </div>
+                    }
+                    else
+                    {
+                        foreach (var msg in Model)
+                        {
+                            bool isSentByMe = msg.SenderId == currentUserId;
+
+                            <div class="mb-3 d-flex @(isSentByMe ? "justify-content-end" : "justify-content-start")">
+                                <div class="p-3 rounded shadow-sm @(isSentByMe ? "bg-primary text-white" : "bg-light border text-dark")" style="max-width: 75%;">
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                        <div style="word-break: break-word;">
+                                            <p class="mb-1">@msg.Content</p>
+                                        </div>
+                                        
+                                        @if (!isSentByMe) 
+                                        {
+                                            <form asp-action="DeleteMessage" method="post" onsubmit="return confirm('Vill du radera meddelandet?')">
+                                                <input type="hidden" name="id" value="@msg.Id" />
+                                                <button type="submit" class="btn btn-link text-danger p-0 border-0">
+                                                    <i class="bi bi-trash" style="font-size: 14px;"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+
+                                    <div class="mt-1 d-flex justify-content-between align-items-center" style="font-size: 0.7rem; opacity: 0.8;">
+                                        <span>@msg.Timestamp.ToString("HH:mm")</span>
+                                        @if (isSentByMe)
+                                        {
+                                            <span class="ms-2">
+                                                <i class="bi @(msg.IsRead ? "bi-check2-all text-info" : "bi-check2")"></i>
+                                                @(msg.IsRead ? "Läst" : "Skickat")
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="p-3 border-top bg-light mt-auto">
+                    <form asp-action="SendMessage" method="post" class="d-flex gap-2">
+                        <input type="hidden" name="receiverId" value="@ViewBag.SelectedUserId" />
+                        <input type="text" name="content" class="form-control" placeholder="Skriv ett meddelande..." required autocomplete="off" />
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                    <i class="bi bi-chat-dots" style="font-size: 5rem;"></i>
+                    <p class="mt-3">Välj en kollega i listan för att börja chatta.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Scrolla automatiskt till botten av chatten vid laddning
+        var chatBox = document.getElementById("chatContainer");
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+}
+
+<style>
+    .chat-box { scroll-behavior: smooth; }
+    .chat-box::-webkit-scrollbar { width: 6px; }
+    .chat-box::-webkit-scrollbar-track { background: #f1f1f1; }
+    .chat-box::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    .list-group-item.active { border-left: 5px solid #0056b3 !important; }
+    .chat-box { 
+        background-color: #ffffff;
+        scroll-behavior: smooth;
+    }
+
+    /* Snyggare scrollbars */
+    .overflow-auto::-webkit-scrollbar {
+        width: 6px;
+    }
+    .overflow-auto::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .overflow-auto::-webkit-scrollbar-thumb {
+        background: #ced4da;
+        border-radius: 10px;
+    }
+    .overflow-auto::-webkit-scrollbar-thumb:hover {
+        background: #adb5bd;
+    }
+
+    /* Förhindrar att långa namn trycker ut layouten */
+    .text-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
