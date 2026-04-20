@@ -11,6 +11,15 @@ namespace Repository
         Task<String> GetCountryByIdAsync(string id);
         Task<List<Customer>> GetAllCustomersAsync();
 
+        Task<List<String>> GetAllCitiesAsync();
+
+        Task<List<String>> GetAllCountriesAsync();
+
+        Task<List<Customer>> GetCustomerByCity(string city);
+
+        Task<List<Customer>> GetCustomerByCountry(string country);
+
+
         Task AddCustomerAsync(Customer customer);
         Task DeleteCustomerAsync(string id);
 
