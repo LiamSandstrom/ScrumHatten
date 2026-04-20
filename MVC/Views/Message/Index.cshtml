@@ -145,34 +145,45 @@
 });
 
 // 1. Scrolla till botten direkt vid start
-        const chatBox = document.getElementById("chatContainer");
-        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+        function scrollToBottom() {
+            const chatBox = document.getElementById("chatContainer");
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
 
-        // 2. Funktion för att hämta nya meddelanden
+        // Kör scroll direkt när sidan laddas
+        scrollToBottom();
+
         function refreshChat() {
             const selectedUserId = "@ViewBag.SelectedUserId";
             
-            // Kör bara om en chatt faktiskt är öppen
-            if (selectedUserId) {
-                // Vi laddar om innehållet i chatContainer genom att hämta sidan igen "i bakgrunden"
+            if (selectedUserId && selectedUserId !== "") {
+                // Vi hämtar hela sidan i bakgrunden
                 fetch(window.location.href)
                     .then(response => response.text())
                     .then(html => {
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
-                        const newMessages = doc.getElementById('chatContainer').innerHTML;
                         
-                        // Om innehållet ändrats, uppdatera och scrolla
-                        const currentChat = document.getElementById('chatContainer');
-                        if (currentChat.innerHTML !== newMessages) {
-                            currentChat.innerHTML = newMessages;
-                            currentChat.scrollTop = currentChat.scrollHeight;
+                        // Hämta det nya innehållet i chatboxen
+                        const newNode = doc.getElementById('chatContainer');
+                        const currentNode = document.getElementById('chatContainer');
+                        
+                        if (newNode && currentNode) {
+                            // Kolla om vi har fått fler meddelanden (jämför HTML-längd eller antal barn)
+                            if (newNode.innerHTML.trim() !== currentNode.innerHTML.trim()) {
+                                currentNode.innerHTML = newNode.innerHTML;
+                                scrollToBottom();
+                                console.log("Chatten uppdaterad!");
+                            }
                         }
-                    });
+                    })
+                    .catch(err => console.error("Kunde inte hämta nya meddelanden:", err));
             }
         }
 
-        // 3. Fråga efter nya meddelanden var 3:e sekund
+        // Kör refresh var 3:e sekund
         setInterval(refreshChat, 3000);
     </script>
 }
