@@ -23,7 +23,7 @@
                 
             int i = 0; i < Model.Users.Count; i++) {
                 <tr>
-                    <th scope="row">@i</th>
+                    <th scope="row">@(i + 1)</th>
                     <td>@Model.Users[i].Name</td>
                     <td>@Model.Users[i].Email </td>
                     <td>@Model.Users[i].PhoneNumber</td>

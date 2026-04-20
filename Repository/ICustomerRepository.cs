@@ -19,6 +19,7 @@ namespace Repository
 
         Task<List<Customer>> GetCustomerByCountry(string country);
 
+        Task<List<Customer>> GetCustomerByStringMatch(string searchTerm);
 
         Task AddCustomerAsync(Customer customer);
         Task DeleteCustomerAsync(string id);
