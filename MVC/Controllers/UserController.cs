@@ -31,15 +31,86 @@ namespace MVC.Controllers
         //[Authorize(Roles = "Admin")] avkommentera denna i prod
         public async Task<IActionResult> UserList()
         {
+            List<ApplicationRole> allRoles = await _roleRepository.GetAllRolesAsync();
+            List<string> allRolesString = new List<string>();
+            foreach (var item in allRoles)
+            {
+                allRolesString.Add(item.ToString());
+            }
+
             List<User> allUsers = await _userRepository.GetAllUsersAsync();
             UserListViewModel vm = new UserListViewModel();
             List<ApplicationRole> roles = await _roleRepository.GetAllRolesAsync();
 
             vm.Users = allUsers;
             vm.UserRoles = await _roleRepository.GetAllRolesAsync();
+            vm.allRoles = allRolesString;
 
             return View(vm);
         }
+
+        [HttpGet("FilteredUserList")]
+        public async Task<IActionResult> FilteredUserList(string selectedRole)
+        {
+
+            if (selectedRole == null)
+            {
+                return RedirectToAction(nameof(UserList));
+            }
+
+
+            List<ApplicationRole> roles = await _roleRepository.GetAllRolesAsync();
+            Guid roleId = roles.Where(r => r.Name == selectedRole).FirstOrDefault().Id;
+
+            List<User> allUsers = await _userRepository.GetAllUsersAsync();
+            List<User> filteredUsers = allUsers.Where(u => u.Roles.FirstOrDefault() == roleId).ToList();
+
+            List<string> allRolesString = new List<string>();
+            foreach (var item in roles)
+            {
+                allRolesString.Add(item.ToString());
+            }
+
+            UserListViewModel vm = new UserListViewModel
+            {
+                Users = filteredUsers,
+                UserRoles = await _roleRepository.GetAllRolesAsync(),
+                allRoles = allRolesString
+
+            };
+
+            return View(nameof(UserList), vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search([FromQuery] string searchTerm)
+        {
+                List<User> result = await _userRepository.GetUserByStringMatch(searchTerm);
+                List<UserWithRoleName> userListExpanded = new List<UserWithRoleName>();
+
+                for (int i = 0; i < result.Count; i++)
+                {
+                    UserWithRoleName userWithRoleName = new UserWithRoleName
+                    {
+                        User = result[i],
+                    };
+                    userListExpanded.Add(userWithRoleName);
+                    ApplicationRole gottenRole = await _roleRepository.GetRoleByIdAsync(result[i].Roles.FirstOrDefault());
+                    string? gottenRoleName = gottenRole.Name;
+                    if (gottenRoleName != null)
+                    {
+                        userListExpanded[i].RoleName = gottenRoleName;
+                    }
+                    else
+                    {
+                        userListExpanded[i].RoleName = "No role found";
+
+                    }
+                }
+
+                return Json(userListExpanded);
+}
+
 
         //[Authorize(Roles = "Admin")] avkommentera denna i prod
         [HttpGet]
