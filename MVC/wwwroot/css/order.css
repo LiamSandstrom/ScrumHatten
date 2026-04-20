@@ -1,3 +1,8 @@
+.modal-body {
+
+    min-height: 600px;
+}
+
 .orderHattRow {
     padding: 5px;
     border-radius: 4px;
@@ -70,4 +75,8 @@
 #createOrderModal .hat-image {
     width: 60px !important;
     height: 60px !important;
+}
+
+#step2 {
+    display: none;
 }

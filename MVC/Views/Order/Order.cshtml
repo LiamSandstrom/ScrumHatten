@@ -76,89 +76,10 @@
 
                 <div class="modal-body">
 
-                    <!-- ===================== HATTAR ===================== -->
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-
-                                    <h6 class="mb-3">Hattar</h6>
-
-                                    <div id="hatList">
-                                        <div id="rows"></div>
-
-                                        <template id="rowTemplate">
-                                            <div class="row-item card mb-3 shadow-sm">
-                                                <div class="card-body">
-
-                                                    <div class="row g-3 align-items-center">
-
-                                                        <div class="col-12 col-sm-6 col-lg-3">
-                                                            <label class="form-label">Typ</label>
-                                                            <select class="form-select type-dropdown">
-                                                                <option value="">Välj typ</option>
-                                                                <option value="Stock">Lager</option>
-                                                                <option value="Custom">Custom</option>
-                                                            </select>
-                                                            <p class="error-text"></p>
-                                                        </div>
-
-                                                        <div class="col-12 col-sm-6 col-lg-3">
-                                                            <label class="form-label">Hatt</label>
-                                                            <select class="form-select hat-dropdown">
-                                                                <option value="">Välj hatt</option>
-                                                            </select>
-                                                            <p class="error-text error-hat"></p>
-                                                        </div>
-
-                                                        <div class="col-12 col-sm-6 col-lg-2">
-                                                            <label class="form-label">Antal</label>
-                                                            <input type="number" min="1" value="1"
-                                                                   class="form-control quantity-input" />
-                                                            <p class="error-text error-qty"></p>
-                                                        </div>
-
-                                                        <div class="col-12 col-sm-6 col-lg-4">
-                                                            <div class="d-flex gap-3 align-items-center">
-
-                                                                <img class="hat-image rounded d-none"
-                                                                     style="width:80px;height:80px;object-fit:contain;" />
-
-                                                                <div>
-                                                                    <div class="fw-bold hat-name"></div>
-                                                                    <div class="text-muted small hat-description"></div>
-                                                                    <div class="hat-price small text-muted"></div>
-                                                                    <div class="hat-quantity small text-muted"></div>
-                                                                    <div class="fw-bold text-primary hat-total"></div>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-
-                                                    <button type="button"
-                                                            class="btn btn-sm btn-outline-danger mt-2 remove-row">
-                                                        Ta bort
-                                                    </button>
-
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
-
-                                    <div id="rowsError" class="text-danger small mt-1 d-none">Minst en hatt krävs</div>
-
-                                    <button type="button" class="btn btn-primary btn-sm mt-2" id="addRow">
-                                        Lägg till hatt
-                                    </button>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- ===================== DETALJER ===================== -->
+                    <div id="step1"></div>
+                    <div id="step2">
+
                     <div class="row mb-3 g-3">
 
                         <div class="col-12 col-lg-6">
@@ -217,7 +138,7 @@
                                     <div id="orderTotal" class="fs-4 fw-bold text-success">0 kr</div>
 
                                     <div class="form-check mt-3">
-                                        <input name="FastOrder" id="FastOrder" class="form-check-input" type="checkbox"
+                                        <input name="FastOrder" id="fastOrder" class="form-check-input" type="checkbox"
                                                value="true" />
                                         <label class="form-check-label" for="FastOrder">Snabborder</label>
                                     </div>
@@ -260,6 +181,8 @@
                             </div>
                         </div>
                     </div>
+
+                    </div>
                     <!-- GENERELLT FEL -->
                     <div id="formError" class="text-danger mt-3 d-none"></div>
 
@@ -268,7 +191,8 @@
                 <!-- ===================== KNAPPAR ===================== -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                    <button type="submit" class="btn btn-primary">Skapa</button>
+                    <button type="button"id="prevBtn" class="btn btn-secondary" >Tillbaka</button>
+                    <button type="button" id="nextBtn" class="btn btn-primary">Nästa</button>
                 </div>
 
             </form>
