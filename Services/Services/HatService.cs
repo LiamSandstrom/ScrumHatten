@@ -1,6 +1,6 @@
-﻿using Models;
+﻿using BL.Interfaces;
+using Models;
 using Repository.Repositories;
-using BL.Interfaces;
 
 namespace BL.Services
 {
@@ -13,29 +13,29 @@ namespace BL.Services
             _hatRepository = hatRepository;
         }
 
-        public List<Hat> GetAllHats()
+        public async Task<List<Hat>> GetAllHats()
         {
-            return _hatRepository.GetAllHats();
+            return await _hatRepository.GetAllHats();
         }
 
-        public void AddHat(Hat hat)
+        public async Task AddHat(Hat hat)
         {
-            _hatRepository.AddHat(hat);
+            await _hatRepository.AddHat(hat);
         }
 
-        public Hat? GetHatById(string id)
+        public async Task<Hat?> GetHatById(string id)
         {
-            return _hatRepository.GetHatById(id);
+            return await _hatRepository.GetHatById(id);
         }
 
-        public void DeleteHat(string id)
+        public async Task DeleteHat(string id)
         {
-            _hatRepository.DeleteHat(id);
+            await _hatRepository.DeleteHat(id);
         }
 
-        public void UpdateHat(Hat hat)
+        public async Task UpdateHat(Hat hat)
         {
-            _hatRepository.UpdateHat(hat);
+            await _hatRepository.UpdateHat(hat);
         }
     }
 }
