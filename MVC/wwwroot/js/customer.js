@@ -25,6 +25,11 @@ el.addEventListener("input", async (e) => {
                 <td>${item.zipCode}</td>
                 <td>${item.city}</td>
                 <td>${item.country}</td>
+                <td>
+                <a href="mailto:${item.email}" class="btn btn-sm btn-outline-secondary" title="Skicka mail">
+                <i class="bi bi-envelope-fill"></i>
+                </a>
+                </td>
                 <td><a href="/Customer/Edit?id=${item.id}">Redigera</a></td>
             </tr>
         `).join('');
