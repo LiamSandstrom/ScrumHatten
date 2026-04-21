@@ -1,3 +1,4 @@
+using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,13 +17,16 @@ namespace MVC.Controllers
         private IUserRepository userRepository;
         private ICustomerRepository customerRepository;
         private HatRepository hatRepository;
+        private IMaterialRepository materialRepository;
 
-        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo, IOrderRepository orderRepo)
+        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo, IOrderRepository orderRepo, IMaterialRepository materialRepo)
+
         {
             orderRepository = orderRepo;
             userRepository = userRepo;
             hatRepository = hatRepo;
             customerRepository = customerRepo;
+            materialRepository = materialRepo;
         }
 
         [HttpGet("")]
@@ -215,6 +219,27 @@ namespace MVC.Controllers
             return Json(CreateResponse(true, message: "Order skapad!", notify: true, redirectUrl: "refresh"));
         }
 
+        [HttpGet("GetAllMaterials")]
+        public async Task<IActionResult> GetAllMaterials()
+        {
+            try
+            {
+                var materials = await materialRepository.GetAllMaterialsAsync();
+                return Json(materials.Select(m => new
+                {
+                    id = m.Id,
+                    name = m.Name,
+                    pricePerUnit = m.PricePerUnit,
+                    unit = m.Unit,
+                    quantity = m.Quantity
+                }));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Json(Array.Empty<object>());
+            }
+        }
 
         [HttpPost("UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromForm] string id, [FromForm] string status)
