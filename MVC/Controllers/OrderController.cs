@@ -146,8 +146,9 @@ namespace MVC.Controllers
                     materials = h.Materials
                 }));
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return Json(Array.Empty<object>());
             }
         }
