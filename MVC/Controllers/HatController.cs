@@ -202,7 +202,7 @@ namespace MVC.Controllers
                     Materials = hatMaterials,
                 };
 
-                _hatService.UpdateHat(updatedHat);
+                await _hatService.UpdateHat(updatedHat);
 
                 TempData["SuccessMessage"] = "Hatten uppdaterades!";
             }
