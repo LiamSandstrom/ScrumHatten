@@ -3,6 +3,15 @@ let stepIndex = 1;
 const maxIndex = 2;
 const allHats = new Map();
 const rowIndex = 0;
+const allMaterials = new Map();
+
+const getAllMaterials = async () => {
+    const res = await fetch("/Order/GetAllMaterials");
+    const data = await res.json();
+    for (const m of data) {
+        allMaterials.set(m.id, m.name);
+    }
+}
 
 const getAllHats = async () => {
     const res = await fetch("/Order/GetAllHats")
@@ -17,6 +26,7 @@ const getAllHats = async () => {
 }
 (async () => {
     await getAllHats()
+    await getAllMaterials();
 })()
 
 //klicka knapp => 
@@ -128,7 +138,7 @@ const makeRowCustom = (row) => {
 }
 
 const addMaterialRow = (materialList) => {
-    const template = materialList.querySelector(".material-row-template");
+    const template = materialList.querySelector("template");
     if (!template) return;
 
     const index = parseInt(materialList.dataset.index);
@@ -139,14 +149,15 @@ const addMaterialRow = (materialList) => {
 
     const select = matRow.querySelector("select");
     select.name = `Materials[${index}].MaterialId`;
-    select.innerHTML = materialOptions; // din befintliga variabel
+    select.innerHTML = [...allMaterials.entries()]
+        .map(([id, name]) => `<option value="${id}">${name}</option>`)
+        .join("");
 
     matRow.querySelector("input[type='number']").name = `Materials[${index}].Amount`;
 
     materialList.appendChild(clone);
     materialList.dataset.index = index + 1;
 }
-
 
 
 
