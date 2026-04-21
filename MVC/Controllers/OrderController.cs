@@ -36,6 +36,18 @@ public async Task<IActionResult> Order()
     var users = await userRepository.GetAllUsersAsync();
     var customers = await customerRepository.GetAllCustomersAsync();
 
+    foreach (var order in realOrders)
+    {
+        if (order.MakerId != Guid.Empty)
+        {
+            var maker = users.FirstOrDefault(u => u.Id == order.MakerId);
+            if (maker != null)
+            {
+                order.MakerName = maker.Name;
+            }
+        }
+    }
+
     
     var orderViewModel = new OrderViewModel
     {

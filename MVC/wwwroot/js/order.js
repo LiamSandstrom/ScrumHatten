@@ -341,14 +341,25 @@ async function fetchOrderDetails(id) {
         const isTaken = order.makerId && order.makerId !== "00000000-0000-0000-0000-000000000000";
 
         if (isTaken) {
-            btn.innerHTML = `<i class="bi bi-person-check"></i> Hanteras av ${order.makerName}`;
-            btn.disabled = true;
-            btn.classList.replace('btn-success', 'btn-outline-secondary');
-            if (btnRelease) btnRelease.classList.remove('d-none');
+            // 1. DÖLJ "Ta mig an" istället för att bara göra den grå
+            btn.classList.add('d-none'); 
+            
+            // 2. Visa "Släpp"-knappen
+            if (btnRelease) {
+                btnRelease.classList.remove('d-none');
+                btnRelease.innerHTML = `<i class="bi bi-arrow-left-circle"></i> Släpp (${order.makerName || 'order'})`;
+            }
         } else {
+            // 1. VISA "Ta mig an" igen
+            btn.classList.remove('d-none');
             btn.innerHTML = `<i class="bi bi-person-plus"></i> Ta mig an`;
             btn.disabled = false;
-            btn.classList.replace('btn-outline-secondary', 'btn-success');
+            
+            // Se till att den har rätt färg (grön)
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-success');
+
+            // 2. DÖLJ "Släpp"-knappen
             if (btnRelease) btnRelease.classList.add('d-none');
         }
 
