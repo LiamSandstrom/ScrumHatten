@@ -16,7 +16,10 @@ namespace Repository.Repositories
         {
             try
             {
-                return await _hatCollection.Find(_ => true).ToListAsync();
+                return await _hatCollection
+                    .Find(_ => true)
+                    .Project<Hat>(Builders<Hat>.Projection.Exclude(h => h.ImageBase64))
+                    .ToListAsync();
             }
             catch
             {
@@ -26,13 +29,19 @@ namespace Repository.Repositories
 
         public async Task<List<Hat>> GetAllCustomHatsAsync()
         {
-            var customHats = await _hatCollection.Find(h => h.CustomHat == true).ToListAsync();
+            var customHats = await _hatCollection
+                .Find(h => h.CustomHat == true)
+                .Project<Hat>(Builders<Hat>.Projection.Exclude(h => h.ImageBase64))
+                .ToListAsync();
             return customHats;
         }
 
         public async Task<List<Hat>> GetAllStandardHatsAsync()
         {
-            var standardHats = await _hatCollection.Find(h => h.CustomHat != true).ToListAsync();
+            var standardHats = await _hatCollection
+                .Find(h => h.CustomHat != true)
+                .Project<Hat>(Builders<Hat>.Projection.Exclude(h => h.ImageBase64))
+                .ToListAsync();
             return standardHats;
         }
 
