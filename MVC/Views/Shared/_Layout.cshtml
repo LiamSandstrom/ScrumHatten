@@ -22,8 +22,12 @@
                 <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
 
                 <div class="logoContainer mb-4">
-                    <img src="~/images/comapnylogo.png"/>
+                <a asp-controller="Home" asp-action="Index">
+                    <img class="img-logo" src="~/images/comapnylogo.png" alt="Logo" />
+                </a>
                 </div>
+
+
 
 
                     <ul class="nav nav-pills flex-column mb-auto" id="menu">
@@ -48,12 +52,12 @@
               
                         <li>
                             <a asp-controller="Hat" asp-action="Index" class="nav-link text-white">
-                                <i class="bi bi-mortarboard"></i> Alla hattar
+                                <i class="bi bi-mortarboard"></i> Hattar
                             </a>
                         </li>
                         <li>
                             <a asp-controller="Material" asp-action="Material" class="nav-link text-white">
-                                <i class="bi bi-circle-square"></i> Alla material
+                                <i class="bi bi-circle-square"></i> Material
                             </a>
                         </li>
                         <li>

@@ -40,6 +40,8 @@ async function apiFetch(url, options = {}) {
     if (contentType?.includes('application/json')) {
         const data = await response.json();
 
+        clearErrorText();
+
         if (data?.notify) {
             data.success
                 ? ui.showSuccess(data.message)
@@ -86,6 +88,19 @@ async function apiFetch(url, options = {}) {
         response.parsedData = data;
     }
     return response;
+}
+
+function clearErrorText() {
+    const errTexts = document.querySelectorAll(".error-text");
+    for (const t of errTexts) {
+        t.textContent = "";
+    }
+
+    const formError = document.getElementById("formError");
+    if (formError) {
+        formError.classList.add("d-none");
+        formError.textContent = "";
+    }
 }
 
 handleFormSubmit = (formId) => {

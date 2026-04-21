@@ -28,5 +28,7 @@ namespace Repository
 
         Task SetIsDeliveredAsync(string id, bool isDelivered);
 
+        Task AssignOrderToMakerAsync(string orderId, Guid makerId);
+
     }
 }

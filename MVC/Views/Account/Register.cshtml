@@ -1,5 +1,11 @@
 ﻿@model MVC.Models.Account.RegisterViewModel;
 <link rel="stylesheet" href="~/css/login.css" />
+@section Scripts {
+    <script>
+        handleFormSubmit("registerForm")
+    </script>
+    }
+
 
 <div class="loginContainer">
     <form asp-action="Register" method="post" id="registerForm">
@@ -47,5 +53,4 @@
     </form>
 </div>
 
-<script src="/js/account.js"></script>
 

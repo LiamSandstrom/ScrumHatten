@@ -28,6 +28,7 @@ namespace DAL.Repositories
         public async Task<List<ApplicationRole>> GetAllRolesAsync()
         {
             return await _collection.Find(_ => true).ToListAsync();
+            
 
         }
 

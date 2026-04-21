@@ -121,6 +121,15 @@ public async Task SetIsDeliveredAsync(string id, bool isDelivered)
         var update = Builders<Order>.Update.Set(o => o.IsDelivered, isDelivered);
         await _collection.UpdateOneAsync(filter, update);
     }
+
+    public async Task AssignOrderToMakerAsync(string orderId, Guid makerId)
+        {
+            var filter = Builders<Order>.Filter.Eq(o=>o.Id, orderId);
+            var update = Builders<Order>.Update.Set(o=>o.MakerId,  makerId)
+            .Set(o=>o.Status, Status.InProgress);
+
+            await _collection.UpdateOneAsync(filter, update);
+        }
 }
 }
 
