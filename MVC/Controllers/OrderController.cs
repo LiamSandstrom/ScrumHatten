@@ -201,7 +201,7 @@ public async Task<IActionResult> GetOrderById(string id)
                 // 'true' gör att den struntar i om det är stora eller små bokstäver
                 if (Enum.TryParse<Status>(status, true, out var parsedStatus))
                 {
-                    // Här kommer du senare lägga in:
+                        await orderRepository.SetStatusAsync(id, parsedStatus);
                     // await _orderRepository.UpdateStatusAsync(id, parsedStatus);
 
                     return Ok(new { message = "Status uppdaterad!" });
