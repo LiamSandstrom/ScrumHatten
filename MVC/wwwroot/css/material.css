@@ -8,3 +8,10 @@
   box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
   border-color: rgba(185,86,59,0.8) !important;
 }
+
+.material-title {
+    color: #2f4358;
+}
+.modal-title {
+    color: #2f4358;
+}
