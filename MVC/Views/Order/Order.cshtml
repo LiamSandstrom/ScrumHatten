@@ -1,337 +1,393 @@
-@using Models
-@model MVC.ViewModels.OrderViewModel
-@{
-    ViewData["Title"] = "Orderhantering";
-}
-<link rel="stylesheet" href="~/css/order.css" />
+    @using Models
+    @model MVC.ViewModels.OrderViewModel
+    @{
+        ViewData["Title"] = "Orderhantering";
+    }
+    <link rel="stylesheet" href="~/css/order.css" />
 
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Orderöversikt</h1>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
-            <span class="badge bg-dark">Totalt: @Model.OrderList.Count ordrar</span>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOrderModal">
-                Ny order
-            </button>
+    <div class="container-fluid mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Orderöversikt</h1>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <span class="badge bg-dark">Totalt: @Model.OrderList.Count ordrar</span>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+                    Ny order
+                </button>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="card bg-light border-0">
+                    <div class="card-header custom-header-brown text-white fw-bold"> INKOMMANDE</div>
+                    <div class="card-body p-2 kanban-col" id="pending">
+                        @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Pending))
+                        {
+                            @Html.Partial("_OrderCard", order)
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light border-0">
+                    <div class="card-header custom-header-brown text-white fw-bold"> PÅGÅENDE</div>
+                    <div class="card-body p-2 kanban-col" id="inprogress">
+                        @foreach (var order in Model.OrderList.Where(o => o.Status == Status.InProgress))
+                        {
+                            @Html.Partial("_OrderCard", order)
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light border-0">
+                    <div class="card-header custom-header-brown text-white fw-bold"> KLARA</div>
+                    <div class="card-body p-2 kanban-col" id="completed">
+                        @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Completed))
+                        {
+                            @Html.Partial("_OrderCard", order)
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-light border-0">
+                    <div class="card-header custom-header-brown text-white fw-bold"> Levererade</div>
+                    <div class="card-body p-2 kanban-col" id="delivered">
+                        @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Delivered))
+                        {
+                            @Html.Partial("_OrderCard", order)
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row g-3">
-        <div class="col-md-3">
-            <div class="card bg-light border-0">
-                <div class="card-header custom-header-brown text-white fw-bold"> INKOMMANDE</div>
-                <div class="card-body p-2 kanban-col" id="pending">
-                    @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Pending))
-                    {
-                        @Html.Partial("_OrderCard", order)
-                    }
+
+    <div class="modal fade" id="createOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Ny order</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-light border-0">
-                <div class="card-header custom-header-brown text-white fw-bold"> PÅGÅENDE</div>
-                <div class="card-body p-2 kanban-col" id="inprogress">
-                    @foreach (var order in Model.OrderList.Where(o => o.Status == Status.InProgress))
-                    {
-                        @Html.Partial("_OrderCard", order)
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-light border-0">
-                <div class="card-header custom-header-brown text-white fw-bold"> KLARA</div>
-                <div class="card-body p-2 kanban-col" id="completed">
-                    @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Completed))
-                    {
-                        @Html.Partial("_OrderCard", order)
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-light border-0">
-                <div class="card-header custom-header-brown text-white fw-bold"> Levererade</div>
-                <div class="card-body p-2 kanban-col" id="delivered">
-                    @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Delivered))
-                    {
-                        @Html.Partial("_OrderCard", order)
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="modal fade" id="createOrderModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
+                <form id="createOrderForm" method="post" action="/Order/Create">
 
-            <div class="modal-header">
-                <h5 class="modal-title">Ny order</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+                    <div class="modal-body">
 
-            <form id="createOrderForm" method="post" action="/Order/Create">
+                        <!-- ===================== HATTAR ===================== -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
 
-                <div class="modal-body">
+                                        <h6 class="mb-3">Hattar</h6>
 
-                    <!-- ===================== HATTAR ===================== -->
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
+                                        <div id="hatList">
+                                            <div id="rows"></div>
 
-                                    <h6 class="mb-3">Hattar</h6>
+                                            <template id="rowTemplate">
+                                                <div class="row-item card mb-3 shadow-sm">
+                                                    <div class="card-body">
 
-                                    <div id="hatList">
-                                        <div id="rows"></div>
+                                                        <div class="row g-3 align-items-center">
 
-                                        <template id="rowTemplate">
-                                            <div class="row-item card mb-3 shadow-sm">
-                                                <div class="card-body">
-
-                                                    <div class="row g-3 align-items-center">
-
-                                                        <div class="col-12 col-sm-6 col-lg-3">
-                                                            <label class="form-label">Typ</label>
-                                                            <select class="form-select type-dropdown">
-                                                                <option value="">Välj typ</option>
-                                                                <option value="Stock">Lager</option>
-                                                                <option value="Custom">Custom</option>
-                                                            </select>
-                                                            <p class="error-text"></p>
-                                                        </div>
-
-                                                        <div class="col-12 col-sm-6 col-lg-3">
-                                                            <label class="form-label">Hatt</label>
-                                                            <select class="form-select hat-dropdown">
-                                                                <option value="">Välj hatt</option>
-                                                            </select>
-                                                            <p class="error-text error-hat"></p>
-                                                        </div>
-
-                                                        <div class="col-12 col-sm-6 col-lg-2">
-                                                            <label class="form-label">Antal</label>
-                                                            <input type="number" min="1" value="1"
-                                                                   class="form-control quantity-input" />
-                                                            <p class="error-text error-qty"></p>
-                                                        </div>
-
-                                                        <div class="col-12 col-sm-6 col-lg-4">
-                                                            <div class="d-flex gap-3 align-items-center">
-
-                                                                <img class="hat-image rounded d-none"
-                                                                     style="width:80px;height:80px;object-fit:contain;" />
-
-                                                                <div>
-                                                                    <div class="fw-bold hat-name"></div>
-                                                                    <div class="text-muted small hat-description"></div>
-                                                                    <div class="hat-price small text-muted"></div>
-                                                                    <div class="hat-quantity small text-muted"></div>
-                                                                    <div class="fw-bold text-primary hat-total"></div>
-                                                                </div>
-
+                                                            <div class="col-12 col-sm-6 col-lg-3">
+                                                                <label class="form-label">Typ</label>
+                                                                <select class="form-select type-dropdown">
+                                                                    <option value="">Välj typ</option>
+                                                                    <option value="Stock">Lager</option>
+                                                                    <option value="Custom">Custom</option>
+                                                                </select>
+                                                                <p class="error-text"></p>
                                                             </div>
+
+                                                            <div class="col-12 col-sm-6 col-lg-3">
+                                                                <label class="form-label">Hatt</label>
+                                                                <select class="form-select hat-dropdown">
+                                                                    <option value="">Välj hatt</option>
+                                                                </select>
+                                                                <p class="error-text error-hat"></p>
+                                                            </div>
+
+                                                            <div class="col-12 col-sm-6 col-lg-2">
+                                                                <label class="form-label">Antal</label>
+                                                                <input type="number" min="1" value="1"
+                                                                    class="form-control quantity-input" />
+                                                                <p class="error-text error-qty"></p>
+                                                            </div>
+
+                                                            <div class="col-12 col-sm-6 col-lg-4">
+                                                                <div class="d-flex gap-3 align-items-center">
+
+                                                                    <img class="hat-image rounded d-none"
+                                                                        style="width:80px;height:80px;object-fit:contain;" />
+
+                                                                    <div>
+                                                                        <div class="fw-bold hat-name"></div>
+                                                                        <div class="text-muted small hat-description"></div>
+                                                                        <div class="hat-price small text-muted"></div>
+                                                                        <div class="hat-quantity small text-muted"></div>
+                                                                        <div class="fw-bold text-primary hat-total"></div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
                                                         </div>
+
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-outline-danger mt-2 remove-row">
+                                                            Ta bort
+                                                        </button>
 
                                                     </div>
-
-                                                    <button type="button"
-                                                            class="btn btn-sm btn-outline-danger mt-2 remove-row">
-                                                        Ta bort
-                                                    </button>
-
                                                 </div>
-                                            </div>
-                                        </template>
+                                            </template>
+                                        </div>
+
+                                        <div id="rowsError" class="text-danger small mt-1 d-none">Minst en hatt krävs</div>
+
+                                        <button type="button" class="btn btn-primary btn-sm mt-2" id="addRow">
+                                            Lägg till hatt
+                                        </button>
+
                                     </div>
-
-                                    <div id="rowsError" class="text-danger small mt-1 d-none">Minst en hatt krävs</div>
-
-                                    <button type="button" class="btn btn-primary btn-sm mt-2" id="addRow">
-                                        Lägg till hatt
-                                    </button>
-
                                 </div>
                             </div>
                         </div>
+
+                        <!-- ===================== DETALJER ===================== -->
+                        <div class="row mb-3 g-3">
+
+                            <div class="col-12 col-lg-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+
+                                        <h6 class="mb-3">Detaljer</h6>
+
+                                        <div class="row g-3">
+
+                                            <div class="col-12 col-sm-6">
+                                                <label class="form-label">Transportkostnad</label>
+                                                <div class="input-group">
+                                                    <input name="TransportPrice" class="form-control" type="number" min="0"
+                                                        value="0" />
+                                                    <span class="input-group-text">kr</span>
+                                                </div>
+                                                <p id="error-TransportPrice" class="error-text"></p>
+                                            </div>
+
+                                            <div class="col-12 col-sm-6">
+                                                <label class="form-label">Tid att utföra</label>
+                                                <div class="input-group">
+                                                    <input name="TimeToMake" class="form-control" type="number" min="0"
+                                                        value="0" />
+                                                    <span class="input-group-text">timmar</span>
+                                                </div>
+                                                <p id="error-TimeToMake" class="error-text"></p>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <label class="form-label">Klart datum</label>
+                                                <input name="DateToFinish" class="form-control" type="date"
+                                                    min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                                    value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                                <p id="error-DateToFinish" class="error-text"></p>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===================== ORDER SUMMARY ===================== -->
+                            <div class="col-12 col-lg-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+
+                                        <h6 class="mb-3">Order översikt</h6>
+
+                                        <div id="orderBreakdown" class="small text-muted"></div>
+
+                                        <div class="mt-2 text-muted small fw-bold">Totalt</div>
+
+                                        <div id="orderTotal" class="fs-4 fw-bold text-success">0 kr</div>
+
+                                        <div class="form-check mt-3">
+                                            <input name="FastOrder" id="FastOrder" class="form-check-input" type="checkbox"
+                                                value="true" />
+                                            <label class="form-check-label" for="FastOrder">Snabborder</label>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- ===================== PERSONER ===================== -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="mb-3">Personer</h6>
+                                        <div class="row g-3">
+                                            <div class="col-12 col-sm-6">
+                                                <label class="form-label">Utförare</label>
+                                                @Html.DropDownListFor(
+                                                m => m.SelectedUserId,
+                                                Model.Users,
+                                                "Välj Utförare",
+                                                new { @class = "form-select" }
+                                                )
+                                                <p id="error-SelectedUserId" class="error-text"></p>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <label class="form-label">Kund</label>
+                                                @Html.DropDownListFor(
+                                                m => m.SelectedCustomerId,
+                                                Model.Customers,
+                                                "Välj Kund",
+                                                new { @class = "form-select" }
+                                                )
+                                                <p id="error-SelectedCustomerId" class="error-text"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- GENERELLT FEL -->
+                        <div id="formError" class="text-danger mt-3 d-none"></div>
+
                     </div>
 
-                    <!-- ===================== DETALJER ===================== -->
-                    <div class="row mb-3 g-3">
-
-                        <div class="col-12 col-lg-6">
-                            <div class="card h-100">
-                                <div class="card-body">
-
-                                    <h6 class="mb-3">Detaljer</h6>
-
-                                    <div class="row g-3">
-
-                                        <div class="col-12 col-sm-6">
-                                            <label class="form-label">Transportkostnad</label>
-                                            <div class="input-group">
-                                                <input name="TransportPrice" class="form-control" type="number" min="0"
-                                                       value="0" />
-                                                <span class="input-group-text">kr</span>
-                                            </div>
-                                            <p id="error-TransportPrice" class="error-text"></p>
-                                        </div>
-
-                                        <div class="col-12 col-sm-6">
-                                            <label class="form-label">Tid att utföra</label>
-                                            <div class="input-group">
-                                                <input name="TimeToMake" class="form-control" type="number" min="0"
-                                                       value="0" />
-                                                <span class="input-group-text">timmar</span>
-                                            </div>
-                                            <p id="error-TimeToMake" class="error-text"></p>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label">Klart datum</label>
-                                            <input name="DateToFinish" class="form-control" type="date"
-                                                   min="@DateTime.Today.ToString("yyyy-MM-dd")"
-                                                   value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                                            <p id="error-DateToFinish" class="error-text"></p>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ===================== ORDER SUMMARY ===================== -->
-                        <div class="col-12 col-lg-6">
-                            <div class="card h-100">
-                                <div class="card-body">
-
-                                    <h6 class="mb-3">Order översikt</h6>
-
-                                    <div id="orderBreakdown" class="small text-muted"></div>
-
-                                    <div class="mt-2 text-muted small fw-bold">Totalt</div>
-
-                                    <div id="orderTotal" class="fs-4 fw-bold text-success">0 kr</div>
-
-                                    <div class="form-check mt-3">
-                                        <input name="FastOrder" id="FastOrder" class="form-check-input" type="checkbox"
-                                               value="true" />
-                                        <label class="form-check-label" for="FastOrder">Snabborder</label>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
+                    <!-- ===================== KNAPPAR ===================== -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                        <button type="submit" class="btn btn-primary">Skapa</button>
                     </div>
 
-                    <!-- ===================== PERSONER ===================== -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="mb-3">Personer</h6>
-                                    <div class="row g-3">
-                                        <div class="col-12 col-sm-6">
-                                            <label class="form-label">Utförare</label>
-                                            @Html.DropDownListFor(
-                                            m => m.SelectedUserId,
-                                            Model.Users,
-                                            "Välj Utförare",
-                                            new { @class = "form-select" }
-                                            )
-                                            <p id="error-SelectedUserId" class="error-text"></p>
-                                        </div>
-                                        <div class="col-12 col-sm-6">
-                                            <label class="form-label">Kund</label>
-                                            @Html.DropDownListFor(
-                                            m => m.SelectedCustomerId,
-                                            Model.Customers,
-                                            "Välj Kund",
-                                            new { @class = "form-select" }
-                                            )
-                                            <p id="error-SelectedCustomerId" class="error-text"></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- GENERELLT FEL -->
-                    <div id="formError" class="text-danger mt-3 d-none"></div>
+                </form>
 
-                </div>
-
-                <!-- ===================== KNAPPAR ===================== -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                    <button type="submit" class="btn btn-primary">Skapa</button>
-                </div>
-
-            </form>
-
+            </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="orderDetailModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header custom-header-brown text-white">
+                    <h5 class="modal-title">Orderdetaljer #<span id="detailOrderIdDisplay"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+               <div class="modal-body">
+    <div class="card bg-light mb-3 border-0">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted small fw-bold">KUNDINFORMATION</h6>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div id="detailCustomerName" class="fw-bold fs-5 text-dark">-</div>
+                    <div id="detailCustomerEmail" class="text-muted small"></div>
+                    <div id="detailCustomerPhone" class="text-muted small"></div>
+                </div>
+                <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+                    <div class="text-muted small fw-bold">LEVERANSADRESS</div>
+                    <div id="detailCustomerAdress" class="small">-</div>
+                    <div>
+                        <span id="detailCustomerZip" class="small"></span> 
+                        <span id="detailCustomerCity" class="small"></span>
+                    </div>
+                    <div id="detailCustomerCountry" class="small text-muted italic"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="fw-bold text-muted small mb-1">BESTÄLLDA HATTAR</label>
+        <ul id="detailHatsList" class="list-group list-group-flush border rounded"></ul>
+    </div>
+
+    <div class="d-flex justify-content-between border-top pt-2">
+        <span class="text-muted">Totalpris (inkl. moms):</span>
+        <span id="detailTotalPrice" class="fw-bold text-success fs-5">0 kr</span>
+    </div>
 </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="detailOrderId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                    <button type="button" id="btnReleaseOrder" class="btn btn-outline-danger d-none">
+            <i class="bi bi-arrow-left-circle"></i> Släpp order
+        </button>
+                    <button type="button" id="btnAssignToMe" class="btn btn-success">
+                        <i class="bi bi-person-plus"></i> Ta mig an beställning
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<style>
-    .custom-header-brown {
-        background-color: #7d563b;
-        !important;
-        border-bottom: 2px solid #4E342E;
-        text-align: center;
-        letter-spacing: 1px;
+
+    <style>
+        .custom-header-brown {
+            background-color: #7d563b !important;
+            border-bottom: 2px solid #4E342E;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .kanban-col {
+            min-height: 70vh;
+            background-color: #f4f1f0;
+            border-radius: 5px;
+        }
+
+        .order-card {
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .order-card:hover {
+            transform: scale(1.02);
+        }
+
+        h1 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            color: #4E342E;
+        }
+
+
+        h1::after {
+            content: "";
+            display: block;
+            width: 50px;
+            height: 3px;
+            background-color: #7d563b;
+            margin-top: 5px;
+            border-radius: 2px;
+        }
+    </style>
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+        <script src="~/js/kanban.js"></script>
+        <script src="~/js/order.js" asp-append-version="true"></script>
+        <script src="~/js/account.js"></script>
+        <script>
+            handleFormSubmit("createOrderForm");
+
+            document.getElementById("createOrderForm").addEventListener("submit", async () => {
+            if (rowValidationFailed) return;
+            await new Promise(r => setTimeout(r, 500));
+            const modal = document.getElementById("createOrderModal");
+            bootstrap.Modal.getInstance(modal)?.hide();
+            }, false);
+        </script>
     }
-
-    .kanban-col {
-        min-height: 70vh;
-        background-color: #f4f1f0;
-        border-radius: 5px;
-    }
-
-    .order-card {
-        transition: transform 0.3s;
-    }
-
-    .order-card:hover {
-        transform: scale(1.02);
-    }
-
-    h1 {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        font-size: 1.5rem;
-        color: #4E342E;
-    }
-
-
-    h1::after {
-        content: "";
-        display: block;
-        width: 50px;
-        height: 3px;
-        background-color: #7d563b;
-        margin-top: 5px;
-        border-radius: 2px;
-    }
-</style>
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="~/js/kanban.js"></script>
-    <script src="~/js/order.js" asp-append-version="true"></script>
-    <script src="~/js/account.js"></script>
-    <script>
-        handleFormSubmit("createOrderForm");
-
-        document.getElementById("createOrderForm").addEventListener("submit", async () => {
-        if (rowValidationFailed) return;
-        await new Promise(r => setTimeout(r, 500));
-        const modal = document.getElementById("createOrderModal");
-        bootstrap.Modal.getInstance(modal)?.hide();
-        }, false);
-    </script>
-}
