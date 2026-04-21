@@ -2,7 +2,72 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome1</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+   @* <div class="text-center mt-5">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <h1 class="display-4">Välkommen till jobbet</h1>
+        <p>@User.Identity.Name!</p>
+
+        
+    }
+</div> *@
+
+<div class="container mt-4">
+    <div class="row">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="col-md-9">
+                <h1>Välkommen @User.Identity.Name!</h1>
+            </div> <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header text-white" style="background-color: #D48B8B;">
+                        <h5 class="mb-0">Såhär ser din dag ut idag</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul id="today-events-list" class="list-group list-group-flush">
+                            <li class="list-group-item text-muted">Laddar dagens schema...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div> }
+    </div> </div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/Calendar/GetEvents')
+                .then(res => res.json())
+                .then(events => {
+                    const list = document.getElementById('today-events-list');
+                    const today = new Date().toLocaleDateString('sv-SE');
+
+                    const todaysEvents = events.filter(e => 
+                        new Date(e.start).toLocaleDateString('sv-SE') === today
+                    );
+
+                    if (todaysEvents.length === 0) {
+                        list.innerHTML = '<li class="list-group-item">Inga händelser idag.</li>';
+                        return;
+                    }
+
+                    // list.innerHTML = todaysEvents.map(e => `
+                    //     <li class="list-group-item">
+                    //         <small class="badge bg-info text-dark">${new Date(e.start).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})}</small>
+                    //         ${e.title}
+                    //     </li>
+                    // `).join('');
+                    list.innerHTML = todaysEvents.map(e => {
+                     const time = new Date(e.start).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'});
+                         return `
+                <li class="list-group-item d-flex align-items-center">
+                 <span class="badge me-2" style="background-color: #D48B8B; color: white;">${time}</span>
+                 <span class="text-dark">${e.title}</span>
+                 </li>
+    `;
+}).join('');
+                });
+        });
+    </script>
+}
