@@ -33,18 +33,22 @@ namespace MVC.Controllers
             if (string.IsNullOrEmpty(input.Title))
                 return BadRequest("Title is required");
 
-            input.Start = input.Start == default ? DateTime.Now : input.Start;
+            //input.Start = input.Start == default ? DateTime.Now : input.Start;
+            input.Start = input.Start.ToUniversalTime();
+
+            if (input.End != default)
+            {
+                input.End = input.End.Value.ToUniversalTime();
+            }
+            input.OwnerName = currentUserName;
 
             input.Color ??= "#007bff";
 
             if (input.TargetType == "public")
             {
-            }
-            else if (input.TargetType == "private")
-            {
- 
                 input.TargetUserNames = new List<string>();
             }
+            
             else if (input.TargetType == "private")
             {
                 input.TargetUserNames = new List<string> { currentUserName };
@@ -55,11 +59,22 @@ namespace MVC.Controllers
                     return Unauthorized();
 
                 if (input.TargetUserNames == null || !input.TargetUserNames.Any())
-                    return BadRequest("No users selected");
+                    return BadRequest("Ingen användare vald");
+
+                if (!input.TargetUserNames.Contains(currentUserName))
+                {
+                    input.TargetUserNames.Add(currentUserName);
+                }
             }
+            if (string.IsNullOrEmpty(input.Id))
+            {
 
-            _calendarRepository.AddEvent(input);
-
+                _calendarRepository.AddEvent(input);
+            }
+            else
+            {
+                _calendarRepository.UpdateEvent(input);
+            }
             return Json(new { success = true });
         }
         [HttpGet]
@@ -78,5 +93,27 @@ namespace MVC.Controllers
             return Json(events);
         }
 
+        //[HttpDelete]
+        //public IActionResult DeleteEvent(string id)
+        //{
+        //    var result = _calendarRepository.DeleteEvent(id);
+        //    if (result)
+
+        //    {
+        //        return Ok();
+
+        //    }
+        //    return BadRequest();
+
+        [HttpDelete("/Calendar/DeleteEvent/{id}")] // Förtydliga routen för JS-anropet
+        public IActionResult DeleteEvent(string id)
+        {
+            var result = _calendarRepository.DeleteEvent(id);
+            if (result) return Ok();
+            return BadRequest();
+        }
     }
-}
+
+    }
+
+

@@ -6,7 +6,7 @@ el.addEventListener("input", async (e) => {
 
     const searchTerm = e.target.value;
 
-    if (searchTerm.length > 3 || searchTerm === "") {
+    if (searchTerm.length > 2 || searchTerm === "") {
 
         const response = await fetch(`/Customer/Search?searchTerm=${searchTerm}`);
         const data = await response.json();
@@ -28,12 +28,6 @@ el.addEventListener("input", async (e) => {
                 <td><a href="/Customer/Edit?id=${item.id}">Redigera</a></td>
             </tr>
         `).join('');
-
-
-
-
-
-
     }
 });
 
