@@ -2,7 +2,7 @@
 @using Models
 
 @{
-    ViewData["Title"] = "Materialbeställningar";
+    ViewData["Title"] = "Materialordrar";
     var materials = ViewBag.Materials as List<Material>;
 
     var completedOrders = Model?
@@ -17,12 +17,12 @@
 <div style="padding: 12px 16px;">
     <!-- 👈 LITEN PADDING -->
 
-    <h1>Materialbeställningar</h1>
+    <h1>Materialordrar</h1>
 
     <div style="display:flex; gap:30px; align-items:flex-start;">
 
         <div style="flex:2;">
-            <h2>Skapa ny beställning</h2>
+            <h2>Skapa ny materialorder</h2>
 
             <form asp-controller="MaterialOrder" asp-action="Create" method="post">
                 <div id="materialRows">
@@ -53,11 +53,11 @@
 
             <hr />
 
-            <h2>Påbörjade beställningar</h2>
+            <h2>Påbörjade materialordrar</h2>
 
             @if (Model == null || !Model.Any(o => o.Status != "Klar"))
             {
-                <p>Det finns inga påbörjade beställningar.</p>
+                <p>Det finns inga påbörjade materialordrar.</p>
             }
             else
             {
@@ -92,11 +92,11 @@
         </div>
 
         <div style="flex:1;">
-            <h2>Klara beställningar</h2>
+            <h2>Klara materialordrar</h2>
 
             @if (!completedOrders.Any())
             {
-                <p>Det finns inga klara beställningar.</p>
+                <p>Det finns inga klara materialodrar.</p>
             }
             else
             {
