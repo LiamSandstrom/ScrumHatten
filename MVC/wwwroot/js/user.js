@@ -1,4 +1,6 @@
-﻿const el = document.getElementById("searchField");
+﻿
+// Kod för sökning.
+const el = document.getElementById("searchField");
 
 el.addEventListener("input", async (e) => {
 
@@ -25,3 +27,53 @@ el.addEventListener("input", async (e) => {
         `).join('');
     }
 });
+
+//KOd för att synliggöra rensa-knappen.
+
+
+
+const dropDownRole = document.getElementById("dropDownRole");
+
+dropDownRole.addEventListener("change", e => {
+
+    const clearButton = document.getElementById("clearButton");
+
+    if (dropDownRole.value !== '') {
+
+
+        clearButton.classList.remove("invisible");
+    }
+
+
+    else if (dropDownRole.value === "" || dropDownRole.value === "Land") {
+
+
+        clearButton.classList.add("invisible");
+    }
+
+
+})
+
+const openFilterModelButton = document.getElementById("openFilterModelButton");
+
+openFilterModelButton.addEventListener("click", e => {
+
+    const dropDownRole = document.getElementById("dropDownRole");
+
+
+    if (dropDownRole.value !== '') {
+
+
+        clearButton.classList.remove("invisible");
+    }
+
+
+    else if (dropDownRole.value === "" || dropDownRole.value === "Role") {
+
+
+        clearButton.classList.add("invisible");
+    }
+
+
+
+})
