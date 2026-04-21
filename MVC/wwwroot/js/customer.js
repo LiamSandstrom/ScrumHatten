@@ -1,5 +1,5 @@
 ﻿
-
+// Kod för sökning.
 const el = document.getElementById("searchField");
 
 el.addEventListener("input", async (e) => {
@@ -31,3 +31,75 @@ el.addEventListener("input", async (e) => {
     }
 });
 
+ //KOd för att synliggöra rensa-knappen.
+
+const cityDropDown = document.getElementById("dropdowncity");
+
+
+cityDropDown.addEventListener("change", e => {
+
+    const clearButton = document.getElementById("clearButton");
+
+    if (cityDropDown.value !== '') {
+
+      
+        clearButton.classList.remove("invisible");
+    }
+
+
+    else if (cityDropDown.value === "" || cityDropDown.value === "Stad") {
+
+
+        clearButton.classList.add("invisible");
+    }
+
+    
+})
+
+const dropDownCountry = document.getElementById("dropDownCountry");
+
+
+
+dropDownCountry.addEventListener("change", e => {
+
+    const clearButton = document.getElementById("clearButton");
+
+    if (dropDownCountry.value !== '') {
+
+
+        clearButton.classList.remove("invisible");
+    }
+
+
+    else if (dropDownCountry.value === "" || dropDownCountry.value === "Land") {
+
+
+        clearButton.classList.add("invisible");
+    }
+
+
+})
+
+const openFilterModelButton = document.getElementById("openFilterModelButton");
+
+openFilterModelButton.addEventListener("click", e => {
+
+    const dropDownCountry = document.getElementById("dropDownCountry");
+    const cityDropDown = document.getElementById("dropdowncity");
+
+    if (dropDownCountry.value !== '' || cityDropDown.value !== '') {
+
+
+            clearButton.classList.remove("invisible");
+        }
+
+
+        else if (dropDownCountry.value === "" || dropDownCountry.value === "Land") {
+
+
+            clearButton.classList.add("invisible");
+        }
+
+
+   
+})
