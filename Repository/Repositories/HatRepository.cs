@@ -74,6 +74,40 @@ namespace Repository.Repositories
                     }).ToList()
             };
         }
+        public async Task<List<HatWithMaterial>> GetAllHatsWithMaterialsAsync()
+        {
+            var hats = await _hatCollection.Find(_ => true).ToListAsync();
+
+            var allMaterials = hats.SelectMany(h => h.Materials.Select(m => m.MaterialId))
+                .Distinct()
+                .ToList();
+
+            var materials = await _materialCollection.Find(m => allMaterials.Contains(m.Id)).ToListAsync();
+
+            var materialDict = materials.ToDictionary(m => m.Id);
+
+            return hats.Select(hat => new HatWithMaterial
+            {
+                Id = hat.Id,
+                Name = hat.Name,
+                Price = hat.Price,
+                Description = hat.Description,
+                ImageUrl = hat.ImageUrl,
+                CustomHat = hat.CustomHat,
+                Quantity = hat.Quantity,
+                Materials = hat.Materials
+                    .Where(m => materialDict.ContainsKey(m.MaterialId))
+                    .Select(m => new HatMaterialDetail
+                    {
+                        MaterialId = m.MaterialId,
+                        Amount = m.Amount,
+                        Name = materialDict[m.MaterialId].Name,
+                        Quantity = materialDict[m.MaterialId].Quantity,
+                        PricePerUnit = materialDict[m.MaterialId].PricePerUnit,
+                        Unit = materialDict[m.MaterialId].Unit
+                    }).ToList()
+            }).ToList();
+        }
 
         public async Task AddHat(Hat hat)
         {

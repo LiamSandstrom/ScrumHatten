@@ -107,7 +107,6 @@ namespace MVC.Controllers
 
             var users = await userRepository.GetAllUsersAsync();
             var customers = await customerRepository.GetAllCustomersAsync();
-            var hats = await hatRepository.GetAllStandardHatsAsync();
 
             var orderViewModel = new OrderViewModel
             {
@@ -124,15 +123,35 @@ namespace MVC.Controllers
                     Text = c.Name
                 }).ToList(),
 
-                Hats = hats.Select(h => new SelectListItem
-                {
-                    Value = h.Id.ToString(),
-                    Text = h.Name
-                }).ToList(),
             };
 
             return View(orderViewModel);
         }
+
+        [HttpGet("GetAllHats")]
+        public async Task<IActionResult> GetAllHats()
+        {
+            try
+            {
+                var hats = await hatRepository.GetAllHatsWithMaterialsAsync();
+
+                return Json(hats.Select(h => new
+                {
+                    id = h.Id,
+                    name = h.Name,
+                    price = h.Price,
+                    description = h.Description,
+                    imageUrl = h.ImageUrl,
+                    quantity = h.Quantity,
+                    materials = h.Materials
+                }));
+            }
+            catch
+            {
+                return Json(Array.Empty<object>());
+            }
+        }
+
 
         [HttpGet("Orders/{id}")]
         public async Task<IActionResult> GetOrderById(string id)
@@ -195,26 +214,6 @@ namespace MVC.Controllers
             return Json(CreateResponse(true, message: "Order skapad!", notify: true, redirectUrl: "refresh"));
         }
 
-        [HttpGet("GetHatsByType")]
-        public async Task<IActionResult> GetHatsByType(string type)
-        {
-            if (type == "Stock")
-            {
-                var hats = await hatRepository.GetAllStandardHatsAsync();
-
-                return Json(hats.Select(h => new
-                {
-                    id = h.Id,
-                    name = h.Name,
-                    price = h.Price,
-                    description = h.Description,
-                    imageUrl = h.ImageUrl,
-                    quantity = h.Quantity
-                }));
-            }
-
-            return Json(Array.Empty<object>());
-        }
 
         [HttpPost("UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromForm] string id, [FromForm] string status)

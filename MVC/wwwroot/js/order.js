@@ -1,6 +1,37 @@
 
 let stepIndex = 1;
 const maxIndex = 2;
+const allHats = [];
+const rowIndex = 0;
+
+const getAllHats = async () => {
+    const res = await fetch("/Order/GetAllHats")
+    const data = await res.json()
+
+    console.log(data)
+}
+getAllHats()
+
+document.getElementById("addHatBtn").addEventListener("click", () => {
+
+
+})
+
+const addRow = () => {
+    const hatDiv = document.getElementById("hat-rows")
+    if (!hatDiv) {
+        console.log("cant find hat div")
+        return
+    }
+
+    //hatDiv.insertAdjacentHTML()
+    //name="Hats[${index}].HatId" name="Hats[0].HatId" auto binds to backend viewmodel
+    //Errors: id="error-Hats-${index}-HatId"    
+}
+
+const createRow = () => {
+}
+
 
 document.getElementById("prevBtn").addEventListener("click", () => {
     if (stepIndex == 1) return
@@ -23,7 +54,6 @@ const setStepIndex = (index) => {
     oldStep.style.display = "none"
     newStep.style.display = "block"
 }
-
 
 
 // ─── CLIENT VALIDATION (capture phase) ────────────────────
