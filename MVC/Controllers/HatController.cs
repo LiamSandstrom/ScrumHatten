@@ -40,7 +40,7 @@ namespace MVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddHat(AddHatViewModel model)
+        public async Task<IActionResult> AddHat(AddHatViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
@@ -66,14 +66,14 @@ namespace MVC.Controllers
 
                 using (var stream = new FileStream(fullPath, FileMode.Create))
                 {
-                    model.ImageFile.CopyTo(stream);
+                    await model.ImageFile.CopyToAsync(stream);
                 }
 
                 imagePath = "/images/hats/" + fileName;
 
                 using (var memoryStream = new MemoryStream())
                 {
-                    model.ImageFile.CopyTo(memoryStream);
+                    await model.ImageFile.CopyToAsync(memoryStream);
                     byte[] imageBytes = memoryStream.ToArray();
                     string base64String = Convert.ToBase64String(imageBytes);
                     imageBase64 = $"data:{model.ImageFile.ContentType};base64,{base64String}";
@@ -100,7 +100,7 @@ namespace MVC.Controllers
 
             try
             {
-                _hatService.AddHat(newHat);
+                await _hatService.AddHat(newHat);
                 TempData["SuccessMessage"] = "Hatten har lagts till!";
             }
             catch
@@ -202,7 +202,7 @@ namespace MVC.Controllers
                     Materials = hatMaterials,
                 };
 
-                _hatService.UpdateHat(updatedHat);
+                await _hatService.UpdateHat(updatedHat);
 
                 TempData["SuccessMessage"] = "Hatten uppdaterades!";
             }

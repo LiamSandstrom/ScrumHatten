@@ -10,7 +10,10 @@ namespace Models
     public class CalendarEvent
     {
         [BsonId]
-        public ObjectId Id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+
+        public string? Id { get; set; }
+        public string OwnerName { get; set; }
         public string Title { get; set; } = string.Empty;
         public DateTime Start { get; set; }
         public DateTime? End { get; set; }
