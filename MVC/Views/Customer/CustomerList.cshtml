@@ -10,7 +10,7 @@
     <div class="customerListHeader mt-5">
         <h1 class="userListHeaderTitle">Kunder</h1>
         <input class="form-control" id="searchField" placeholder="Sök efter kund..."/>
-        <button class="btn btn-primary filterButton" type="button" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi bi-funnel"></i>Filtrera</button>
+        <button class="btn btn-primary filterButton" type="button" data-bs-toggle="modal" id ="openFilterModelButton"data-bs-target="#filterModal"><i class="bi bi-funnel"></i>Filtrera</button>
     </div>
 
     <!--Filter modal-->
@@ -25,13 +25,13 @@
                 <div class="modal-body">
            
                     <div class="form-floating my-3">
-                        <select asp-for="SelectedCity" class="form-select" asp-items="@(new SelectList(Model.allCities))">
+                            <select asp-for="SelectedCity" class="form-select" id="dropdowncity" asp-items="@(new SelectList(Model.allCities))">
                             <option value="">Stad</option>
                         </select>
                         <label asp-for="SelectedCity">Välj stad</label>
                     </div>
                     <div class="form-floating my-3">
-                        <select asp-for="SelectedCountry" class="form-select" asp-items="@(new SelectList(Model.allCountries))">
+                        <select asp-for="SelectedCountry" class="form-select" id="dropDownCountry" asp-items="@(new SelectList(Model.allCountries))">
                             <option value="">Land</option>
                         </select>
                         <label asp-for="SelectedCountry">Välj land</label>
@@ -39,6 +39,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                   
+                    
+                        <a href="/Customer/CustomerList" class="btn btn-warning invisible" id="clearButton">Rensa</a>
                     <button type="submit" class="btn btn-primary">Filtrera</button>
                  
                 </div>
