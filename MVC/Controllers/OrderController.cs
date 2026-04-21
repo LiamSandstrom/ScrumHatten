@@ -248,13 +248,20 @@ public async Task<IActionResult> GetOrderById(string id)
 [HttpPost("ReleaseOrder")]
 public async Task<IActionResult> ReleaseOrder(string orderId)
 {
-    try 
-    {
-        // 1. Nolla utföraren (Använder metoden från ditt interface)
-        await orderRepository.AssignOrderToMakerAsync(orderId, Guid.Empty);
-        
-        // 2. Flytta tillbaka till 'Inkommande' status
-        await orderRepository.SetStatusAsync(orderId, Status.Pending);
+            try
+            {
+                
+            
+    var order = await orderRepository.GetOrderByIdAsync(orderId);
+        if (order == null) return NotFound();
+
+        // 2. Nolla BÅDE ID och Namn
+        order.MakerId = Guid.Empty;
+        order.MakerName = null; // Detta rensar namnet på kortet!
+        order.Status = Status.Pending;
+
+        // 3. Spara hela ordern (Använd din Update-metod)
+        await orderRepository.UpdateOrderAsync(orderId, order); 
 
         return Ok();
     }
@@ -262,7 +269,7 @@ public async Task<IActionResult> ReleaseOrder(string orderId)
     {
         return BadRequest("Kunde inte släppa ordern: " + ex.Message);
     }
-}
+    }
 
 [HttpPost("UpdateBasicInfo/{id}")]
 public async Task<IActionResult> UpdateBasicInfo(string id, [FromBody] OrderUpdateModel model)
@@ -291,12 +298,12 @@ public async Task<IActionResult> UpdateBasicInfo(string id, [FromBody] OrderUpda
         {
             order.MakerId = makerGuid;
             var user = await userRepository.GetUser(makerGuid);
-            order.MakerName = user?.Name ?? "Okänd";
+            order.MakerName = user?.Name;
         }
         else 
         {
             order.MakerId = Guid.Empty;
-            order.MakerName = "Ingen tilldelad";
+            order.MakerName = null;
         }
 
         // KRASCH-SKYDD: Beräkna priset säkert
