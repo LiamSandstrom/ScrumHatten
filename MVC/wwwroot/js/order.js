@@ -12,6 +12,13 @@ const getAllHats = async () => {
 }
 getAllHats()
 
+//klicka knapp => 
+//add Row
+//name="Hats[${index}].HatId" name="Hats[0].HatId" auto binds to backend viewmodel
+//Errors: id="error-Hats-${index}-HatId"    
+
+// get data of row
+
 document.getElementById("addHatBtn").addEventListener("click", () => {
 
 
@@ -24,12 +31,27 @@ const addRow = () => {
         return
     }
 
+    for (const hat of allHats) {
+
+
+    }
+
+    hatDiv.insertAdjacentHTML("beforeend", `
+        <div>
+            <select>
+                <option></option>
+
+            </select>
+        </div>
+        `)
+
+
     //hatDiv.insertAdjacentHTML()
-    //name="Hats[${index}].HatId" name="Hats[0].HatId" auto binds to backend viewmodel
-    //Errors: id="error-Hats-${index}-HatId"    
 }
 
 const createRow = () => {
+
+
 }
 
 
