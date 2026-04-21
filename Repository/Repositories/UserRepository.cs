@@ -1,5 +1,6 @@
 ﻿using DAL.Repositories.Interfaces;
 using Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Repository;
 
@@ -18,6 +19,7 @@ namespace DAL.Repositories
         {
             return await _collection.Find(_ => true).ToListAsync();
         }
+
 
         public async Task<bool> DeleteUserAsync(Guid id)
         {
@@ -43,6 +45,22 @@ namespace DAL.Repositories
             return await _collection.Find(u => u.Id == id).FirstOrDefaultAsync();
              
         }
+        public async Task<List<User>> GetUserByStringMatch(string searchTerm)
+        {
+        
+            if (searchTerm == null)
+            {
+                searchTerm = string.Empty;
+            }
+            var query = new BsonRegularExpression(searchTerm, "i");
 
+            var filter = Builders<User>.Filter.Or(
+                Builders<User>.Filter.Regex(x => x.Name, query),
+                Builders<User>.Filter.Regex(x => x.Email, query),
+                Builders<User>.Filter.Regex(x => x.PhoneNumber, query)
+                );
+
+            return await _collection.Find(filter).Limit(20).ToListAsync();
+        }
     }
 }

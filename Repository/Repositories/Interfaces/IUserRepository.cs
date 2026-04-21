@@ -15,5 +15,8 @@ namespace DAL.Repositories.Interfaces
 
         Task<User> GetUser(Guid id);
 
+        Task<List<User>> GetUserByStringMatch(string searchTerm);
+
+
     }
 }
