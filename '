@@ -1,23 +1,16 @@
 
 let stepIndex = 1;
 const maxIndex = 2;
-const allHats = new Map();
+let allHats = [];
 const rowIndex = 0;
 
 const getAllHats = async () => {
     const res = await fetch("/Order/GetAllHats")
     const data = await res.json()
-
-    for (const d of data) {
-        const { id, ...rest } = d
-        allHats.set(id, rest)
-    }
-
+    allHats = data;
     console.log(allHats)
 }
-(async () => {
-    await getAllHats()
-})()
+getAllHats()
 
 //klicka knapp => 
 //add Row
@@ -26,9 +19,10 @@ const getAllHats = async () => {
 
 // get data of row
 
-// ─── Row Stuff ────────────────────────────────────────
 document.getElementById("addHatBtn").addEventListener("click", () => {
+
     addRow();
+
 })
 
 const addRow = () => {
@@ -48,115 +42,26 @@ const addRow = () => {
 
 const populateRows = (rowDiv) => {
     const hatSelect = rowDiv.querySelector('.hat-dropdown');
+    console.log(rowDiv)
     hatSelect.innerHTML = `<optgroup label="Custom"><option value="-1">Skräddarsydd Hatt</option></optgroup> <optgroup id="lager-opt" label="Lager"></optgroup>  `;
     const lagerGroup = hatSelect.querySelector("#lager-opt");
+    console.log(allHats)
     for (const h of allHats) {
         const opt = document.createElement("option");
-        opt.value = h[0];
-        opt.textContent = h[1].name;
+        opt.value = h.id;
+        opt.textContent = h.name;
         lagerGroup.appendChild(opt);
     }
 
-    hatSelect.addEventListener("change", () => {
-        const selectedId = hatSelect.value
-        console.log("selected id:", selectedId)
-        console.log(allHats.get(selectedId))
-        renderPreview(rowDiv, allHats.get(selectedId))
-    })
+    console.log(hatSelect)
 }
 
-// ─── RENDER PREVIEW ────────────────────────────────────────
-function renderPreview(row, hat) {
-    row.dataset.price = hat.price || 0;
+const createRow = () => {
 
-    const img = row.querySelector(".hat-image");
-    if (hat.imageUrl && hat.imageUrl.trim() !== "") {
-        img.src = hat.imageUrl;
-        img.classList.remove("d-none");
-    } else {
-        img.src = "";
-        img.classList.add("d-none");
-    }
 
-    const editBtn = row.querySelector(".edit-btn")
-    editBtn.classList.remove("d-none")
-    row.querySelector(".hat-name").textContent = hat.name || "";
-    row.querySelector(".hat-description").textContent = hat.description || "";
-    row.querySelector(".hat-price").textContent = `Pris: ${hat.price ?? "-"}`;
-
-    const qtyInput = row.querySelector(".quantity-input");
-    const selectedQty = parseInt(qtyInput.value || "0");
-    const stock = hat.quantity ?? 0;
-
-    const el = row.querySelector(".hat-quantity");
-    el.textContent = `I lager: ${stock}`;
-
-    if (selectedQty > stock) {
-        el.classList.remove("text-muted");
-        el.classList.add("text-danger", "fw-bold");
-    } else {
-        el.classList.remove("text-danger", "fw-bold");
-        el.classList.add("text-muted");
-    }
-}
-
-document.getElementById("rows").addEventListener("click", (e) => {
-    const btn = e.target.closest(".edit-btn");
-    if (!btn) return;
-    const row = btn.closest(".row-item");
-    if (!row) return;
-    makeRowCustom(row)
-});
-
-const makeRowCustom = (row) => {
-    const materialList = row.querySelector(".material-list");
-    if (!materialList) return;
-
-    // Init index counter on element itself
-    if (materialList.dataset.index === undefined) {
-        materialList.dataset.index = materialList.querySelectorAll(".material-row").length;
-    }
-
-    materialList.querySelector(".add-material-btn")?.remove(); // avoid duplicates
-
-    const addBtn = document.createElement("button");
-    addBtn.type = "button";
-    addBtn.className = "btn btn-sm btn-outline-secondary mt-2 add-material-btn";
-    addBtn.textContent = "Lägg till material";
-    addBtn.addEventListener("click", () => addMaterialRow(materialList));
-    materialList.after(addBtn);
-}
-
-const addMaterialRow = (materialList) => {
-    const template = materialList.querySelector(".material-row-template");
-    if (!template) return;
-
-    const index = parseInt(materialList.dataset.index);
-    const clone = template.content.cloneNode(true);
-    const matRow = clone.querySelector(".material-row");
-
-    matRow.querySelector("input[name='Materials.Index']").value = index;
-
-    const select = matRow.querySelector("select");
-    select.name = `Materials[${index}].MaterialId`;
-    select.innerHTML = materialOptions; // din befintliga variabel
-
-    matRow.querySelector("input[type='number']").name = `Materials[${index}].Amount`;
-
-    materialList.appendChild(clone);
-    materialList.dataset.index = index + 1;
 }
 
 
-
-
-
-
-
-
-
-
-// ─── Swap step ────────────────────────────────────────
 document.getElementById("prevBtn").addEventListener("click", () => {
     if (stepIndex == 1) return
 
@@ -178,12 +83,6 @@ const setStepIndex = (index) => {
     oldStep.style.display = "none"
     newStep.style.display = "block"
 }
-
-
-
-
-
-
 
 
 // ─── CLIENT VALIDATION (capture phase) ────────────────────
@@ -218,6 +117,7 @@ document.querySelector("[name='TransportPrice']")?.addEventListener("input", () 
 });
 
 document.getElementById("fastOrder").addEventListener("input", () => {
+    console.log("hi")
     updateOrderTotal();
 });
 
@@ -225,15 +125,6 @@ document.getElementById("fastOrder").addEventListener("input", () => {
 function getTransportCost() {
     return parseFloat(document.querySelector("[name='TransportPrice']")?.value || "0");
 }
-
-document.getElementById("rows").addEventListener("click", (e) => {
-    const btn = e.target.closest(".remove-row");
-    if (!btn) return;
-    const row = btn.closest(".row-item");
-    if (!row) return;
-    row.remove();
-    updateOrderTotal();
-});
 
 function updateOrderTotal() {
     let subtotal = 0;

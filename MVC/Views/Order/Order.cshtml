@@ -79,7 +79,80 @@
                     <!-- ===================== DETALJER ===================== -->
                     <div id="step1">
                     <button type="button" id="addHatBtn">Add row</button>
-                    <div id="hat-rows"></div>
+                    <div id="rows">
+                        <template id="rowTemplate">
+                        <div class="row-item card mb-3 shadow-sm">
+                            <div class="card-body">
+                                <div class="row g-3 align-items-center">
+
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <label class="form-label">Hatt</label>
+                                        <select class="form-select hat-dropdown">
+                                            <option value="">Välj hatt</option>
+                                        </select>
+                                        <p class="error-text error-hat"></p>
+                                    </div>
+
+                                    <div class="col-12 col-sm-6 col-lg-2">
+                                        <label class="form-label">Antal</label>
+                                        <input type="number" min="1" value="1"
+                                            class="form-control quantity-input" />
+                                        <p class="error-text error-qty"></p>
+                                    </div>
+
+                                    <div class="col-12 col-sm-6 col-lg-6">
+                                        <div class="d-flex gap-3 align-items-center">
+
+                                            <img class="hat-image rounded d-none"
+                                                style="width:80px;height:80px;object-fit:contain;" />
+
+                                            <div>
+                                                <div class="fw-bold hat-name"></div>
+                                                <div class="text-muted small hat-description"></div>
+                                                <div class="hat-price small text-muted"></div>
+                                                <div class="hat-quantity small text-muted"></div>
+                                                <div class="fw-bold text-primary hat-total"></div>
+                                            </div>
+                                                <button id="edit-btn" class="d-none edit-btn btn btn-secondary" type="button">Ändra</button>
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-danger remove-row">
+                                                    Ta bort
+                                                </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="material-list">
+                                        <template class="material-row-template">
+                                            <div class="row align-items-end material-row">
+                                                <input type="hidden" name="Materials.Index" value="" />
+                                                <div class="col-md-7 mb-2 mb-md-0">
+                                                    <label class="form-label-clean">Material</label>
+                                                    <select name="" class="form-control">
+                                                        <!-- options injected -->
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-2 mb-md-0">
+                                                    <label class="form-label-clean">Antal</label>
+                                                    <input name="" type="number" min="1" class="form-control" />
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="clean-btn-danger w-100"
+                                                            onclick="removeMaterialRow(this)">
+                                                        Ta bort
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                </template>
+
+                    </div>
 
                     </div>
 
@@ -122,9 +195,7 @@
                                                    value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                                             <p id="error-DateToFinish" class="error-text"></p>
                                         </div>
-
                                     </div>
-
                                 </div>
                             </div>
                         </div>
