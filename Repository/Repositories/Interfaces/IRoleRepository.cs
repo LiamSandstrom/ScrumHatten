@@ -11,6 +11,7 @@ namespace DAL.Repositories.Interfaces
 
         Task<List<ApplicationRole>> GetAllRolesAsync();
 
+       
 
     }
 }

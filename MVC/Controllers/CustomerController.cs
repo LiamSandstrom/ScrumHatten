@@ -103,19 +103,19 @@ namespace MVC.Controllers
         }
 
         [HttpGet(nameof(Search))]
-        public async Task<IActionResult> Search(string searchTerm)
+        public async Task<IActionResult> Search([FromQuery] string searchTerm)
         {
             // En liten validering för att inte söka efter bara en eller två chars.
-            if (searchTerm != null && searchTerm.Length > 3)
-            {
+            //if (searchTerm != null && searchTerm.Length > 3)
+            //{
                 List<Customer> result = await _customerRepository.GetCustomerByStringMatch(searchTerm);
 
                 return Json(result);
-            }
-            else
-            {
-                return Content("Insufficent search term :(");
-            }
+            //}
+            //else
+            //{
+                //return Json(new { error = "Request too short." });
+            //}
 
         }
 
