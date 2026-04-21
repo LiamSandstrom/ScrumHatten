@@ -339,6 +339,67 @@
         </div>
     </div>
 
+    <div class="modal fade" id="orderEditModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Redigera Order #<span id="editOrderDisplayId"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editOrderForm">
+                <input type="hidden" id="editHiddenOrderId" name="Id" />
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Transportkostnad (kr)</label>
+                            <input type="number" name="TransportPrice" id="editTransportPrice" class="form-control" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Antal timmar</label>
+                            <input type="number" name="TimeToMake" id="editTimeToMake" class="form-control" min="0">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Uppskattat datum klart</label>
+                            <input type="date" name="DateToFinish" id="editDateToFinish" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Utförare</label>
+                            <select name="SelectedUserId" id="editSelectedUserId" class="form-select">
+                                @foreach (var user in Model.Users)
+                                {
+                                    <option value="@user.Value">@user.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Kund</label>
+                            <select name="SelectedCustomerId" id="editSelectedCustomerId" class="form-select">
+                                @foreach (var customer in Model.Customers)
+                                {
+                                    <option value="@customer.Value">@customer.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="FastOrder" id="editFastOrder" value="true">
+                                <label class="form-check-label fw-bold" for="editFastOrder">Snabborder</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary">Spara ändringar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
     <style>
         .custom-header-brown {
