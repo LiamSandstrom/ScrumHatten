@@ -77,6 +77,13 @@
                         <td class="tableCell">@Model.allCustomers[i].ZipCode</td>
                         <td class="tableCell">@Model.allCustomers[i].City</td>
                         <td class="tableCell">@Model.allCustomers[i].Country</td>
+
+                        <td>
+                          <a href="mailto:@Model.allCustomers[i].Email" class="btn btn-sm btn-outline-secondary" title="Skicka mail">
+                            <i class="bi bi-envelope-fill"></i>
+                          </a>
+                        </td>
+
                         <td><a asp-action="Edit" asp-route-id="@Model.allCustomers[i].Id">Redigera</a></td>
                     </tr>
 

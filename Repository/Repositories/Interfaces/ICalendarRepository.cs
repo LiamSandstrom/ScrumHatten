@@ -9,5 +9,8 @@ namespace DAL.Repositories.Interfaces
     {
         void AddEvent(CalendarEvent calendarEvent);
         List<CalendarEvent> GetEvents(string userId);
+
+        bool DeleteEvent(string id);
+        void UpdateEvent(CalendarEvent calendarEvent);
     }
 }

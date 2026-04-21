@@ -36,6 +36,18 @@ public async Task<IActionResult> Order()
     var users = await userRepository.GetAllUsersAsync();
     var customers = await customerRepository.GetAllCustomersAsync();
 
+    foreach (var order in realOrders)
+    {
+        if (order.MakerId != Guid.Empty)
+        {
+            var maker = users.FirstOrDefault(u => u.Id == order.MakerId);
+            if (maker != null)
+            {
+                order.MakerName = maker.Name;
+            }
+        }
+    }
+
     
     var orderViewModel = new OrderViewModel
     {
@@ -59,33 +71,35 @@ public async Task<IActionResult> Order()
 }
 
         [HttpGet("Orders/{id}")]
-        public async Task<IActionResult> GetOrderById(string id)
-        {
-            var order = await orderRepository.GetOrderByIdAsync(id);
-            if (order == null)
-                return NotFound("Ordern hittades inte!");
-            
-            var customer= !string.IsNullOrEmpty(order.CustomerId) 
-            ? await customerRepository.GetCustomerByIdAsync(order.CustomerId) : null;
+public async Task<IActionResult> GetOrderById(string id)
+{
+    var order = await orderRepository.GetOrderByIdAsync(id);
+    if (order == null) return NotFound("Ordern hittades inte!");
+    
+    // Hämta kunden för att få adress, e-post etc.
+    var customer = !string.IsNullOrEmpty(order.CustomerId) 
+        ? await customerRepository.GetCustomerByIdAsync(order.CustomerId) : null;
 
-            string makerName = "Ingen tilldelad";
+    string makerName = "Ingen tilldelad";
     if (order.MakerId != Guid.Empty)
     {
         var user = await userRepository.GetUser(order.MakerId);
-        if (user !=null)
-                {
-                    makerName = user.Name;
-                
-                }
+        makerName = user?.Name ?? "Okänd";
     }
             
-            return Ok(new {
+    // VIKTIGT: Returnera ALLA fält som båda modalerna behöver
+    return Ok(new {
         id = order.Id,
-        customer = customer, // Här skickas hela objektet (Name, Email, Adress etc.)
-        hats = order.Hats,
+        transportPrice = order.TransportPrice,
+        timeToMake = order.TimeToMake,
+        dateToFinish = order.DateToFinish,
+        fastOrder = order.FastOrder,
         finalPrice = order.FinalPrice,
+        hats = order.Hats,
         makerId = order.MakerId,
         makerName = makerName,
+        customerId = order.CustomerId,
+        customer = customer, // Hela objektet för adressuppgifter
         status = order.Status.ToString()
     });
 }
@@ -234,19 +248,85 @@ public async Task<IActionResult> Order()
 [HttpPost("ReleaseOrder")]
 public async Task<IActionResult> ReleaseOrder(string orderId)
 {
-    try 
-    {
-        // 1. Nolla utföraren (Använder metoden från ditt interface)
-        await orderRepository.AssignOrderToMakerAsync(orderId, Guid.Empty);
-        
-        // 2. Flytta tillbaka till 'Inkommande' status
-        await orderRepository.SetStatusAsync(orderId, Status.Pending);
+            try
+            {
+                
+            
+    var order = await orderRepository.GetOrderByIdAsync(orderId);
+        if (order == null) return NotFound();
+
+        // 2. Nolla BÅDE ID och Namn
+        order.MakerId = Guid.Empty;
+        order.MakerName = null; // Detta rensar namnet på kortet!
+        order.Status = Status.Pending;
+
+        // 3. Spara hela ordern (Använd din Update-metod)
+        await orderRepository.UpdateOrderAsync(orderId, order); 
 
         return Ok();
     }
     catch (Exception ex)
     {
         return BadRequest("Kunde inte släppa ordern: " + ex.Message);
+    }
+    }
+
+[HttpPost("UpdateBasicInfo/{id}")]
+public async Task<IActionResult> UpdateBasicInfo(string id, [FromBody] OrderUpdateModel model)
+{
+    try
+    {
+        var order = await orderRepository.GetOrderByIdAsync(id);
+        if (order == null) return NotFound();
+
+        // Uppdatera värden - om model-värdet är 0 eller null, kan du välja 
+        // att behålla gamla eller skriva över. Här skriver vi över eftersom
+        // vi litar på att modalen var förifylld.
+        order.TransportPrice = model.TransportPrice;
+        order.TimeToMake = model.TimeToMake;
+        
+        // Säkerställ att datumet inte är DateTime.MinValue
+        if (model.DateToFinish != default) {
+            order.DateToFinish = model.DateToFinish;
+        }
+
+        order.CustomerId = model.SelectedCustomerId;
+        order.FastOrder = model.FastOrder;
+
+        // Hantera MakerId och MakerName defensivt
+        if (!string.IsNullOrEmpty(model.SelectedUserId) && Guid.TryParse(model.SelectedUserId, out Guid makerGuid))
+        {
+            order.MakerId = makerGuid;
+            var user = await userRepository.GetUser(makerGuid);
+            order.MakerName = user?.Name;
+        }
+        else 
+        {
+            order.MakerId = Guid.Empty;
+            order.MakerName = null;
+        }
+
+        // KRASCH-SKYDD: Beräkna priset säkert
+        // Vi kollar om Hats är null innan vi kör .Sum()
+        decimal hatSubtotal = 0;
+        if (order.Hats != null && order.Hats.Any())
+        {
+            hatSubtotal = order.Hats.Sum(h => (decimal)(h.Price));
+        }
+
+        decimal subtotalWithTransport = hatSubtotal + order.TransportPrice;
+        decimal fastOrderSurcharge = order.FastOrder ? subtotalWithTransport * 0.20m : 0m;
+        
+        order.FinalPrice = (subtotalWithTransport + fastOrderSurcharge) * 1.25m;
+
+        await orderRepository.UpdateOrderAsync(id, order);
+        return Ok(new { success = true });
+    }
+    catch (Exception ex)
+    {
+        // Logga felet så du ser exakt vad som hände i Visual Studio
+        System.Diagnostics.Debug.WriteLine($"Update Error: {ex.Message}");
+        return StatusCode(500, "Internt serverfel vid sparande.");
     }
 }
     }
