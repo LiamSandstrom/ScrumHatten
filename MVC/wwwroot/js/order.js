@@ -396,3 +396,70 @@ async function releaseOrder(orderId) {
         console.error("Fel:", err);
     }
 }
+
+// Initiera modalerna
+const editModal = new bootstrap.Modal(document.getElementById('orderEditModal'));
+
+// 1. När man klickar "Redigera" i Detail-modalen
+document.getElementById('btnEditOrder')?.addEventListener('click', function() {
+    const orderId = document.getElementById('detailOrderId').value;
+    openEditModal(orderId);
+});
+
+// 2. Öppna Edit-modal och fyll med data
+async function openEditModal(id) {
+    try {
+        const response = await fetch(`/Order/Orders/${id}`);
+        const order = await response.json();
+
+        // Nu mappar vi mot de små bokstäverna vi skickar från Controllern
+        document.getElementById('editHiddenOrderId').value = order.id;
+        document.getElementById('editOrderDisplayId').textContent = order.id.slice(-5);
+        
+        document.getElementById('editTransportPrice').value = order.transportPrice || 0;
+        document.getElementById('editTimeToMake').value = order.timeToMake || 0;
+        
+        if (order.dateToFinish) {
+            const date = new Date(order.dateToFinish);
+            document.getElementById('editDateToFinish').value = date.toISOString().split('T')[0];
+        }
+
+        document.getElementById('editSelectedUserId').value = order.makerId || "";
+        document.getElementById('editSelectedCustomerId').value = order.customerId || "";
+        document.getElementById('editFastOrder').checked = order.fastOrder || false;
+
+        editModal.show();
+    } catch (error) {
+        console.error("Kunde inte ladda ordern:", error);
+    }
+}
+
+// 3. Spara ändringar
+document.getElementById('editOrderForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const orderId = document.getElementById('editHiddenOrderId').value;
+
+    // Om checkboxen inte är ikryssad skickas den inte med FormData som "false", 
+    // så vi ser till att vi har ett värde för den.
+    const data = Object.fromEntries(formData.entries());
+    data.FastOrder = document.getElementById('editFastOrder').checked;
+
+    try {
+        const response = await fetch(`/Order/UpdateBasicInfo/${orderId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            editModal.hide();
+            location.reload(); // Uppdatera Kanban för att se ändringar (t.ex. ny kund/pris)
+        } else {
+            alert("Kunde inte spara ändringarna.");
+        }
+    } catch (error) {
+        console.error("Fel vid sparande:", error);
+    }
+});
