@@ -1,0 +1,92 @@
+@using Models
+@model List<Message>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Meddelanden";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/message.css" />
+}
+
+<div class="container-fluid p-0"> 
+    <div class="row g-0 bg-white shadow-sm chat-main-container">
+        
+        <div class="col-md-3 border-end p-0 bg-light contact-list-column">
+            <div class="p-3 border-bottom bg-white flex-shrink-0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Kollegor</h5>
+                    <input type="text" id="userSearch" class="form-control form-control-sm rounded-pill w-50" placeholder="Sök...">
+                </div>
+            </div>
+            
+            <div class="list-group list-group-flush scrollable-content">
+                @foreach (var user in (IEnumerable<User>)ViewBag.Users)
+                {
+                    bool isSelected = ViewBag.SelectedUserId?.ToString() == user.Id.ToString();
+                    <a asp-action="Index" asp-route-id="@user.Id" class="list-group-item list-group-item-action py-3 @(isSelected ? "active border-primary" : "")">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; flex-shrink: 0;">
+                                @(user.Name?[0].ToString().ToUpper() ?? "?")
+                            </div>
+                            <div class="text-truncate">
+                                <h6 class="mb-0 text-truncate">@user.Name</h6>
+                                <small class="@(isSelected ? "text-white-50" : "text-muted")">Anställd</small>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-9 p-0 chat-window-column bg-white">
+            @if (ViewBag.SelectedUserId != null)
+            {
+                <div class="p-3 border-bottom bg-white flex-shrink-0">
+                    <h5 class="mb-0">Chatt med @ViewBag.SelectedUserName</h5>
+                </div>
+
+                <div class="scrollable-content p-4" id="chatContainer">
+                    @foreach (var msg in Model.OrderBy(m => m.Timestamp))
+                    {
+                        bool isSentByMe = msg.SenderId.ToString() == currentUserId;
+                        <div class="w-100 d-flex mb-3 @(isSentByMe ? "justify-content-end" : "justify-content-start")">
+                            <div class="msg-bubble @(isSentByMe ? "sent" : "received")">
+                                <p class="mb-1">@msg.Content</p>
+                                <div class="text-end" style="font-size: 0.65rem; opacity: 0.8;">
+                                    @msg.Timestamp.ToString("HH:mm")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="chat-input-area">
+                    <form asp-action="SendMessage" method="post" class="d-flex gap-2">
+                        <input type="hidden" name="receiverId" value="@ViewBag.SelectedUserId" />
+                        <input type="text" name="content" class="form-control rounded-pill" placeholder="Skriv ett meddelande..." required autocomplete="off" />
+                        <button type="submit" class="btn btn-primary rounded-circle px-3">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted bg-light">
+                    <i class="bi bi-chat-dots" style="font-size: 4rem; opacity: 0.2;"></i>
+                    <p>Välj en kollega för att börja chatta.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/message.js"></script>
+    <script>
+        initMessaging("@ViewBag.SelectedUserId");
+    </script>
+}
