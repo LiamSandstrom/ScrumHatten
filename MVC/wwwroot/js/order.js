@@ -333,6 +333,12 @@ async function fetchOrderDetails(id) {
         ).join('') || "Inga hattar valda";
 
         // --- PRIS ---
+
+        const transportEl = document.getElementById('detailTransportPrice');
+if (transportEl) {
+    transportEl.textContent = `${(order.transportPrice || 0).toLocaleString('sv-SE')} kr`;
+}
+
         document.getElementById('detailTotalPrice').textContent = `${(order.finalPrice || 0).toLocaleString('sv-SE')} kr`;
 
         // --- KNAPP-LOGIK ---
