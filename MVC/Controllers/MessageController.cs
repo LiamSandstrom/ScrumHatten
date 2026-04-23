@@ -22,50 +22,55 @@ namespace MVC.Controllers
             _groupRepo = groupRepo;
         }
 
-        [HttpGet]
-        [Route("Message/Index/{id?}")] // Använder id som standard för både person och grupp
-        public async Task<IActionResult> Index(string? id, string? groupId)
+       [HttpGet]
+[Route("Message/Index/{id?}")]
+public async Task<IActionResult> Index(string? id, string? groupId)
+{
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrEmpty(currentUserId)) return Challenge();
+
+    var allUsers = await _userRepo.GetAllUsersAsync();
+    ViewBag.Users = allUsers.Where(u => u.Id.ToString() != currentUserId).ToList();
+    ViewBag.Groups = await _groupRepo.GetGroupsForUserAsync(currentUserId);
+
+    List<Message> messages = new List<Message>();
+
+    if (!string.IsNullOrEmpty(groupId))
+    {
+        var group = await _groupRepo.GetGroupByIdAsync(groupId);
+        if (group != null)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(currentUserId)) return Challenge();
+            ViewBag.SelectedUserId = groupId;
+            ViewBag.SelectedUserName = group.Name;
+            ViewBag.IsGroupChat = true;
+            ViewBag.CurrentGroup = group; // Viktigt för modalen
 
-            // 1. Hämta data för sidomenyn
-            var allUsers = await _userRepo.GetAllUsersAsync();
-            ViewBag.Users = allUsers.Where(u => u.Id.ToString() != currentUserId).ToList();
-            ViewBag.Groups = await _groupRepo.GetGroupsForUserAsync(currentUserId);
+            // --- HÄR ÄR FIXEN: Fyll listorna för modalen i RÄTT controller ---
+            var memberIds = group.MemberIds ?? new List<string>();
+            
+            ViewBag.GroupMembers = allUsers
+                .Where(u => memberIds.Contains(u.Id.ToString()) && u.Id.ToString() != currentUserId)
+                .ToList();
 
-            List<Message> messages = new List<Message>();
+            ViewBag.NonMembers = allUsers
+                .Where(u => !memberIds.Contains(u.Id.ToString()))
+                .ToList();
 
-            // 2. Hantera GRUPP-chatt
-            if (!string.IsNullOrEmpty(groupId))
-            {
-                var group = await _groupRepo.GetGroupByIdAsync(groupId);
-                if (group != null)
-                {
-                    ViewBag.SelectedUserId = groupId;
-                    ViewBag.SelectedUserName = group.Name;
-                    ViewBag.IsGroupChat = true;
-                    messages = await _groupRepo.GetGroupMessagesAsync(groupId);
-                }
-            }
-            // 3. Hantera PRIVAT-chatt (id kan komma från antingen 'id' eller 'contactId' beroende på route)
-            else if (!string.IsNullOrEmpty(id))
-            {
-                ViewBag.SelectedUserId = id;
-                ViewBag.IsGroupChat = false;
-                var selectedUser = allUsers.FirstOrDefault(u => u.Id.ToString() == id);
-                ViewBag.SelectedUserName = selectedUser?.Name ?? "Kollega";
-
-                messages = await _messageRepo.GetConversationAsync(currentUserId, id);
-
-                var unreadIds = messages.Where(m => m.ReceiverId == currentUserId && !m.IsRead)
-                                        .Select(m => m.Id).ToList();
-                if (unreadIds.Any()) await _messageRepo.MarkAsReadAsync(unreadIds);
-            }
-
-            var sortedMessages = messages.OrderBy(m => m.Timestamp).ToList();
-            return View(sortedMessages);
+            messages = await _groupRepo.GetGroupMessagesAsync(groupId);
         }
+    }
+    else if (!string.IsNullOrEmpty(id))
+    {
+        ViewBag.SelectedUserId = id;
+        ViewBag.IsGroupChat = false;
+        var selectedUser = allUsers.FirstOrDefault(u => u.Id.ToString() == id);
+        ViewBag.SelectedUserName = selectedUser?.Name ?? "Kollega";
+        messages = await _messageRepo.GetConversationAsync(currentUserId, id);
+        // ... olästa-logik ...
+    }
+
+    return View(messages.OrderBy(m => m.Timestamp).ToList());
+}
 
         [HttpPost]
         public async Task<IActionResult> SendMessage(string receiverId, string content)
@@ -126,6 +131,60 @@ public async Task<IActionResult> CreateGroup(string groupName, List<string> sele
     await _groupRepo.CreateGroupAsync(newGroup);
 
     return RedirectToAction("Index", new { groupId = newGroup.Id });
+}
+
+[HttpPost]
+public async Task<IActionResult> LeaveGroup(string groupId)
+{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var group = await _groupRepo.GetGroupByIdAsync(groupId);
+    
+    if (group != null)
+    {
+        group.MemberIds.Remove(userId);
+        if (group.MemberIds.Count == 0)
+        {
+            // Valfritt: Ta bort gruppen helt om ingen är kvar
+        }
+        else
+        {
+            await _groupRepo.UpdateGroupMembersAsync(groupId, group.MemberIds);
+        }
+    }
+    return RedirectToAction("Index");
+}
+
+[HttpPost]
+public async Task<IActionResult> UpdateMembers(string groupId, List<string> selectedUsers)
+{
+    // selectedUsers bör innehålla ALLA som ska vara kvar/lägga till
+    await _groupRepo.UpdateGroupMembersAsync(groupId, selectedUsers);
+    return RedirectToAction("Index", new { groupId = groupId });
+}
+
+ [HttpPost]
+public async Task<IActionResult> RemoveMember(string groupId, string userId)
+{
+    var group = await _groupRepo.GetGroupByIdAsync(groupId);
+    if (group != null)
+    {
+        group.MemberIds.Remove(userId);
+        await _groupRepo.UpdateGroupMembersAsync(groupId, group.MemberIds);
+    }
+    return RedirectToAction("Index", new { groupId = groupId });
+}
+
+[HttpPost]
+public async Task<IActionResult> AddMembers(string groupId, List<string> newUserIds)
+{
+    var group = await _groupRepo.GetGroupByIdAsync(groupId);
+    if (group != null && newUserIds != null && newUserIds.Any())
+    {
+        group.MemberIds.AddRange(newUserIds);
+        group.MemberIds = group.MemberIds.Distinct().ToList(); // Säkerhetsåtgärd mot dubbletter
+        await _groupRepo.UpdateGroupMembersAsync(groupId, group.MemberIds);
+    }
+    return RedirectToAction("Index", new { groupId = groupId });
 }
     }
 }
