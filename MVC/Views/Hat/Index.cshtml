@@ -290,10 +290,10 @@
 
                             @if (hat.Sizes != null && hat.Sizes.Any())
                             {
-                            <div class="hat-meta">
-                            <strong>Storlekar:</strong>
-                            @string.Join(", ", hat.Sizes.Select(s => $"{s.Label} ({s.Centimeters} cm)"))
-                            </div>
+                                <div class="hat-meta">
+                                <strong>Storlekar:</strong>
+                                @string.Join(", ", hat.Sizes.Select(s => $"{s.Quantity} st {s.Label}"))
+                                </div>
                             }
 
                             <!-- Materiallista -->
@@ -623,48 +623,52 @@
             }
 
             function addSizeRow() {
-                const container = document.getElementById("sizeRows");
-                const currentIndex = sizeIndex;
+    const container = document.getElementById("sizeRows");
+    const currentIndex = sizeIndex;
 
-                const row = document.createElement("div");
-                row.className = "row align-items-end material-row";
+    const row = document.createElement("div");
+    row.className = "row align-items-end material-row";
 
-                row.innerHTML = `
-                <input type="hidden" name="Sizes.Index" value="${currentIndex}" />
+    row.innerHTML = `
+        <input type="hidden" name="Sizes.Index" value="${currentIndex}" />
 
-                <div class="col-md-5 mb-2 mb-md-0">
-                    <label class="form-label-clean">Storlek</label>
-                    <select name="Sizes[${currentIndex}].Label" class="form-control">
-                        <option value="">-- Välj storlek --</option>
-                        <option value="XS">XS</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="XXL">XXL</option>
-                    </select>
-                </div>
+        <div class="col-md-6 mb-2 mb-md-0">
+            <label class="form-label-clean">Storlek</label>
+            <select name="Sizes[${currentIndex}].Label" class="form-control">
+                <option value="">-- Välj storlek --</option>
+                <option value="0–6 månader (35–43 cm)">0–6 månader (35–43 cm)</option>
+                <option value="6–12 månader (43–47 cm)">6–12 månader (43–47 cm)</option>
+                <option value="1–2 år (48–50 cm)">1–2 år (48–50 cm)</option>
+                <option value="2–4 år (50–52 cm)">2–4 år (50–52 cm)</option>
+                <option value="5–7 år (52–54 cm)">5–7 år (52–54 cm)</option>
+                <option value="8–12 år (54–56 cm)">8–12 år (54–56 cm)</option>
+                <option value="S (55–56 cm)">S (55–56 cm)</option>
+                <option value="M (57–58 cm)">M (57–58 cm)</option>
+                <option value="L (59–60 cm)">L (59–60 cm)</option>
+                <option value="XL (61–62 cm)">XL (61–62 cm)</option>
+            </select>
+        </div>
 
-                <div class="col-md-5 mb-2 mb-md-0">
-                    <label class="form-label-clean">Centimeter</label>
-                    <input name="Sizes[${currentIndex}].Centimeters"
-                           type="number"
-                           min="1"
-                           class="form-control" />
-                </div>
+        <div class="col-md-4 mb-2 mb-md-0">
+            <label class="form-label-clean">Antal i lager</label>
+            <input name="Sizes[${currentIndex}].Quantity"
+                   type="number"
+                   min="0"
+                   class="form-control" />
+        </div>
 
-                <div class="col-md-2">
-                    <button type="button"
-                            class="clean-btn-danger w-100"
-                            onclick="removeMaterialRow(this)">
-                        Ta bort
-                    </button>
-                </div>
-            `;
+        <div class="col-md-2">
+            <button type="button"
+                    class="clean-btn-danger w-100"
+                    onclick="removeMaterialRow(this)">
+                Ta bort
+            </button>
+        </div>
+    `;
 
-                container.appendChild(row);
-                sizeIndex++;
-            }
+    container.appendChild(row);
+    sizeIndex++;
+}
 
             /* =========================================
                TA BORT EN MATERIALRAD
