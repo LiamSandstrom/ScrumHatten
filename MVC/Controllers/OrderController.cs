@@ -361,5 +361,18 @@ public async Task<IActionResult> GetCustomsRate(string customerId)
     }
 }
 
+[HttpGet("PrintShippingDocument/{id}")]
+public async Task<IActionResult> PrintShippingDoc(string id)
+        {
+            
+            var order = await orderRepository.GetOrderByIdAsync(id);
+            if (order == null) return NotFound("Ordern hittades inte!");
+
+            var customer= await customerRepository.GetCustomerByIdAsync(order.CustomerId);
+            if (customer == null) return NotFound("Kunden hittades inte!");
+
+            return View("ShippingDocument", (order, customer));
+        }
+
     }
 }
