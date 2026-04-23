@@ -40,5 +40,7 @@ namespace Models
 
         public string? MakerName { get; set; }
 
+        public decimal CustomsFee { get; set; }
+
     }
 }
