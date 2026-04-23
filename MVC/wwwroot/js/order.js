@@ -281,6 +281,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    document.getElementById('btnPrintOrder')?.addEventListener('click', function () {
+        generateOrderPDF();
+    });
+
     // "Ta mig an"-knappen
     document.getElementById('btnAssignToMe')?.addEventListener('click', function () {
         const orderId = document.getElementById('detailOrderId').value;
@@ -469,3 +473,14 @@ document.getElementById('editOrderForm').addEventListener('submit', async functi
         console.error("Fel vid sparande:", error);
     }
 });
+
+function generateOrderPDF() {
+    const orderId = document.getElementById('detailOrderId').value;
+    if (!orderId) {
+        alert("Kunde inte hitta order-ID.");
+        return;
+    }
+    
+    const url = `/Order/PrintShippingDocument/${orderId}`;
+    window.open(url, '_blank');
+}
