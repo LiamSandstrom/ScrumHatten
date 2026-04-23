@@ -297,7 +297,9 @@
                                         @foreach (var hm in hat.Materials)
                                         {
                                             var material = Model.Materials.FirstOrDefault(m => m.Id == hm.MaterialId);
-                                            <li>@hm.Amount @(material != null ? material.Name : "Okänt material")</li>
+                                            <li>
+                                                @hm.Amount @(material != null ? material.Unit : "") @(material != null ? material.Name : "Okänt material")
+                                            </li>
                                         }
                                     </ul>
                                 </div>
@@ -392,17 +394,17 @@
 
                                                     <div class="col-md-7 mb-2 mb-md-0">
                                                         <label class="form-label-clean">Material</label>
-                                                        <select name="Materials[@i].MaterialId" class="form-control">
+                                                        <select name="Materials[@i].MaterialId" class="form-control" onchange="updateMaterialUnit(this)">
                                                             <option value="">-- Välj material --</option>
                                                             @foreach (var material in Model.Materials)
                                                             {
                                                                 if (material.Id == hatMaterial.MaterialId)
                                                                 {
-                                                                    <option value="@material.Id" selected>@material.Name</option>
+                                                                    <option value="@material.Id" data-unit="@material.Unit" selected>@material.Name</option>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <option value="@material.Id">@material.Name</option>
+                                                                    <option value="@material.Id" data-unit="@material.Unit">@material.Name</option>
                                                                 }
                                                             }
                                                         </select>
@@ -554,7 +556,7 @@
             <option value="">-- Välj material --</option>
             @foreach (var material in Model.Materials)
             {
-                <option value="@material.Id">@material.Name</option>
+                <option value="@material.Id" data-unit="@material.Unit">@material.Name</option>
             }
         `;
 
@@ -573,7 +575,7 @@
 
                 <div class="col-md-7 mb-2 mb-md-0">
                     <label class="form-label-clean">Material</label>
-                    <select name="Materials[${currentIndex}].MaterialId" class="form-control">
+                    <select name="Materials[${currentIndex}].MaterialId" class="form-control" onchange="updateMaterialUnit(this)">
                         ${materialOptions}
                     </select>
                 </div>
@@ -584,6 +586,7 @@
                            type="number"
                            min="1"
                            class="form-control" />
+                           <small class="material-unit text-muted"></small>
                 </div>
 
                 <div class="col-md-2">
@@ -606,6 +609,17 @@
             const row = button.closest(".material-row");
             if (row) {
                 row.remove();
+            }
+        }
+
+        function updateMaterialUnit(selectElement) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const unit = selectedOption.getAttribute("data-unit") || "";
+            const row = selectElement.closest(".material-row");
+            const unitElement = row.querySelector(".material-unit");
+
+            if (unitElement) {
+            unitElement.textContent = unit ? `Enhet: ${unit}` : "";
             }
         }
 
@@ -636,7 +650,7 @@
 
                 <div class="col-md-7 mb-2 mb-md-0">
                     <label class="form-label-clean">Material</label>
-                    <select name="Materials[${currentIndex}].MaterialId" class="form-control">
+                    <select name="Materials[${currentIndex}].MaterialId" class="form-control" onchange="updateMaterialUnit(this)">
                         ${materialOptions}
                     </select>
                 </div>
@@ -647,6 +661,7 @@
                            type="number"
                            min="1"
                            class="form-control" />
+                           <small class="material-unit text-muted"></small>
                 </div>
 
                 <div class="col-md-2">
@@ -666,7 +681,11 @@
            LÄGG TILL EN TOM MATERIALRAD NÄR SIDAN LADDAS
         ========================================= */
         document.addEventListener("DOMContentLoaded", function () {
-            addMaterialRow();
+        addMaterialRow();
+
+        document.querySelectorAll('select[name$=".MaterialId"], select[name*="Materials["]').forEach(select => {
+        updateMaterialUnit(select);
+            });
         });
 
         /* =========================================
