@@ -84,108 +84,141 @@
                         </div>
                     <p id="error-rows" class="text-danger"></p>
                     <div id="rows">
+
 <template id="customRowTemplate">
     <div class="row-item card mb-3 shadow-sm">
         <div class="card-body">
 
-            <!-- Header -->
+            <!-- HEADER -->
             <div class="d-flex justify-content-between mb-3">
                 <h6 class="mb-0 fw-bold">Skräddarsydd hatt</h6>
                 <button type="button" class="btn btn-sm btn-outline-danger remove-row">Ta bort</button>
             </div>
 
-            <!-- Bild -->
-            <p class="text-muted small text-uppercase fw-semibold mb-2">Bild</p>
-            <div class="row g-3 mb-4 align-items-center" style="justify-content: space-around;">
-                <div class="col-4 col-md-4">
-                    <label class="form-label">Ladda upp bild</label>
-                    <input type="file" accept="image/*" class="form-control custom-image" name="" />
-                    <p class="text-muted small mt-1 mb-0">JPG, PNG eller WebP</p>
-                </div>
-                <div class="col-6 col-md-5">
-                    <div class="border rounded p-2 d-flex align-items-center justify-content-center bg-light custom-preview-wrapper" style="min-height:120px;">
-                        <span class="text-muted small custom-preview-placeholder">Ingen bild vald</span>
-                        <img class="custom-preview rounded d-none" style="max-width:100%;object-fit:contain;" />
+            <div class="row g-4">
+
+                <!-- ===================== -->
+                <!-- VÄNSTER -->
+                <!-- ===================== -->
+                <div class="col-12 col-md-6">
+
+                    <div class="">
+                        <label class="form-label">Pris</label>
+                        <div class="input-group">
+                            <input type="number" min="0" step="50"
+                                   class="form-control custom-price" placeholder="0" />
+                            <span class="input-group-text">kr</span>
+                        </div>
+                        <p class="error-text-field error-price"></p>
                     </div>
-                </div>
-            </div>
 
-            <hr class="my-3" />
-
-            <!-- Grundinfo -->
-            <p class="text-muted small text-uppercase fw-semibold mb-2">Grundinfo</p>
-            <div class="row g-3 mb-4">
-
-                <div class="col-12 col-md-4">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label">Pris</label>
-                            <div class="input-group">
-                                <input type="number" min="0" step="50" class="form-control custom-price" name="" placeholder="0" />
-                                <span class="input-group-text">kr</span>
-                            </div>
-                            <p class="error-text-field error-price"></p>
-                        </div>
-                        <div class="col-12" style="margin-top: 0;">
-                            <label class="form-label">Antal</label>
-                            <input type="number" min="1" value="1" class="form-control quantity-input" name="" />
-                            <p class="error-text-field error-qty"></p>
-                        </div>
-                        <div class="col-12" style="margin-top: 0;">
-                            <label class="form-label">Storlek</label>
-                            <select class="form-select row-size" name="">
-                                <option value="">Välj storlek</option>
-                                <optgroup label="Barn">
-                                    <option value="0-6m">0–6 månader (35–43 cm)</option>
-                                    <option value="6-12m">6–12 månader (43–47 cm)</option>
-                                    <option value="1-2y">1–2 år (48–50 cm)</option>
-                                    <option value="2-4y">2–4 år (50–52 cm)</option>
-                                    <option value="5-7y">5–7 år (52–54 cm)</option>
-                                    <option value="8-12y">8–12 år (54–56 cm)</option>
-                                </optgroup>
-                                <optgroup label="Vuxen">
-                                    <option value="S">S (55–56 cm)</option>
-                                    <option value="M">M (57–58 cm)</option>
-                                    <option value="L">L (59–60 cm)</option>
-                                    <option value="XL">XL (61–62 cm)</option>
-                                </optgroup>
-                            </select>
-                            <p class="error-text-field error-size"></p>
-                        </div>
+                    <div class="">
+                        <label class="form-label">Antal</label>
+                        <input type="number" min="1" value="1"
+                               class="form-control quantity-input" />
+                        <p class="error-text-field error-qty"></p>
                     </div>
+
+                    <div class="">
+                        <label class="form-label">Storlek</label>
+                        <select class="form-select row-size">
+                            <option value="">Välj storlek</option>
+                            <optgroup label="Barn">
+                                <option value="0-6m">0–6 månader (35–43 cm)</option>
+                                <option value="6-12m">6–12 månader (43–47 cm)</option>
+                                <option value="1-2y">1–2 år (48–50 cm)</option>
+                                <option value="2-4y">2–4 år (50–52 cm)</option>
+                                <option value="5-7y">5–7 år (52–54 cm)</option>
+                                <option value="8-12y">8–12 år (54–56 cm)</option>
+                            </optgroup>
+                            <optgroup label="Vuxen">
+                                <option value="S">S (55–56 cm)</option>
+                                <option value="M">M (57–58 cm)</option>
+                                <option value="L">L (59–60 cm)</option>
+                                <option value="XL">XL (61–62 cm)</option>
+                            </optgroup>
+                        </select>
+                        <p class="error-text-field error-size"></p>
+                    </div>
+
                 </div>
 
-                <div class="col-12 col-md-8">
-                    <label class="form-label">Beskrivning</label>
-                    <textarea class="form-control custom-description" style="min-height: 90%; resize: none;" name="" placeholder="Beskriv hatten..."></textarea>
-                </div>
+                <!-- ===================== -->
+                <!-- HÖGER -->
+                <!-- ===================== -->
+                <div class="col-12 col-md-6">
 
-            </div>
+                    <!-- VÄLJ BILD -->
+                    <div class="mb-3 w-100">
+                        <p class="text-muted small text-uppercase fw-semibold mb-2">Bild</p>
 
-            <hr class="my-3" />
+                        <input type="file" accept="image/*"
+                               class="form-control custom-image" />
 
-            <!-- Material -->
-            <p class="text-muted small text-uppercase fw-semibold mb-2">Material</p>
-            <p class="error-text-field error-materials"></p>
-            <div class="material-list">
-                <template class="material-row-template">
-                    <div class="row material-row mt-2">
-                        <input type="hidden" value="" />
-                        <div class="col-md-7 mb-2 mb-md-0">
-                            <label class="form-label-clean">Material</label>
-                            <select name="" class="form-control materials-select"></select>
-                            <p class="error-text-field error-material-u"></p>
-                        </div>
-                        <div class="col-md-3 mb-2 mb-md-0">
-                            <label class="form-label-clean">Antal</label>
-                            <input name="" type="number" value="1" min="1" class="form-control material-quantity" />
-                            <p class="error-text-field error-material-qty"></p>
-                        </div>
-                        <div class="col-md-2 d-flex" style="align-items: center;">
-                            <button type="button" class="btn btn-sm btn-outline-danger remove-material w-100">Ta bort</button>
+                        <p class="text-muted small mt-1">JPG, PNG eller WebP</p>
+
+                        <div class="border rounded bg-light d-flex align-items-center justify-content-center mt-2 custom-preview-wrapper"
+                             style="height:160px;">
+                            <span class="text-muted small custom-preview-placeholder">
+                                Ingen bild vald
+                            </span>
+                            <img class="custom-preview d-none"
+                                 style="max-width:100%; max-height:100%; object-fit:contain;" />
                         </div>
                     </div>
-                </template>
+
+                    <!-- DESCRIPTION (100% width block) -->
+
+                </div>
+                    <div class="col-12" style="margin-top: 0;">
+                        <label class="form-label">Beskrivning</label>
+                        <textarea class="form-control custom-description"
+                                  style="min-height:120px; resize:none;"
+                                  placeholder="Beskriv hatten..."></textarea>
+                    </div>
+
+                    <!-- MATERIAL (100% width block) -->
+                    <div class="col-10">
+
+                        <p class="text-muted small text-uppercase fw-semibold mb-2">Material</p>
+                        <p class="error-text-field error-materials"></p>
+
+                        <div class="material-list">
+
+                            <template class="material-row-template">
+
+                                <div class="row material-row mt-2">
+
+                                    <input type="hidden" value="" />
+
+                                    <div class="col-md-7 mb-2 mb-md-0">
+                                        <label class="form-label-clean">Material</label>
+                                        <select class="form-control materials-select"></select>
+                                        <p class="error-text-field error-material-u"></p>
+                                    </div>
+
+                                    <div class="col-md-3 mb-2 mb-md-0">
+                                        <label class="form-label-clean">Antal</label>
+                                        <input type="number" value="1" min="1"
+                                               class="form-control material-quantity" />
+                                        <p class="error-text-field error-material-qty"></p>
+                                    </div>
+
+                                    <div class="col-md-2 d-flex align-items-center" style="max-width: 60px;">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger remove-material w-100">
+                                                x
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            </template>
+
+                        </div>
+
+                    </div>
+
             </div>
 
         </div>
@@ -248,7 +281,7 @@
                     </div>
                 </div>
 
-                <div class="material-list">
+                <div class="material-list" style="margin: 0;">
                     <template class="material-row-template">
                         <div class="row material-row">
                             <input type="hidden" value="" />
@@ -263,7 +296,7 @@
                                 <p class="error-text-field error-material-qty"></p>
                             </div>
                             <div class="col-md-2 d-flex" style="align-items: center;"> 
-                                <button type="button" class="btn btn-sm btn-outline-danger remove-material w-100">Ta bort</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-material w-100" style="max-width: 75px;">Ta bort</button>
                             </div>
                         </div>
                     </template>
