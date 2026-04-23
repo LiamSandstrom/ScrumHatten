@@ -14,4 +14,6 @@ public class Customer
     public string Country { get; set; }
     public string City { get; set; }
 
+    public double Discount { get; set; }
+
 }
