@@ -63,222 +63,409 @@
         </div>
     </div>
 
-    <div class="modal fade" id="createOrderModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
+<div class="modal fade" id="createOrderModal" tabindex="-1" style="min-width: 320px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
 
-                <div class="modal-header">
-                    <h5 class="modal-title">Ny order</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header">
+                <h5 class="modal-title">Ny order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="createOrderForm" enctype="multipart/form-data" method="post" action="/Order/Create">
+
+                <div class="modal-body">
+
+                    <!-- ===================== DETALJER ===================== -->
+                    <div id="step1">
+                        <div class="mb-2" style="display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+                            <button type="button" class="btn btn-primary" id="addHatBtn">Lägg till lagerförd</button>
+                            <button type="button" class="btn btn-primary" id="addCustomHatBtn">Lägg till skräddarsydd</button>
+                        </div>
+                    <p id="error-rows" class="text-danger"></p>
+                    <div id="rows">
+
+<template id="customRowTemplate">
+    <div class="row-item card mb-3 shadow-sm" style="border-left: 3px solid black">
+        <div class="card-body">
+
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between mb-3">
+                <h6 class="mb-0 fw-bold">Skräddarsydd hatt</h6>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-row">Ta bort</button>
+            </div>
+
+            <div class="row g-4">
+
+                <!-- ===================== -->
+                <!-- VÄNSTER -->
+                <!-- ===================== -->
+                <div class="col-12 col-md-4">
+
+                    <div class="">
+                        <label class="form-label">Pris</label>
+                        <div class="input-group">
+                            <input type="number" min="0" step="50"
+                                   class="form-control custom-price" placeholder="0" />
+                            <span class="input-group-text">kr</span>
+                        </div>
+                        <p class="error-text-field error-price"></p>
+                    </div>
+
+                    <div class="">
+                        <label class="form-label">Antal</label>
+                        <input type="number" min="1" value="1"
+                               class="form-control quantity-input" />
+                        <p class="error-text-field error-qty"></p>
+                    </div>
+
+                    <div class="">
+                        <label class="form-label">Storlek</label>
+                        <select class="form-select row-size">
+                            <option value="">Välj storlek</option>
+                            <optgroup label="Barn">
+                                <option value="0-6m">0–6 månader (35–43 cm)</option>
+                                <option value="6-12m">6–12 månader (43–47 cm)</option>
+                                <option value="1-2y">1–2 år (48–50 cm)</option>
+                                <option value="2-4y">2–4 år (50–52 cm)</option>
+                                <option value="5-7y">5–7 år (52–54 cm)</option>
+                                <option value="8-12y">8–12 år (54–56 cm)</option>
+                            </optgroup>
+                            <optgroup label="Vuxen">
+                                <option value="S">S (55–56 cm)</option>
+                                <option value="M">M (57–58 cm)</option>
+                                <option value="L">L (59–60 cm)</option>
+                                <option value="XL">XL (61–62 cm)</option>
+                            </optgroup>
+                        </select>
+                        <p class="error-text-field error-size"></p>
+                    </div>
+
                 </div>
 
-                <form id="createOrderForm" method="post" action="/Order/Create">
+                <!-- ===================== -->
+                <!-- HÖGER -->
+                <!-- ===================== -->
+                <div class="col-12 col-md-8">
 
-                    <div class="modal-body">
+                    <!-- VÄLJ BILD -->
+                    <div class="mb-3 w-100">
+                        <p class="text-muted small text-uppercase fw-semibold mb-2">Bild</p>
 
-                        <!-- ===================== HATTAR ===================== -->
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-body">
+                        <input type="file" accept="image/*"
+                               class="form-control custom-image" />
 
-                                        <h6 class="mb-3">Hattar</h6>
+                        <p class="text-muted small mt-1">JPG, PNG eller WebP</p>
 
-                                        <div id="hatList">
-                                            <div id="rows"></div>
+                        <div class="border rounded bg-light d-flex align-items-center justify-content-center mt-2"
+                             style="min-height: 200px;">
+                            <span class="text-muted small custom-preview-placeholder">
+                                Ingen bild vald
+                            </span>
+                            <img class="custom-preview d-none"
+                                 style="width: 350px; height: 200px; max-width:100%; max-height:100%; object-fit:cover; border-radius: 10px; border: 2px solid #dfe2e6;" />
+                        </div>
+                    </div>
 
-                                            <template id="rowTemplate">
-                                                <div class="row-item card mb-3 shadow-sm">
-                                                    <div class="card-body">
+                    <!-- DESCRIPTION (100% width block) -->
 
-                                                        <div class="row g-3 align-items-center">
+                </div>
+                    <div class="col-12" style="margin-top: 0;">
+                        <label class="form-label">Beskrivning</label>
+                        <textarea class="form-control custom-description"
+                                  style="min-height:120px; resize:none;"
+                                  placeholder="Beskriv hatten..."></textarea>
+                    </div>
 
-                                                            <div class="col-12 col-sm-6 col-lg-3">
-                                                                <label class="form-label">Typ</label>
-                                                                <select class="form-select type-dropdown">
-                                                                    <option value="">Välj typ</option>
-                                                                    <option value="Stock">Lager</option>
-                                                                    <option value="Custom">Custom</option>
-                                                                </select>
-                                                                <p class="error-text"></p>
-                                                            </div>
+                    <!-- MATERIAL (100% width block) -->
+                    <div class="col-10">
 
-                                                            <div class="col-12 col-sm-6 col-lg-3">
-                                                                <label class="form-label">Hatt</label>
-                                                                <select class="form-select hat-dropdown">
-                                                                    <option value="">Välj hatt</option>
-                                                                </select>
-                                                                <p class="error-text error-hat"></p>
-                                                            </div>
+                        <p class="text-muted small text-uppercase fw-semibold mb-2">Material</p>
+                        <p class="error-text-field error-materials"></p>
 
-                                                            <div class="col-12 col-sm-6 col-lg-2">
-                                                                <label class="form-label">Antal</label>
-                                                                <input type="number" min="1" value="1"
-                                                                    class="form-control quantity-input" />
-                                                                <p class="error-text error-qty"></p>
-                                                            </div>
+                        <div class="material-list">
 
-                                                            <div class="col-12 col-sm-6 col-lg-4">
-                                                                <div class="d-flex gap-3 align-items-center">
+                            <template class="material-row-template">
 
-                                                                    <img class="hat-image rounded d-none"
-                                                                        style="width:80px;height:80px;object-fit:contain;" />
+                                <div class="row material-row mt-2" style="border-left: 2px solid black; margin-left: 16px;">
 
-                                                                    <div>
-                                                                        <div class="fw-bold hat-name"></div>
-                                                                        <div class="text-muted small hat-description"></div>
-                                                                        <div class="hat-price small text-muted"></div>
-                                                                        <div class="hat-quantity small text-muted"></div>
-                                                                        <div class="fw-bold text-primary hat-total"></div>
-                                                                    </div>
+                                    <input type="hidden" value="" />
 
-                                                                </div>
-                                                            </div>
+                                    <div class="col-md-7 mb-2 mb-md-0">
+                                        <label class="form-label-clean">Material</label>
+                                        <select class="form-control materials-select"></select>
+                                        <p class="error-text-field error-material-u"></p>
+                                    </div>
 
-                                                        </div>
+                                    <div class="col-md-3 mb-2 mb-md-0">
+                                        <label class="form-label-clean">Antal</label>
+                                        <input type="number" value="1" min="1"
+                                               class="form-control material-quantity" />
+                                        <p class="error-text-field error-material-qty"></p>
+                                    </div>
 
-                                                        <button type="button"
-                                                                class="btn btn-sm btn-outline-danger mt-2 remove-row">
-                                                            Ta bort
-                                                        </button>
-
-                                                    </div>
-                                                </div>
-                                            </template>
-                                        </div>
-
-                                        <div id="rowsError" class="text-danger small mt-1 d-none">Minst en hatt krävs</div>
-
-                                        <button type="button" class="btn btn-primary btn-sm mt-2" id="addRow">
-                                            Lägg till hatt
+                                    <div class="col-md-2 d-flex align-items-center" style="max-width: 60px;">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger remove-material w-100">
+                                                x
                                         </button>
-
                                     </div>
+
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- ===================== DETALJER ===================== -->
-                        <div class="row mb-3 g-3">
-
-                            <div class="col-12 col-lg-6">
-                                <div class="card h-100">
-                                    <div class="card-body">
-
-                                        <h6 class="mb-3">Detaljer</h6>
-
-                                        <div class="row g-3">
-
-                                            <div class="col-12 col-sm-6">
-                                                <label class="form-label">Transportkostnad</label>
-                                                <div class="input-group">
-                                                    <input name="TransportPrice" class="form-control" type="number" min="0"
-                                                        value="0" />
-                                                    <span class="input-group-text">kr</span>
-                                                </div>
-                                                <p id="error-TransportPrice" class="error-text"></p>
-                                            </div>
-
-                                            <div class="col-12 col-sm-6">
-                                                <label class="form-label">Tid att utföra</label>
-                                                <div class="input-group">
-                                                    <input name="TimeToMake" class="form-control" type="number" min="0"
-                                                        value="0" />
-                                                    <span class="input-group-text">timmar</span>
-                                                </div>
-                                                <p id="error-TimeToMake" class="error-text"></p>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label">Klart datum</label>
-                                                <input name="DateToFinish" class="form-control" type="date"
-                                                    min="@DateTime.Today.ToString("yyyy-MM-dd")"
-                                                    value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                                                <p id="error-DateToFinish" class="error-text"></p>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- ===================== ORDER SUMMARY ===================== -->
-                            <div class="col-12 col-lg-6">
-                                <div class="card h-100">
-                                    <div class="card-body">
-
-                                        <h6 class="mb-3">Order översikt</h6>
-
-                                        <div id="orderBreakdown" class="small text-muted"></div>
-
-                                        <div class="mt-2 text-muted small fw-bold">Totalt</div>
-
-                                        <div id="orderTotal" class="fs-4 fw-bold text-success">0 kr</div>
-
-                                        <div class="form-check mt-3">
-                                            <input name="FastOrder" id="FastOrder" class="form-check-input" type="checkbox"
-                                                value="true" />
-                                            <label class="form-check-label" for="FastOrder">Snabborder</label>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+                            </template>
 
                         </div>
-
-                        <!-- ===================== PERSONER ===================== -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h6 class="mb-3">Personer</h6>
-                                        <div class="row g-3">
-                                            <div class="col-12 col-sm-6">
-                                                <label class="form-label">Utförare</label>
-                                                @Html.DropDownListFor(
-                                                m => m.SelectedUserId,
-                                                Model.Users,
-                                                "Välj Utförare",
-                                                new { @class = "form-select" }
-                                                )
-                                                <p id="error-SelectedUserId" class="error-text"></p>
-                                            </div>
-                                            <div class="col-12 col-sm-6">
-                                                <label class="form-label">Kund</label>
-                                                @Html.DropDownListFor(
-                                                m => m.SelectedCustomerId,
-                                                Model.Customers,
-                                                "Välj Kund",
-                                                new { @class = "form-select" }
-                                                )
-                                                <p id="error-SelectedCustomerId" class="error-text"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- GENERELLT FEL -->
-                        <div id="formError" class="text-danger mt-3 d-none"></div>
 
                     </div>
 
-                    <!-- ===================== KNAPPAR ===================== -->
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                        <button type="submit" class="btn btn-primary">Skapa</button>
-                    </div>
+            </div>
 
-                </form>
+        </div>
+    </div>
+</template>
+
+<template id="rowTemplate">
+    <div class="row-item card mb-3 shadow-sm" style="border-left: 3px solid black;">
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+
+                <div class="col-12 col-sm-4 col-lg-2">
+                    <label class="form-label">Hatt</label>
+                    <select class="form-select hat-dropdown">
+                        <option value="">Välj hatt</option>
+                    </select>
+                    <p class="error-text-field error-hat"></p>
+                </div>
+
+                <div class="col-6 col-sm-4 col-lg-1">
+                    <label class="form-label">Antal</label>
+                    <input type="number" min="1" value="1" class="form-control quantity-input" />
+                    <p class="error-text-field error-qty"></p>
+                </div>
+
+                <div class="col-6 col-sm-4 col-lg-3">
+                    <label class="form-label">Storlek</label>
+                    <select class="form-select row-size" name="">
+                        <option value="">Välj storlek</option>
+                        <optgroup label="Barn">
+                            <option value="0-6m">0–6 månader (35–43 cm)</option>
+                            <option value="6-12m">6–12 månader (43–47 cm)</option>
+                            <option value="1-2y">1–2 år (48–50 cm)</option>
+                            <option value="2-4y">2–4 år (50–52 cm)</option>
+                            <option value="5-7y">5–7 år (52–54 cm)</option>
+                            <option value="8-12y">8–12 år (54–56 cm)</option>
+                        </optgroup>
+                        <optgroup label="Vuxen">
+                            <option value="S">S (55–56 cm)</option>
+                            <option value="M">M (57–58 cm)</option>
+                            <option value="L">L (59–60 cm)</option>
+                            <option value="XL">XL (61–62 cm)</option>
+                        </optgroup>
+                    </select>
+                    <p class="error-text-field error-size"></p>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                        <img class="hat-image rounded d-none" style="width:60px;height:60px;object-fit:contain;flex-shrink:0;" />
+                        <div style="min-width:0;flex:1;">
+                            <div class="fw-bold hat-name"></div>
+                            <div class="text-muted small hat-description text-truncate"></div>
+                            <div class="hat-price small text-muted"></div>
+                            <div class="hat-quantity small text-muted"></div>
+                            <div class="fw-bold text-primary hat-total"></div>
+                        </div>
+                        <button class="edit-btn btn btn-sm btn-secondary d-none" type="button">Ändra</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-row">Ta bort</button>
+                    </div>
+                </div>
+
+                <div class="material-list" style="margin: 0;">
+                    <template class="material-row-template">
+                        <div class="row material-row mt-2" style="border-left: 2px solid black; margin-left: 16px;">
+                            <input type="hidden" value="" />
+                            <div class="col-md-7 mb-2 mb-md-0">
+                                <label class="form-label-clean">Material</label>
+                                <select name="" class="form-control materials-select"></select>
+                                <p class="error-text-field error-material-u"></p>
+                            </div>
+                            <div class="col-md-3 mb-2 mb-md-0">
+                                <label class="form-label-clean">Antal</label>
+                                <input name="" type="number" value="1" min="1" class="form-control material-quantity" />
+                                <p class="error-text-field error-material-qty"></p>
+                            </div>
+                            <div class="col-md-2 d-flex" style="align-items: center;"> 
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-material w-100" style="max-width: 75px;">Ta bort</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
 
             </div>
         </div>
     </div>
+</template>
+                    </div>
+
+                    </div>
+
+                    <div id="step2">
+
+                    <div class="row mb-3 g-3">
+
+                        <div class="col-12 col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+
+                                    <h6 class="mb-2">Order detaljer</h6>
+
+                                    <div class="row g-3">
+
+                                        <div class="col-12 col-sm-6">
+                                            <label class="form-label">Transportkostnad</label>
+                                            <div class="input-group">
+                                                <input name="TransportPrice" class="form-control" type="number" min="0" step="10"
+                                                       value="0" />
+                                                <span class="input-group-text">kr</span>
+                                            </div>
+                                            <p id="error-TransportPrice" class="error-text"></p>
+                                        </div>
+
+                                        <div class="col-12 col-sm-6" >
+                                            <label class="form-label">Tull</label>
+                                            <div class="input-group">
+                                                <input name="Customs" class="form-control" type="number" min="0"
+                                                       value="0" step="10" />
+                                                <span class="input-group-text">kr</span>
+                                            </div>
+                                            <p id="error-Customs" class="error-text"></p>
+                                        </div>
+
+                                        <div class="col-12 col-sm-6" style="margin-top: 0;">
+                                            <label class="form-label">Rabatt</label>
+                                            <div class="input-group">
+                                                <input name="Discount" class="form-control" type="number" min="0"
+                                                       value="0" max="100" step="5" />
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                            <p id="error-Discount" class="error-text"></p>
+                                        </div>
+
+                                        <div class="col-0 col-sm-6"></div>
+
+                                        <div class="col-12 col-sm-6" style="margin-top: 0;">
+                                            <label class="form-label">Tid att utföra</label>
+                                            <div class="input-group">
+                                                <input name="TimeToMake" class="form-control" type="number" min="0"
+                                                       value="0" />
+                                                <span class="input-group-text">timmar</span>
+                                            </div>
+                                            <p id="error-TimeToMake" class="error-text"></p>
+                                        </div>
 
 
-    <div class="modal fade" id="orderDetailModal" tabindex="-1">
+                                        <div class="col-12 col-sm-6" style="margin-top: 0;">
+                                            <label class="form-label">Klart datum</label>
+                                            <input name="DateToFinish" class="form-control" type="date"
+                                                   min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                                   value="@DateTime.Today.ToString("yyyy-MM-dd")" 
+                                                   style="height: 50%;"
+                                                   />
+                                            <p id="error-DateToFinish" class="error-text"></p>
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===================== ORDER SUMMARY ===================== -->
+                        <div class="col-12 col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+
+                                    <h6 class="mb-3">Order översikt</h6>
+
+                                    <div id="orderBreakdown" class="small text-muted"></div>
+
+                                    <div class="mt-2 text-muted small fw-bold">Totalt</div>
+
+                                    <div id="orderTotal" class="fs-4 fw-bold text-success">0 kr</div>
+
+                                        <div class="form-check col-12 col-sm-6" style="display:flex; justify-content: flex-start; align-items: center; padding-bottom: 10px; style=margin-top: 0;">
+                                        <div style="display: flex; justify-content: center; align-items: center; gap: 4px;">
+                                            <input name="FastOrder" id="fastOrder" class="form-check-input" type="checkbox"
+                                                   value="true" style="height: 17px; width: 17px;" />
+                                            <label class="form-check-label" style="padding-top:2px;" for="FastOrder">Snabborder</label>
+                                        </div>
+                                        </div>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ===================== PERSONER ===================== -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="mb-2">Personer</h6>
+                                    <div class="row g-3">
+                                        <div class="col-12 col-sm-6">
+                                            <label class="form-label">Utförare</label>
+                                            @Html.DropDownListFor(
+                                            m => m.SelectedUserId,
+                                            Model.Users,
+                                            "Välj Utförare",
+                                            new { @class = "form-select" }
+                                            )
+                                            <p id="error-SelectedUserId" class="error-text"></p>
+                                        </div>
+
+                                        <div class="col-12 col-sm-6">
+                                            <label class="form-label">Kund</label>
+                                            @Html.DropDownListFor(
+                                            m => m.SelectedCustomerId,
+                                            Model.Customers,
+                                            "Välj Kund",
+                                            new { @class = "form-select" }
+                                            )
+                                            <p id="error-SelectedCustomerId" class="error-text"></p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    </div>
+                    <!-- GENERELLT FEL -->
+                    <div id="formError" class="text-danger mt-3 d-none"></div>
+
+                </div>
+
+                <!-- ===================== KNAPPAR ===================== -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <button type="button"id="prevBtn" class="btn btn-secondary" >Tillbaka</button>
+                    <button type="button" id="nextBtn" class="btn btn-primary">Nästa</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+  <div class="modal fade" id="orderDetailModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header custom-header-brown text-white">
@@ -393,7 +580,7 @@
                             </select>
                         </div>
 
-                        <div class="col-12 mt-3">
+                        <div class="col-12">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="FastOrder" id="editFastOrder" value="true">
                                 <label class="form-check-label fw-bold" for="editFastOrder">Snabborder</label>
@@ -410,62 +597,54 @@
     </div>
 </div>
 
-
-    <style>
-        .custom-header-brown {
-            background-color: #7d563b !important;
-            border-bottom: 2px solid #4E342E;
-            text-align: center;
-            letter-spacing: 1px;
-        }
-
-        .kanban-col {
-            min-height: 70vh;
-            background-color: #f4f1f0;
-            border-radius: 5px;
-        }
-
-        .order-card {
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-
-        .order-card:hover {
-            transform: scale(1.02);
-        }
-
-        h1 {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 1.5rem;
-            color: #4E342E;
-        }
-
-
-        h1::after {
-            content: "";
-            display: block;
-            width: 50px;
-            height: 3px;
-            background-color: #7d563b;
-            margin-top: 5px;
-            border-radius: 2px;
-        }
-    </style>
-    @section Scripts {
-        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-        <script src="~/js/kanban.js"></script>
-        <script src="~/js/order.js" asp-append-version="true"></script>
-        <script src="~/js/account.js"></script>
-        <script>
-            handleFormSubmit("createOrderForm");
-
-            document.getElementById("createOrderForm").addEventListener("submit", async () => {
-            if (rowValidationFailed) return;
-            await new Promise(r => setTimeout(r, 500));
-            const modal = document.getElementById("createOrderModal");
-            bootstrap.Modal.getInstance(modal)?.hide();
-            }, false);
-        </script>
+<style>
+    .custom-header-brown {
+        background-color: #7d563b;
+        !important;
+        border-bottom: 2px solid #4E342E;
+        text-align: center;
+        letter-spacing: 1px;
     }
+
+    .kanban-col {
+        min-height: 70vh;
+        background-color: #f4f1f0;
+        border-radius: 5px;
+    }
+
+    .order-card {
+        transition: transform 0.3s;
+    }
+
+    .order-card:hover {
+        transform: scale(1.02);
+    }
+
+    h1 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 1.5rem;
+        color: #4E342E;
+    }
+
+
+    h1::after {
+        content: "";
+        display: block;
+        width: 50px;
+        height: 3px;
+        background-color: #7d563b;
+        margin-top: 5px;
+        border-radius: 2px;
+    }
+</style>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="~/js/kanban.js"></script>
+    <script src="~/js/order.js" asp-append-version="true" type="module"></script>
+    <script>
+        handleFormSubmit("createOrderForm");
+    </script>
+}
+
