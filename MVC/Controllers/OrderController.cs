@@ -3,10 +3,13 @@ using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models;
+using MongoDB.Driver;
 using MVC.ViewModels;
 using Repository;
 using Repository.Repositories;
 using Services;
+using BL.Services;
+
 
 namespace MVC.Controllers
 {
@@ -14,107 +17,49 @@ namespace MVC.Controllers
     public class OrderController : BaseController
     {
         private readonly IOrderRepository orderRepository;
+        private readonly ICustomsService _customsService;
         private IUserRepository userRepository;
         private ICustomerRepository customerRepository;
         private HatRepository hatRepository;
         private IMaterialRepository materialRepository;
 
-        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo, IOrderRepository orderRepo, IMaterialRepository materialRepo)
-
+        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo, IOrderRepository orderRepo, IMaterialRepository materialRepo, ICustomsService customsService)
         {
             orderRepository = orderRepo;
             userRepository = userRepo;
             hatRepository = hatRepo;
             customerRepository = customerRepo;
             materialRepository = materialRepo;
+            _customsService = customsService;
         }
 
         [HttpGet("")]
         public async Task<IActionResult> Order()
         {
-            // Vi skapar temporär data för att simulera databasen
-            var mockOrders = new List<Order>
-            {
-                new Order {
-                    Id = "65f1a2b3c4d5e6f7a8b9c001", // Simulerat MongoDB-id
-                    DateToFinish = DateTime.Now.AddDays(2),
-                    FastOrder = true,
-                    Status = Status.Pending,
-                    Priority = Priority.High,
-                    Hats = new List<Hat> { new Hat(), new Hat(), new Hat() } // 3 hattar
-                },
-                new Order {
-                    Id = "65f1a2b3c4d5e6f7a8b9c002",
-                    DateToFinish = DateTime.Now.AddDays(5),
-                    FastOrder = false,
-                    Status = Status.InProgress,
-                    Priority = Priority.Medium,
-                    Hats = new List<Hat> { new Hat() } // 1 hatt
-                },
-                new Order {
-                    Id = "65f1a2b3c4d5e6f7a8b9c003",
-                    DateToFinish = DateTime.Now.AddDays(1),
-                    FastOrder = false,
-                    Status = Status.Completed,
-                    Priority = Priority.Low,
-                    Hats = new List<Hat> { new Hat(), new Hat() } // 2 hattar
-                },
-                new Order {
-                    Id = "65f1a2b3c4d5e6f7a8b9c004",
-                    DateToFinish = DateTime.Now.AddDays(10),
-                    FastOrder = false,
-                    Status = Status.Pending,
-                },
-                new Order {
-                    Id = "65f1a2b3c4d5e6f4", // Simulerat MongoDB-id
-                    DateToFinish = DateTime.Now.AddDays(2),
-                    FastOrder = true,
-                    Status = Status.Pending,
-                    Priority = Priority.High,
-                    Hats = new List<Hat> { new Hat(), new Hat(), new Hat() } // 3 hattar
-                },
-                new Order {
-                    Id = "65f1a2b3c4d5egrrg57",
-                    DateToFinish = DateTime.Now.AddDays(5),
-                    FastOrder = false,
-                    Status = Status.InProgress,
-                    Priority = Priority.Medium,
-                    Hats = new List<Hat> { new Hat() } // 1 hatt
-                },
-                new Order {
-                    Id = "65f1a2b3c4d5e6",
-                    DateToFinish = DateTime.Now.AddDays(1),
-                    FastOrder = false,
-                    Status = Status.Completed,
-                    Priority = Priority.Low,
-                    Hats = new List<Hat> { new Hat(), new Hat() } // 2 hattar
-                },
-                new Order {
-                    Id = "65f1a2b3c4d5e6",
-                    DateToFinish = DateTime.Now.AddDays(10),
-                    FastOrder = false,
-                    Status = Status.Pending,
-                    Priority = Priority.Medium,
-                    Hats = new List<Hat> { new Hat(), new Hat(), new Hat(), new Hat() } // 4 hattar
-                },
-                new Order
-                {
-                    Id = "65f2394795hjf",
-                    DateToFinish = DateTime.Now.AddDays(-3),
-                    FastOrder = false,
-                    Status = Status.Delivered,
-                    Priority = Priority.Low,
-                    Hats = new List<Hat> { new Hat() } // 1 hatt
 
-                }
-            };
+            var realOrders = await orderRepository.GetAllOrdersAsync();
+
 
             var users = await userRepository.GetAllUsersAsync();
             var customers = await customerRepository.GetAllCustomersAsync();
 
+            foreach (var order in realOrders)
+            {
+                if (order.MakerId != Guid.Empty)
+                {
+                    var maker = users.FirstOrDefault(u => u.Id == order.MakerId);
+                    if (maker != null)
+                    {
+                        order.MakerName = maker.Name;
+                    }
+                }
+            }
+
+
             var orderViewModel = new OrderViewModel
             {
-                OrderList = mockOrders,
+                OrderList = realOrders.ToList(),
+
                 Users = users.Select(u => new SelectListItem
                 {
                     Value = u.Id.ToString(),
@@ -125,9 +70,9 @@ namespace MVC.Controllers
                 {
                     Value = c.Id,
                     Text = c.Name
-                }).ToList(),
-
+                }).ToList()
             };
+
 
             return View(orderViewModel);
         }
@@ -162,9 +107,35 @@ namespace MVC.Controllers
         public async Task<IActionResult> GetOrderById(string id)
         {
             var order = await orderRepository.GetOrderByIdAsync(id);
-            if (order == null)
-                return NotFound("Ordern hittades inte!");
-            return Ok(order);
+            if (order == null) return NotFound("Ordern hittades inte!");
+
+            // Hämta kunden för att få adress, e-post etc.
+            var customer = !string.IsNullOrEmpty(order.CustomerId)
+                ? await customerRepository.GetCustomerByIdAsync(order.CustomerId) : null;
+
+            string makerName = "Ingen tilldelad";
+            if (order.MakerId != Guid.Empty)
+            {
+                var user = await userRepository.GetUser(order.MakerId);
+                makerName = user?.Name ?? "Okänd";
+            }
+
+            // VIKTIGT: Returnera ALLA fält som båda modalerna behöver
+            return Ok(new
+            {
+                id = order.Id,
+                transportPrice = order.TransportPrice,
+                timeToMake = order.TimeToMake,
+                dateToFinish = order.DateToFinish,
+                fastOrder = order.FastOrder,
+                finalPrice = order.FinalPrice,
+                hats = order.Hats,
+                makerId = order.MakerId,
+                makerName = makerName,
+                customerId = order.CustomerId,
+                customer = customer, // Hela objektet för adressuppgifter
+                status = order.Status.ToString()
+            });
         }
 
         [HttpPost("Create")]
@@ -178,6 +149,9 @@ namespace MVC.Controllers
             {
                 return Json(ModelStateErrorResponse("Validering misslyckades"));
             }
+
+            var customer = await customerRepository.GetCustomerByIdAsync(model.SelectedCustomerId);
+            decimal customsRate = customer != null ? _customsService.GetCustomsRate(customer.Country) : 0;
 
             var allHats = await hatRepository.GetAllHats();
 
@@ -195,10 +169,11 @@ namespace MVC.Controllers
             .GroupBy(h => h.Id)
             .Sum(g => (decimal)g.First().Price * g.Count());
 
-            decimal subtotalWithTransport = hatSubtotal + model.TransportPrice;
-            decimal fastOrderSurcharge = model.FastOrder ? subtotalWithTransport * 0.20m : 0m;
-            decimal afterFast = subtotalWithTransport + fastOrderSurcharge;
-            decimal finalPrice = afterFast * 1.25m;
+
+            decimal calculatedCustoms = hatSubtotal * customsRate;
+            decimal subtotalWithFees = hatSubtotal + model.TransportPrice + calculatedCustoms;
+            decimal fastOrderSurcharge = model.FastOrder ? subtotalWithFees * 0.20m : 0m;
+            decimal finalPrice = (subtotalWithFees + fastOrderSurcharge) * 1.25m;
 
             var order = new Order
             {
@@ -211,6 +186,7 @@ namespace MVC.Controllers
                 OrderDate = DateTime.Now,
                 Status = Status.Pending,
                 Hats = orderHats,
+                CustomsFee = calculatedCustoms,
                 FinalPrice = finalPrice
             };
 
@@ -250,20 +226,169 @@ namespace MVC.Controllers
                 // 'true' gör att den struntar i om det är stora eller små bokstäver
                 if (Enum.TryParse<Status>(status, true, out var parsedStatus))
                 {
-                    // Här kommer du senare lägga in:
+                    await orderRepository.SetStatusAsync(id, parsedStatus);
                     // await _orderRepository.UpdateStatusAsync(id, parsedStatus);
 
                     return Ok(new { message = "Status uppdaterad!" });
                 }
 
-                // Om konverteringen misslyckas hamnar vi här
+
                 return BadRequest("Ogiltig status-typ.");
             }
             catch (Exception ex)
             {
-                // Om något annat går fel (t.ex. databasfel senare)
+
                 return StatusCode(500, $"Internt serverfel: {ex.Message}");
             }
+        }
+
+
+        [HttpPost("AssignToMe")]
+
+        public async Task<IActionResult> AssignToMe(string orderId)
+        {
+
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userGuid))
+            {
+                return BadRequest("Du måste vara inloggad för att ta dig an en order.");
+            }
+
+            try
+            {
+                await orderRepository.AssignOrderToMakerAsync(orderId, userGuid);
+                return Json(new
+                {
+                    success = true,
+                    message = "Ordern är nu din och har flyttats till Pågående!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Kunde inte ta dig an ordern: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpPost("ReleaseOrder")]
+        public async Task<IActionResult> ReleaseOrder(string orderId)
+        {
+            try
+            {
+
+
+                var order = await orderRepository.GetOrderByIdAsync(orderId);
+                if (order == null) return NotFound();
+
+                // 2. Nolla BÅDE ID och Namn
+                order.MakerId = Guid.Empty;
+                order.MakerName = null; // Detta rensar namnet på kortet!
+                order.Status = Status.Pending;
+
+                // 3. Spara hela ordern (Använd din Update-metod)
+                await orderRepository.UpdateOrderAsync(orderId, order);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Kunde inte släppa ordern: " + ex.Message);
+            }
+        }
+
+        [HttpPost("UpdateBasicInfo/{id}")]
+        public async Task<IActionResult> UpdateBasicInfo(string id, [FromBody] OrderUpdateModel model)
+        {
+            try
+            {
+                var order = await orderRepository.GetOrderByIdAsync(id);
+                if (order == null) return NotFound();
+
+                // Uppdatera värden - om model-värdet är 0 eller null, kan du välja 
+                // att behålla gamla eller skriva över. Här skriver vi över eftersom
+                // vi litar på att modalen var förifylld.
+                order.TransportPrice = model.TransportPrice;
+                order.TimeToMake = model.TimeToMake;
+
+                // Säkerställ att datumet inte är DateTime.MinValue
+                if (model.DateToFinish != default)
+                {
+                    order.DateToFinish = model.DateToFinish;
+                }
+
+                order.CustomerId = model.SelectedCustomerId;
+                order.FastOrder = model.FastOrder;
+
+                // Hantera MakerId och MakerName defensivt
+                if (!string.IsNullOrEmpty(model.SelectedUserId) && Guid.TryParse(model.SelectedUserId, out Guid makerGuid))
+                {
+                    order.MakerId = makerGuid;
+                    var user = await userRepository.GetUser(makerGuid);
+                    order.MakerName = user?.Name;
+                }
+                else
+                {
+                    order.MakerId = Guid.Empty;
+                    order.MakerName = null;
+                }
+
+                // KRASCH-SKYDD: Beräkna priset säkert
+                // Vi kollar om Hats är null innan vi kör .Sum()
+                decimal hatSubtotal = 0;
+                if (order.Hats != null && order.Hats.Any())
+                {
+                    hatSubtotal = order.Hats.Sum(h => (decimal)(h.Price));
+                }
+
+                decimal subtotalWithTransport = hatSubtotal + order.TransportPrice;
+                decimal fastOrderSurcharge = order.FastOrder ? subtotalWithTransport * 0.20m : 0m;
+
+                order.FinalPrice = (subtotalWithTransport + fastOrderSurcharge) * 1.25m;
+
+                await orderRepository.UpdateOrderAsync(id, order);
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                // Logga felet så du ser exakt vad som hände i Visual Studio
+                System.Diagnostics.Debug.WriteLine($"Update Error: {ex.Message}");
+                return StatusCode(500, "Internt serverfel vid sparande.");
+            }
+        }
+
+        [HttpGet("GetCustomsRate")]
+        public async Task<IActionResult> GetCustomsRate(string customerId)
+        {
+            try
+            {
+                var customer = await customerRepository.GetCustomerByIdAsync(customerId);
+                if (customer == null) return NotFound("Kund saknas");
+
+                decimal rate = _customsService.GetCustomsRate(customer.Country);
+                return Ok(new
+                {
+                    customsRate = rate,
+                    country = customer.Country
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Kunde inte hämta tullsatsen: {ex.Message}");
+            }
+        }
+
+        [HttpGet("PrintShippingDocument/{id}")]
+        public async Task<IActionResult> PrintShippingDoc(string id)
+        {
+
+            var order = await orderRepository.GetOrderByIdAsync(id);
+            if (order == null) return NotFound("Ordern hittades inte!");
+
+            var customer = await customerRepository.GetCustomerByIdAsync(order.CustomerId);
+            if (customer == null) return NotFound("Kunden hittades inte!");
+
+            return View("ShippingDocument", (order, customer));
         }
 
     }

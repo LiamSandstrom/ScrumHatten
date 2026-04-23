@@ -40,7 +40,7 @@ namespace MVC.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddHat(AddHatViewModel model)
+        public async Task<IActionResult> AddHat(AddHatViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
@@ -66,14 +66,14 @@ namespace MVC.Controllers
 
                 using (var stream = new FileStream(fullPath, FileMode.Create))
                 {
-                    model.ImageFile.CopyTo(stream);
+                    await model.ImageFile.CopyToAsync(stream);
                 }
 
                 imagePath = "/images/hats/" + fileName;
 
                 using (var memoryStream = new MemoryStream())
                 {
-                    model.ImageFile.CopyTo(memoryStream);
+                    await model.ImageFile.CopyToAsync(memoryStream);
                     byte[] imageBytes = memoryStream.ToArray();
                     string base64String = Convert.ToBase64String(imageBytes);
                     imageBase64 = $"data:{model.ImageFile.ContentType};base64,{base64String}";
@@ -87,6 +87,18 @@ namespace MVC.Controllers
                     .ToList()
                 ?? new List<HatMaterial>();
 
+               var hatSizes =
+                model
+                .Sizes?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Quantity >= 0)
+                .Select(s => new HatSize
+                {
+                      Label = s.Label,
+                    Quantity = s.Quantity,
+                  })
+                    .ToList()
+                    ?? new List<HatSize>();
+
+
             Hat newHat = new Hat
             {
                 Name = model.Name,
@@ -96,11 +108,12 @@ namespace MVC.Controllers
                 ImageUrl = imagePath,
                 ImageBase64 = imageBase64,
                 Materials = hatMaterials,
+                Sizes = hatSizes,
             };
 
             try
             {
-                _hatService.AddHat(newHat);
+                await _hatService.AddHat(newHat);
                 TempData["SuccessMessage"] = "Hatten har lagts till!";
             }
             catch
@@ -140,7 +153,8 @@ namespace MVC.Controllers
             int Quantity,
             string ImageUrl,
             IFormFile? ImageFile,
-            List<HatMaterialInputViewModel> Materials
+            List<HatMaterialInputViewModel> Materials,
+            List<HatSizeInputViewModel> Sizes
         )
         {
             try
@@ -190,6 +204,18 @@ namespace MVC.Controllers
                         .ToList()
                     ?? new List<HatMaterial>();
 
+
+                    var hatSizes =
+                    Sizes
+                    ?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Quantity >= 0)
+                    .Select(s => new HatSize
+                    {
+                    Label = s.Label,
+                    Quantity = s.Quantity,
+                     })
+                    .ToList()
+                    ?? new List<HatSize>();
+
                 Hat updatedHat = new Hat
                 {
                     Id = Id,
@@ -200,9 +226,10 @@ namespace MVC.Controllers
                     ImageUrl = imagePath,
                     ImageBase64 = imageBase64,
                     Materials = hatMaterials,
+                    Sizes = hatSizes,
                 };
 
-                _hatService.UpdateHat(updatedHat);
+                await _hatService.UpdateHat(updatedHat);
 
                 TempData["SuccessMessage"] = "Hatten uppdaterades!";
             }
