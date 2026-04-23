@@ -12,5 +12,7 @@ namespace MVC.ViewModels
         public IFormFile ImageFile { get; set; }
 
         public List<HatMaterialInputViewModel> Materials { get; set; } = new();
+
+        public List<HatSizeInputViewModel> Sizes { get; set; } = new();
     }
 }

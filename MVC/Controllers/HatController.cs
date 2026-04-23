@@ -87,6 +87,18 @@ namespace MVC.Controllers
                     .ToList()
                 ?? new List<HatMaterial>();
 
+                var hatSizes =
+                    model
+                    .Sizes?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Centimeters > 0)
+                    .Select(s => new HatSize
+             {
+            Label = s.Label,
+            Centimeters = s.Centimeters,
+             })
+             .ToList()
+            ?? new List<HatSize>();
+
+
             Hat newHat = new Hat
             {
                 Name = model.Name,
@@ -96,6 +108,7 @@ namespace MVC.Controllers
                 ImageUrl = imagePath,
                 ImageBase64 = imageBase64,
                 Materials = hatMaterials,
+                Sizes = hatSizes,
             };
 
             try

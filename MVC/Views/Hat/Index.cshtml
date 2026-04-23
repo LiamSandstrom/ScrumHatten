@@ -288,6 +288,14 @@
                             <div class="hat-meta"><strong>Pris:</strong> @hat.Price kr</div>
                             <div class="hat-meta"><strong>I lager:</strong> @hat.Quantity</div>
 
+                            @if (hat.Sizes != null && hat.Sizes.Any())
+                            {
+                            <div class="hat-meta">
+                            <strong>Storlekar:</strong>
+                            @string.Join(", ", hat.Sizes.Select(s => $"{s.Label} ({s.Centimeters} cm)"))
+                            </div>
+                            }
+
                             <!-- Materiallista -->
                             @if (hat.Materials != null && hat.Materials.Any())
                             {
@@ -347,7 +355,7 @@
 
                                     <!-- Grundinfo -->
                                     <div class="row">
-                                        <div class="col-md-6 mb-ls3">
+                                        <div class="col-md-6 mb-3">
                                             <label class="form-label-clean">Namn</label>
                                             <input name="Name" class="form-control" value="@hat.Name" required />
                                         </div>
@@ -520,6 +528,17 @@
                             onclick="addMaterialRow()">
                         Lägg till material
                     </button>
+                    <hr />
+
+                        <div class="section-subtitle">Storlekar</div>
+
+                        <div id="sizeRows"></div>
+
+                        <button type="button"
+                        class="clean-btn-outline mt-2"
+                        onclick="addSizeRow()">
+                        Lägg till storlek
+                        </button>
 
                 </div>
 
@@ -548,6 +567,7 @@
            GLOBALT INDEX FÖR NYA MATERIALRADER
         ========================================= */
         let materialIndex = 0;
+        let sizeIndex = 0;
 
         /* =========================================
            HTML-ALTERNATIV FÖR MATERIAL-DROPDOWN
@@ -560,33 +580,77 @@
             }
         `;
 
-        /* =========================================
-           LÄGG TILL MATERIALRAD I "LÄGG TILL HATT"
-        ========================================= */
-        function addMaterialRow() {
-            const container = document.getElementById("materialRows");
-            const currentIndex = materialIndex;
+            /* =========================================
+               LÄGG TILL MATERIALRAD I "LÄGG TILL HATT"
+            ========================================= */
+            function addMaterialRow() {
+                const container = document.getElementById("materialRows");
+                const currentIndex = materialIndex;
 
-            const row = document.createElement("div");
-            row.className = "row align-items-end material-row";
+                const row = document.createElement("div");
+                row.className = "row align-items-end material-row";
 
-            row.innerHTML = `
-                <input type="hidden" name="Materials.Index" value="${currentIndex}" />
+                row.innerHTML = `
+                        <input type="hidden" name="Materials.Index" value="${currentIndex}" />
 
-                <div class="col-md-7 mb-2 mb-md-0">
-                    <label class="form-label-clean">Material</label>
-                    <select name="Materials[${currentIndex}].MaterialId" class="form-control" onchange="updateMaterialUnit(this)">
-                        ${materialOptions}
+                        <div class="col-md-7 mb-2 mb-md-0">
+                            <label class="form-label-clean">Material</label>
+                            <select name="Materials[${currentIndex}].MaterialId" class="form-control" onchange="updateMaterialUnit(this)">
+                                ${materialOptions}
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 mb-2 mb-md-0">
+                            <label class="form-label-clean">Antal</label>
+                            <input name="Materials[${currentIndex}].Amount"
+                                   type="number"
+                                   min="1"
+                                   class="form-control" />
+                                   <small class="material-unit text-muted"></small>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button"
+                                    class="clean-btn-danger w-100"
+                                    onclick="removeMaterialRow(this)">
+                                Ta bort
+                            </button>
+                        </div>
+                    `;
+
+                container.appendChild(row);
+                materialIndex++;
+            }
+
+            function addSizeRow() {
+                const container = document.getElementById("sizeRows");
+                const currentIndex = sizeIndex;
+
+                const row = document.createElement("div");
+                row.className = "row align-items-end material-row";
+
+                row.innerHTML = `
+                <input type="hidden" name="Sizes.Index" value="${currentIndex}" />
+
+                <div class="col-md-5 mb-2 mb-md-0">
+                    <label class="form-label-clean">Storlek</label>
+                    <select name="Sizes[${currentIndex}].Label" class="form-control">
+                        <option value="">-- Välj storlek --</option>
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
                     </select>
                 </div>
 
-                <div class="col-md-3 mb-2 mb-md-0">
-                    <label class="form-label-clean">Antal</label>
-                    <input name="Materials[${currentIndex}].Amount"
+                <div class="col-md-5 mb-2 mb-md-0">
+                    <label class="form-label-clean">Centimeter</label>
+                    <input name="Sizes[${currentIndex}].Centimeters"
                            type="number"
                            min="1"
                            class="form-control" />
-                           <small class="material-unit text-muted"></small>
                 </div>
 
                 <div class="col-md-2">
@@ -598,33 +662,33 @@
                 </div>
             `;
 
-            container.appendChild(row);
-            materialIndex++;
-        }
-
-        /* =========================================
-           TA BORT EN MATERIALRAD
-        ========================================= */
-        function removeMaterialRow(button) {
-            const row = button.closest(".material-row");
-            if (row) {
-                row.remove();
+                container.appendChild(row);
+                sizeIndex++;
             }
-        }
 
-        function updateMaterialUnit(selectElement) {
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const unit = selectedOption.getAttribute("data-unit") || "";
-            const row = selectElement.closest(".material-row");
-            const unitElement = row.querySelector(".material-unit");
-
-            if (unitElement) {
-            unitElement.textContent = unit ? `Enhet: ${unit}` : "";
+            /* =========================================
+               TA BORT EN MATERIALRAD
+            ========================================= */
+            function removeMaterialRow(button) {
+                const row = button.closest(".material-row");
+                if (row) {
+                    row.remove();
+                }
             }
-        }
 
-        /* =========================================
-           HÅLLA REDA PÅ INDEX FÖR REDIGERINGSMODALER
+            function updateMaterialUnit(selectElement) {
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const unit = selectedOption.getAttribute("data-unit") || "";
+                const row = selectElement.closest(".material-row");
+                const unitElement = row.querySelector(".material-unit");
+
+                if (unitElement) {
+                    unitElement.textContent = unit ? `Enhet: ${unit}` : "";
+                }
+            }
+
+            /* =========================================
+               HÅLLA REDA PÅ INDEX FÖR REDIGERINGSMODALER
         ========================================= */
         const editMaterialIndexes = {};
 
@@ -682,6 +746,7 @@
         ========================================= */
         document.addEventListener("DOMContentLoaded", function () {
         addMaterialRow();
+        addSizeRow();
 
         document.querySelectorAll('select[name$=".MaterialId"], select[name*="Materials["]').forEach(select => {
         updateMaterialUnit(select);
@@ -698,6 +763,11 @@
                 container.innerHTML = "";
                 materialIndex = 0;
                 addMaterialRow();
+
+                const sizeContainer = document.getElementById("sizeRows");
+                sizeContainer.innerHTML = "";
+                sizeIndex = 0;
+                addSizeRow();
             });
         }
     </script>
