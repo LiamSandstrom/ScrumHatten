@@ -2,12 +2,11 @@ using Models;
 
 namespace Repository
 {
-    public interface GroupChatRepository
+    public interface IGroupChatRepository
     {
-        Task CreateGroupChatAsync(GroupChat groupChat);
-        Task GetGroupChatByIdAsync(string id);
-        Task DeleteGroupChatAsync(string id);
-        Task AddmemberToGroupChatAsync(string groupId, string userId);
-        Task RemoveMemberFromGroupChatAsync(string groupId, string userId);
+        Task CreateGroupAsync(GroupChat group);
+        Task<List<GroupChat>> GetGroupsForUserAsync(string userId);
+        Task<GroupChat> GetGroupByIdAsync(string groupId);
+        Task<List<Message>> GetGroupMessagesAsync(string groupId);
     }
 }

@@ -27,7 +27,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-
+builder.Services.AddScoped<Repository.IGroupChatRepository, Repository.GroupChatRepository>();
 builder.Services.AddIdentity<User, ApplicationRole>(options =>
 {
     options.Password.RequiredLength = 8;
