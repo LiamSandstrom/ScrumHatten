@@ -3,6 +3,14 @@
     min-height: 600px;
 }
 
+.error-text-field {
+    min-height: 1.25rem;
+    font-size: 0.775rem;
+    color: #dc3545;
+    margin-top: 0.2rem;
+    margin-bottom: 0;
+}
+
 .orderHattRow {
     padding: 5px;
     border-radius: 4px;
