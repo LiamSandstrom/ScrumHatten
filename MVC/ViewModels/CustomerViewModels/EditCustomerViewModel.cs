@@ -39,5 +39,8 @@ namespace MVC.ViewModels.CustomerViewModels
         [Required(ErrorMessage = "Vänligen ange ett land")]
         [StringLength(100)]
         public string Country { get; set; }
+
+
+        public double Discount { get; set; }
     }
 }

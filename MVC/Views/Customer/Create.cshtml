@@ -63,6 +63,13 @@
             <span asp-validation-for="Country" class="text-danger"></span>
         </div>
 
+        <div class="form-floating mb-2">
+            <input asp-for="Discount" class="form-control" placeholder="20%" />
+            <label asp-for="Discount">Rabatt</label>
+            <p id="error-Name" class="error-text"></p>
+            <span asp-validation-for="Discount" class="text-danger"></span>
+        </div>
+
         <button type="submit" class="btn btn-primary w-100 py-2">Registrera kund</button>
     </form>
 </div>
