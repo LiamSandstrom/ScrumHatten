@@ -7,7 +7,7 @@
 
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Produktionsflöde</h1>
+        <h1>Orderöversikt</h1>
         <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
             <span class="badge bg-dark">Totalt: /*~~~~~~~~~~~~~~~~~~*/ ordrar</span>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOrderModal">
@@ -76,89 +76,87 @@
 
                 <div class="modal-body">
 
-                    <!-- ===================== HATTAR ===================== -->
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
+                    <!-- ===================== DETALJER ===================== -->
+                    <div id="step1">
+                    <button type="button" id="addHatBtn">Add row</button>
+                    <div id="rows">
+                        <template id="rowTemplate">
+                        <div class="row-item card mb-3 shadow-sm">
+                            <div class="card-body">
+                                <div class="row g-3 align-items-center">
 
-                                    <h6 class="mb-3">Hattar</h6>
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <label class="form-label">Hatt</label>
+                                        <select class="form-select hat-dropdown">
+                                            <option value="">Välj hatt</option>
+                                        </select>
+                                        <p class="error-text error-hat"></p>
+                                    </div>
 
-                                    <div id="hatList">
-                                        <div id="rows"></div>
+                                    <div class="col-12 col-sm-6 col-lg-2">
+                                        <label class="form-label">Antal</label>
+                                        <input type="number" min="1" value="1"
+                                            class="form-control quantity-input" />
+                                        <p class="error-text error-qty"></p>
+                                    </div>
 
-                                        <template id="rowTemplate">
-                                            <div class="row-item card mb-3 shadow-sm">
-                                                <div class="card-body">
+                                    <div class="col-12 col-sm-6 col-lg-6">
+                                        <div class="d-flex gap-3 align-items-center">
 
-                                                    <div class="row g-3 align-items-center">
+                                            <img class="hat-image rounded d-none"
+                                                style="width:80px;height:80px;object-fit:contain;" />
 
-                                                        <div class="col-12 col-sm-6 col-lg-3">
-                                                            <label class="form-label">Typ</label>
-                                                            <select class="form-select type-dropdown">
-                                                                <option value="">Välj typ</option>
-                                                                <option value="Stock">Lager</option>
-                                                                <option value="Custom">Custom</option>
-                                                            </select>
-                                                            <p class="error-text cant"></p>
-                                                        </div>
+                                            <div>
+                                                <div class="fw-bold hat-name"></div>
+                                                <div class="text-muted small hat-description"></div>
+                                                <div class="hat-price small text-muted"></div>
+                                                <div class="hat-quantity small text-muted"></div>
+                                                <div class="fw-bold text-primary hat-total"></div>
+                                            </div>
+                                                <button id="edit-btn" class="d-none edit-btn btn btn-secondary" type="button">Ändra</button>
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-danger remove-row">
+                                                    Ta bort
+                                                </button>
+                                        </div>
+                                    </div>
 
-                                                        <div class="col-12 col-sm-6 col-lg-3">
-                                                            <label class="form-label">Hatt</label>
-                                                            <select class="form-select hat-dropdown">
-                                                                <option value="">Välj hatt</option>
-                                                            </select>
-                                                            <p class="error-text error-hat"></p>
-                                                        </div>
-
-                                                        <div class="col-12 col-sm-6 col-lg-2">
-                                                            <label class="form-label">Antal</label>
-                                                            <input type="number" min="1" value="1"
-                                                                   class="form-control quantity-input" />
-                                                            <p class="error-text error-qty"></p>
-                                                        </div>
-
-                                                        <div class="col-12 col-sm-6 col-lg-4">
-                                                            <div class="d-flex gap-3 align-items-center">
-
-                                                                <img class="hat-image rounded d-none"
-                                                                     style="width:80px;height:80px;object-fit:contain;" />
-
-                                                                <div>
-                                                                    <div class="fw-bold hat-name"></div>
-                                                                    <div class="text-muted small hat-description"></div>
-                                                                    <div class="hat-price small text-muted"></div>
-                                                                    <div class="hat-quantity small text-muted"></div>
-                                                                    <div class="fw-bold text-primary hat-total"></div>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-
-                                                    <button type="button"
-                                                            class="btn btn-sm btn-outline-danger mt-2 remove-row">
+                                    <div class="material-list">
+                                        <template class="material-row-template">
+                                            <div class="row align-items-end material-row">
+                                                <input type="hidden" value="" />
+                                                <div class="col-md-7 mb-2 mb-md-0">
+                                                    <label class="form-label-clean">Material</label>
+                                                    <select name="" class="form-control">
+                                                        <!-- options injected -->
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-2 mb-md-0">
+                                                    <label class="form-label-clean">Antal</label>
+                                                    <input name="" type="number" min="1" class="form-control" />
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="clean-btn-danger w-100"
                                                         Ta bort
                                                     </button>
-
                                                 </div>
                                             </div>
                                         </template>
                                     </div>
 
-                                    <div id="rowsError" class="text-danger small mt-1 d-none">Minst en hatt krävs</div>
-
-                                    <button type="button" class="btn btn-primary btn-sm mt-2" id="addRow">
-                                        Lägg till hatt
-                                    </button>
-
                                 </div>
+
+
                             </div>
                         </div>
+                </template>
+
                     </div>
 
-                    <!-- ===================== DETALJER ===================== -->
+                    </div>
+
+                    <div id="step2">
+
                     <div class="row mb-3 g-3">
 
                         <div class="col-12 col-lg-6">
@@ -172,7 +170,8 @@
                                         <div class="col-12 col-sm-6">
                                             <label class="form-label">Transportkostnad</label>
                                             <div class="input-group">
-                                                <input name="TransportPrice" class="form-control" type="number" min="0" value="0" />
+                                                <input name="TransportPrice" class="form-control" type="number" min="0"
+                                                       value="0" />
                                                 <span class="input-group-text">kr</span>
                                             </div>
                                             <p id="error-TransportPrice" class="error-text"></p>
@@ -181,7 +180,8 @@
                                         <div class="col-12 col-sm-6">
                                             <label class="form-label">Tid att utföra</label>
                                             <div class="input-group">
-                                                <input name="TimeToMake" class="form-control" type="number" min="0" value="0" />
+                                                <input name="TimeToMake" class="form-control" type="number" min="0"
+                                                       value="0" />
                                                 <span class="input-group-text">timmar</span>
                                             </div>
                                             <p id="error-TimeToMake" class="error-text"></p>
@@ -189,12 +189,12 @@
 
                                         <div class="col-12">
                                             <label class="form-label">Klart datum</label>
-                                            <input name="DateToFinish" class="form-control" type="date" value="/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/" />
+                                            <input name="DateToFinish" class="form-control" type="date"
+                                                   min="/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/"
+                                                   value="/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/" />
                                             <p id="error-DateToFinish" class="error-text"></p>
                                         </div>
-
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -213,7 +213,8 @@
                                     <div id="orderTotal" class="fs-4 fw-bold text-success">0 kr</div>
 
                                     <div class="form-check mt-3">
-                                        <input name="FastOrder" id="FastOrder" class="form-check-input" type="checkbox" value="true" />
+                                        <input name="FastOrder" id="fastOrder" class="form-check-input" type="checkbox"
+                                               value="true" />
                                         <label class="form-check-label" for="FastOrder">Snabborder</label>
                                     </div>
 
@@ -225,43 +226,38 @@
 
                     <!-- ===================== PERSONER ===================== -->
                     <div class="row">
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12">
                             <div class="card">
                                 <div class="card-body">
-
                                     <h6 class="mb-3">Personer</h6>
-
                                     <div class="row g-3">
-
-                                        <div class="col-12">
+                                        <div class="col-12 col-sm-6">
                                             <label class="form-label">Utförare</label>
                                             /*~~~~~~~~~~~~~~~~~~*/
-                                                ~ ~~ /*~~~~~~~~~~~~~*/
-                                                /*~~~~~~~~*/
-                                                /*~*/ /*~~~~~~*/
-                                                ~~~ ~ /*~~*/ ~ /*~~~~~~~~~*/ ~
+                                            ~ ~~ /*~~~~~~~~~~~~~*/
+                                            /*~~~~~~~~*/
+                                            /*~*/ /*~~~~~~*/
+                                            ~~~ ~ /*~~*/ ~ /*~~~~~~~~~*/ ~
                                             ~
                                             <p id="error-SelectedUserId" class="error-text"></p>
                                         </div>
-
-                                        <div class="col-12">
+                                        <div class="col-12 col-sm-6">
                                             <label class="form-label">Kund</label>
                                             /*~~~~~~~~~~~~~~~~~~*/
-                                                ~ ~~ /*~~~~~~~~~~~~~~~~~*/
-                                                /*~~~~~~~~~~~~*/
-                                                /*~*/ /*~~*/
-                                                ~~~ ~ /*~~*/ ~ /*~~~~~~~~~*/ ~
+                                            ~ ~~ /*~~~~~~~~~~~~~~~~~*/
+                                            /*~~~~~~~~~~~~*/
+                                            /*~*/ /*~~*/
+                                            ~~~ ~ /*~~*/ ~ /*~~~~~~~~~*/ ~
                                             ~
                                             <p id="error-SelectedCustomerId" class="error-text"></p>
                                         </div>
-
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    </div>
                     <!-- GENERELLT FEL -->
                     <div id="formError" class="text-danger mt-3 d-none"></div>
 
@@ -270,7 +266,8 @@
                 <!-- ===================== KNAPPAR ===================== -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                    <button type="submit" class="btn btn-primary">Skapa</button>
+                    <button type="button"id="prevBtn" class="btn btn-secondary" >Tillbaka</button>
+                    <button type="button" id="nextBtn" class="btn btn-primary">Nästa</button>
                 </div>
 
             </form>
@@ -278,13 +275,11 @@
         </div>
     </div>
 </div>
-<script src="~/js/order.js" asp-append-version="true"></script>
-<script src="/js/account.js"></script>
 
 <style>
-
     .custom-header-brown {
-        background-color: #7d563b; !important;
+        background-color: #7d563b;
+        !important;
         border-bottom: 2px solid #4E342E;
         text-align: center;
         letter-spacing: 1px;
@@ -309,10 +304,10 @@
         text-transform: uppercase;
         letter-spacing: 2px;
         font-size: 1.5rem;
-        color: #4E342E; 
+        color: #4E342E;
     }
-    
-   
+
+
     h1::after {
         content: "";
         display: block;
@@ -323,10 +318,19 @@
         border-radius: 2px;
     }
 </style>
-
 /*~~~~*/ /*~~~*/ ~
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    
     <script src="~/js/kanban.js"></script>
+    <script src="~/js/order.js" asp-append-version="/**/"></script>
+    <script>
+        handleFormSubmit("createOrderForm");
+
+        document.getElementById("createOrderForm").addEventListener("submit", async () => {
+        if (rowValidationFailed) return;
+        await new Promise(r => setTimeout(r, 500));
+        const modal = document.getElementById("createOrderModal");
+        bootstrap.Modal.getInstance(modal)?.hide();
+        }, false);
+    </script>
 ~
 
