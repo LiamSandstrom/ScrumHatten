@@ -127,14 +127,15 @@ const makeRowCustom = (row) => {
         materialList.dataset.index = materialList.querySelectorAll(".material-row").length;
     }
 
-    materialList.querySelector(".add-material-btn")?.remove(); // avoid duplicates
+    if (!materialList.querySelector(".add-material-btn")) {
+        const addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "btn btn-sm btn-outline-secondary mt-2 add-material-btn";
+        addBtn.textContent = "Lägg till material";
+        addBtn.addEventListener("click", () => addMaterialRow(materialList));
+        materialList.after(addBtn);
+    }
 
-    const addBtn = document.createElement("button");
-    addBtn.type = "button";
-    addBtn.className = "btn btn-sm btn-outline-secondary mt-2 add-material-btn";
-    addBtn.textContent = "Lägg till material";
-    addBtn.addEventListener("click", () => addMaterialRow(materialList));
-    materialList.after(addBtn);
 }
 
 const addMaterialRow = (materialList) => {
@@ -142,21 +143,14 @@ const addMaterialRow = (materialList) => {
     if (!template) return;
 
     const index = parseInt(materialList.dataset.index);
+    materialList.dataset.index++
     const clone = template.content.cloneNode(true);
-    const matRow = clone.querySelector(".material-row");
+    console.log(clone)
+    materialList.appendChild(clone)
 
-    matRow.querySelector("input[name='Materials.Index']").value = index;
+    for (const mat of allMaterials) {
 
-    const select = matRow.querySelector("select");
-    select.name = `Materials[${index}].MaterialId`;
-    select.innerHTML = [...allMaterials.entries()]
-        .map(([id, name]) => `<option value="${id}">${name}</option>`)
-        .join("");
-
-    matRow.querySelector("input[type='number']").name = `Materials[${index}].Amount`;
-
-    materialList.appendChild(clone);
-    materialList.dataset.index = index + 1;
+    }
 }
 
 
