@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MVC.ViewModels.CustomerViewModels;
 using Repository;
-using System.Reflection.Metadata.Ecma335;
 
 namespace MVC.Controllers
 {
@@ -18,8 +17,8 @@ namespace MVC.Controllers
 
         [HttpGet("CustomerList")]
         public async Task<IActionResult> CustomerList(CustomerListViewModel vmIn)
-        
-         {
+
+        {
 
 
             List<Customer> customerList = new List<Customer>();
@@ -28,7 +27,7 @@ namespace MVC.Controllers
             List<String> cities = await _customerRepository.GetAllCitiesAsync();
             List<String> countries = await _customerRepository.GetAllCountriesAsync();
 
-          
+
 
             CustomerListViewModel vm = new CustomerListViewModel()
             {
@@ -59,7 +58,7 @@ namespace MVC.Controllers
                     allCustomers = filteredList,
                     allCities = cities,
                     allCountries = countries
-                   
+
                 };
 
                 return View(nameof(CustomerList), newVm);
@@ -85,7 +84,7 @@ namespace MVC.Controllers
                                                 filteredListCountry,
                                                 c1 => new { c1.City, c1.Country },
                                                 c2 => new { c2.City, c2.Country },
-                                                (c1, c2) => c1) 
+                                                (c1, c2) => c1)
                                                 .ToList();
 
                 CustomerListViewModel newVm = new CustomerListViewModel
@@ -103,19 +102,19 @@ namespace MVC.Controllers
         }
 
         [HttpGet(nameof(Search))]
-        public async Task<IActionResult> Search(string searchTerm)
+        public async Task<IActionResult> Search([FromQuery] string searchTerm)
         {
             // En liten validering för att inte söka efter bara en eller två chars.
-            if (searchTerm != null && searchTerm.Length > 3)
-            {
-                List<Customer> result = await _customerRepository.GetCustomerByStringMatch(searchTerm);
+            //if (searchTerm != null && searchTerm.Length > 3)
+            //{
+            List<Customer> result = await _customerRepository.GetCustomerByStringMatch(searchTerm);
 
-                return Json(result);
-            }
-            else
-            {
-                return Content("Insufficent search term :(");
-            }
+            return Json(result);
+            //}
+            //else
+            //{
+            //return Json(new { error = "Request too short." });
+            //}
 
         }
 
@@ -143,6 +142,7 @@ namespace MVC.Controllers
                 ZipCode = customer.ZipCode,
                 City = customer.City,
                 Country = customer.Country,
+                Discount = customer.Discount,
             };
 
             return View(vm);
@@ -161,6 +161,7 @@ namespace MVC.Controllers
                 ZipCode = vm.ZipCode,
                 City = vm.City,
                 Country = vm.Country,
+                Discount = vm.Discount,
             };
 
             await Update(customer);
@@ -205,7 +206,8 @@ namespace MVC.Controllers
                 Adress = vm.Adress,
                 ZipCode = vm.ZipCode,
                 City = vm.City,
-                Country = vm.Country
+                Country = vm.Country,
+                Discount = vm.Discount,
 
             };
 

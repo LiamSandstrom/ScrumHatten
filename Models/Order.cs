@@ -38,7 +38,9 @@ namespace Models
 
         public bool IsDelivered { get; set; }
 
+        public string? MakerName { get; set; }
 
+        public decimal CustomsFee { get; set; }
 
     }
 }

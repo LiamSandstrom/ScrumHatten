@@ -1,0 +1,146 @@
+@using Models
+@model (Order order, Customer customer) 
+
+@{
+    ViewData["Title"] = "Shipping Document";
+    Layout = null; 
+    
+    // 1. Räkna ut varuvärdet för alla hattar
+    decimal hatSubtotal = Model.order.Hats?.Sum(h => (decimal)h.Price) ?? 0;
+
+    // 2. Kontrollera om det är ett EU-land (för att tvinga 0 kr tull)
+    var euCountries = new List<string> { "Sverige", "Danmark", "Finland", "Tyskland", "Grekland", "Italien", "Frankrike", "Spanien", "Belgien", "Nederländerna" };
+    bool isEu = euCountries.Any(c => c.Equals(Model.customer.Country, StringComparison.OrdinalIgnoreCase));
+
+    // 3. Hantera tullavgiften
+    decimal displayCustomsFee = Model.order.CustomsFee;
+
+    // Om det är EU, ska tullen alltid vara 0
+    if (isEu) 
+    {
+        displayCustomsFee = 0;
+    }
+    // Om det är utanför EU och värdet saknas (gamla ordrar), använd 15% som standard
+    else if (displayCustomsFee == 0 && hatSubtotal > 0)
+    {
+        displayCustomsFee = hatSubtotal * 0.15m;
+    }
+
+    // 4. Räkna ut tullsatsen i % för visning i rutan
+    decimal customsRatePercent = 0;
+    if (hatSubtotal > 0) 
+    {
+        customsRatePercent = (displayCustomsFee / hatSubtotal) * 100;
+    }
+
+    // 5. Räkna ut momsen (25%)
+    decimal vat = Model.order.FinalPrice - (Model.order.FinalPrice / 1.25m);
+}
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8" />
+    <title>Fraktsedel - @Model.order.Id</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+        .print-container { max-width: 800px; margin: 30px auto; padding: 50px; border: 1px solid #dee2e6; }
+        .hs-code-box { border: 2px dashed #000; padding: 15px; margin: 20px 0; background: #f8f9fa; }
+        @@media print { 
+            .no-print { display: none; } 
+            .print-container { border: none; margin: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container no-print text-center mt-4">
+        <button onclick="window.print()" class="btn btn-success btn-lg">
+            <i class="fas fa-print"></i> Bekräfta & Spara som PDF
+        </button>
+    </div>
+
+    <div class="print-container">
+        <div class="d-flex justify-content-between border-bottom pb-3 mb-4">
+            <div>
+                <h2 class="mb-0">HATTMAKAREN</h2>
+                <small>Örebro, Sverige</small>
+            </div>
+            <div class="text-end">
+                <h4>FRAKTSEDEL / INVOICE</h4>
+                <span>Order #@Model.order.Id</span><br />
+                <span>Datum: @Model.order.OrderDate.ToShortDateString()</span>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-6">
+                <h6 class="text-muted text-uppercase">Avsändare</h6>
+                <p>Hattmakaren AB<br />Hattgatan 12<br />702 10 Örebro<br />Sweden</p>
+            </div>
+            <div class="col-6 text-end">
+                <h6 class="text-muted text-uppercase">Mottagare</h6>
+                <p>
+                    <strong>@Model.customer.Name</strong><br />
+                    @Model.customer.Adress<br />
+                    @Model.customer.ZipCode @Model.customer.City<br />
+                    @Model.customer.Country
+                </p>
+            </div>
+        </div>
+
+        <div class="hs-code-box">
+            <div class="row">
+                <div class="col-8">
+                    <strong>Beskrivning:</strong> Handgjord huvudbonad (Hatt)<br />
+                    <strong>Tullkod (HS Code):</strong> <span class="badge bg-dark">6505.00</span>
+                </div>
+                <div class="col-4 text-end">
+                    <strong>Ursprung:</strong> SE (Sweden)<br />
+                    <strong>Tullsats:</strong> @(isEu ? "0.0" : customsRatePercent.ToString("0.0"))%
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-bordered mt-4">
+            <thead class="table-light">
+                <tr>
+                    <th>Specifikation</th>
+                    <th class="text-end">Pris</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Varuvärde (Hattar)</td>
+                    <td class="text-end">@hatSubtotal.ToString("C")</td>
+                </tr>
+                <tr>
+                    <td>Fraktkostnad</td>
+                    <td class="text-end">@Model.order.TransportPrice.ToString("C")</td>
+                </tr>
+                
+                @if (displayCustomsFee > 0)
+                {
+                    <tr>
+                        <td>Tullavgift (@Model.customer.Country)</td>
+                        <td class="text-end">@displayCustomsFee.ToString("C")</td>
+                    </tr>
+                }
+
+                <tr>
+                    <td class="fw-bold text-primary">Varav Moms (25%)</td>
+                    <td class="text-end fw-bold text-primary">@vat.ToString("C")</td>
+                </tr>
+                <tr class="table-dark">
+                    <td class="fw-bold">TOTALT (Inkl. allt)</td>
+                    <td class="text-end fw-bold">@Model.order.FinalPrice.ToString("C")</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-5 small text-muted">
+            <p>* Detta dokument fungerar som underlag för export och momsredovisning.</p>
+        </div>
+    </div>
+</body>
+</html>

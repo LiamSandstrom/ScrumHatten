@@ -63,6 +63,15 @@
             <p id="error-Email" class="error-text"></p>
         </div>
 
+
+          
+        <div class="form-floating mb-2">
+            <input asp-for="Discount" class="form-control" placeholder="20%" />
+            <label asp-for="Discount">Rabatt</label>
+            <span asp-validation-for="Discount" class="text-danger"></span>
+            <p id="error-Email" class="error-text"></p>
+        </div>
+
         <button type="submit" class="btn btn-primary w-100 py-2">Spara uppgifter</button>
     </form>
 
