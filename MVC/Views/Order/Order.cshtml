@@ -62,6 +62,7 @@
             </div>
         </div>
     </div>
+
 <div class="modal fade" id="createOrderModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -77,8 +78,10 @@
 
                     <!-- ===================== DETALJER ===================== -->
                     <div id="step1">
-                    <button type="button" id="addHatBtn">Lägg till lagerförd</button>
-                    <button type="button" id="addCustomHatBtn">Lägg till skräddarsydd</button>
+                        <div class="mb-2" style="display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+                            <button type="button" class="btn btn-primary" id="addHatBtn">Lägg till lagerförd</button>
+                            <button type="button" class="btn btn-primary" id="addCustomHatBtn">Lägg till skräddarsydd</button>
+                        </div>
                     <p id="error-rows" class="text-danger"></p>
                     <div id="rows">
 <template id="customRowTemplate">
@@ -405,6 +408,138 @@
 
             </form>
 
+        </div>
+    </div>
+</div>
+
+  <div class="modal fade" id="orderDetailModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header custom-header-brown text-white">
+                    <h5 class="modal-title">Orderdetaljer #<span id="detailOrderIdDisplay"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+               <div class="modal-body">
+    <div class="card bg-light mb-3 border-0">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted small fw-bold">KUNDINFORMATION</h6>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div id="detailCustomerName" class="fw-bold fs-5 text-dark">-</div>
+                    <div id="detailCustomerEmail" class="text-muted small"></div>
+                    <div id="detailCustomerPhone" class="text-muted small"></div>
+                </div>
+                <div class="col-sm-6 text-sm-end mt-2 mt-sm-0">
+                    <div class="text-muted small fw-bold">LEVERANSADRESS</div>
+                    <div id="detailCustomerAdress" class="small">-</div>
+                    <div>
+                        <span id="detailCustomerZip" class="small"></span> 
+                        <span id="detailCustomerCity" class="small"></span>
+                    </div>
+                    <div id="detailCustomerCountry" class="small text-muted italic"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="fw-bold text-muted small mb-1">BESTÄLLDA HATTAR</label>
+        <ul id="detailHatsList" class="list-group list-group-flush border rounded"></ul>
+    </div>
+
+    <div class="mt-3 border-top pt-2">
+    <div class="d-flex justify-content-between mb-1">
+        <span class="text-muted small">Fraktkostnad:</span>
+        <span id="detailTransportPrice" class="text-dark small">0 kr</span>
+    </div>
+
+    <div class="d-flex justify-content-between border-top pt-2">
+        <span class="text-muted">Totalpris (inkl. moms):</span>
+        <span id="detailTotalPrice" class="fw-bold text-success fs-5">0 kr</span>
+    </div>
+</div>
+                <div class="modal-footer">
+    <input type="hidden" id="detailOrderId" />
+    
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+
+    <button type="button" id="btnPrintOrder" class="btn btn-outline-primary">
+        <i class="bi bi-printer"></i> Skriv ut / PDF
+    </button>
+    
+    <button type="button" id="btnReleaseOrder" class="btn btn-outline-danger d-none">
+        <i class="bi bi-arrow-left-circle"></i> Släpp order
+    </button>
+
+    <button type="button" id="btnAssignToMe" class="btn btn-success d-none">
+        <i class="bi bi-person-plus"></i> Ta mig an beställning
+    </button>
+    
+    <a id="btnEditOrder" href="#" class="btn btn-primary">
+        <i class="bi bi-pencil"></i> Redigera
+    </a>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="orderEditModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Redigera Order #<span id="editOrderDisplayId"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editOrderForm">
+                <input type="hidden" id="editHiddenOrderId" name="Id" />
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Transportkostnad (kr)</label>
+                            <input type="number" name="TransportPrice" id="editTransportPrice" class="form-control" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Antal timmar</label>
+                            <input type="number" name="TimeToMake" id="editTimeToMake" class="form-control" min="0">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Uppskattat datum klart</label>
+                            <input type="date" name="DateToFinish" id="editDateToFinish" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Utförare</label>
+                            <select name="SelectedUserId" id="editSelectedUserId" class="form-select">
+                                @foreach (var user in Model.Users)
+                                {
+                                    <option value="@user.Value">@user.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Kund</label>
+                            <select name="SelectedCustomerId" id="editSelectedCustomerId" class="form-select">
+                                @foreach (var customer in Model.Customers)
+                                {
+                                    <option value="@customer.Value">@customer.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="FastOrder" id="editFastOrder" value="true">
+                                <label class="form-check-label fw-bold" for="editFastOrder">Snabborder</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary">Spara ändringar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
