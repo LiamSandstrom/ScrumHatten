@@ -86,7 +86,7 @@
                     <div id="rows">
 
 <template id="customRowTemplate">
-    <div class="row-item card mb-3 shadow-sm">
+    <div class="row-item card mb-3 shadow-sm" style="border-left: 3px solid black">
         <div class="card-body">
 
             <!-- HEADER -->
@@ -100,7 +100,7 @@
                 <!-- ===================== -->
                 <!-- VÄNSTER -->
                 <!-- ===================== -->
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-4">
 
                     <div class="">
                         <label class="form-label">Pris</label>
@@ -146,7 +146,7 @@
                 <!-- ===================== -->
                 <!-- HÖGER -->
                 <!-- ===================== -->
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-8">
 
                     <!-- VÄLJ BILD -->
                     <div class="mb-3 w-100">
@@ -157,13 +157,13 @@
 
                         <p class="text-muted small mt-1">JPG, PNG eller WebP</p>
 
-                        <div class="border rounded bg-light d-flex align-items-center justify-content-center mt-2 custom-preview-wrapper"
-                             style="height:160px;">
+                        <div class="border rounded bg-light d-flex align-items-center justify-content-center mt-2"
+                             style="min-height: 200px;">
                             <span class="text-muted small custom-preview-placeholder">
                                 Ingen bild vald
                             </span>
                             <img class="custom-preview d-none"
-                                 style="max-width:100%; max-height:100%; object-fit:contain;" />
+                                 style="width: 350px; height: 200px; max-width:100%; max-height:100%; object-fit:cover; border-radius: 10px; border: 2px solid #dfe2e6;" />
                         </div>
                     </div>
 
@@ -187,7 +187,7 @@
 
                             <template class="material-row-template">
 
-                                <div class="row material-row mt-2">
+                                <div class="row material-row mt-2" style="border-left: 2px solid black; margin-left: 16px;">
 
                                     <input type="hidden" value="" />
 
@@ -226,7 +226,7 @@
 </template>
 
 <template id="rowTemplate">
-    <div class="row-item card mb-3 shadow-sm">
+    <div class="row-item card mb-3 shadow-sm" style="border-left: 3px solid black;">
         <div class="card-body">
             <div class="row g-3 align-items-center">
 
@@ -244,7 +244,7 @@
                     <p class="error-text-field error-qty"></p>
                 </div>
 
-                <div class="col-6 col-sm-4 col-lg-2">
+                <div class="col-6 col-sm-4 col-lg-3">
                     <label class="form-label">Storlek</label>
                     <select class="form-select row-size" name="">
                         <option value="">Välj storlek</option>
@@ -266,7 +266,7 @@
                     <p class="error-text-field error-size"></p>
                 </div>
 
-                <div class="col-12 col-lg-7">
+                <div class="col-12 col-lg-6">
                     <div class="d-flex gap-2 align-items-center flex-wrap">
                         <img class="hat-image rounded d-none" style="width:60px;height:60px;object-fit:contain;flex-shrink:0;" />
                         <div style="min-width:0;flex:1;">
@@ -283,7 +283,7 @@
 
                 <div class="material-list" style="margin: 0;">
                     <template class="material-row-template">
-                        <div class="row material-row">
+                        <div class="row material-row mt-2" style="border-left: 2px solid black; margin-left: 16px;">
                             <input type="hidden" value="" />
                             <div class="col-md-7 mb-2 mb-md-0">
                                 <label class="form-label-clean">Material</label>
@@ -416,7 +416,7 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <h6 class="mb-2">Personer & Tid</h6>
+                                    <h6 class="mb-2">Personer</h6>
                                     <div class="row g-3">
                                         <div class="col-12 col-sm-6">
                                             <label class="form-label">Utförare</label>
