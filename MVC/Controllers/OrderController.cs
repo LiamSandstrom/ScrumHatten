@@ -7,6 +7,8 @@ using MVC.ViewModels;
 using Repository;
 using Repository.Repositories;
 using Services;
+using BL.Services;
+
 
 namespace MVC.Controllers
 {
@@ -14,16 +16,20 @@ namespace MVC.Controllers
     public class OrderController : BaseController
     {
         private readonly IOrderRepository orderRepository;
+        private readonly ICustomsService _customsService;
         private IUserRepository userRepository;
         private ICustomerRepository customerRepository;
         private HatRepository hatRepository;
 
-        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo, IOrderRepository orderRepo)
+        
+
+        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo, IOrderRepository orderRepo, ICustomsService customsService)
         {
             orderRepository = orderRepo;
             userRepository = userRepo;
             hatRepository = hatRepo;
             customerRepository = customerRepo;
+            _customsService = customsService;
         }
 
         [HttpGet("")]
@@ -116,6 +122,9 @@ public async Task<IActionResult> GetOrderById(string id)
                 return Json(ModelStateErrorResponse("Validering misslyckades"));
             }
 
+            var customer = await customerRepository.GetCustomerByIdAsync(model.SelectedCustomerId);
+            decimal customsRate = customer != null ? _customsService.GetCustomsRate(customer.Country) : 0;
+
             var allHats = await hatRepository.GetAllHats();
 
             var orderHats = model.Rows
@@ -132,10 +141,11 @@ public async Task<IActionResult> GetOrderById(string id)
             .GroupBy(h => h.Id)
             .Sum(g => (decimal)g.First().Price * g.Count());
 
-            decimal subtotalWithTransport = hatSubtotal + model.TransportPrice;
-            decimal fastOrderSurcharge = model.FastOrder ? subtotalWithTransport * 0.20m : 0m;
-            decimal afterFast = subtotalWithTransport + fastOrderSurcharge;
-            decimal finalPrice = afterFast * 1.25m;
+
+            decimal calculatedCustoms = hatSubtotal * customsRate;
+            decimal subtotalWithFees = hatSubtotal + model.TransportPrice + calculatedCustoms;
+            decimal fastOrderSurcharge = model.FastOrder ? subtotalWithFees * 0.20m : 0m;
+            decimal finalPrice = (subtotalWithFees + fastOrderSurcharge) * 1.25m;
 
             var order = new Order
             {
@@ -148,6 +158,7 @@ public async Task<IActionResult> GetOrderById(string id)
                 OrderDate = DateTime.Now,
                 Status = Status.Pending,
                 Hats = orderHats,
+                CustomsFee = calculatedCustoms,
                 FinalPrice = finalPrice
             };
 
@@ -201,7 +212,7 @@ public async Task<IActionResult> GetOrderById(string id)
                 // 'true' gör att den struntar i om det är stora eller små bokstäver
                 if (Enum.TryParse<Status>(status, true, out var parsedStatus))
                 {
-                    // Här kommer du senare lägga in:
+                        await orderRepository.SetStatusAsync(id, parsedStatus);
                     // await _orderRepository.UpdateStatusAsync(id, parsedStatus);
 
                     return Ok(new { message = "Status uppdaterad!" });
@@ -329,5 +340,26 @@ public async Task<IActionResult> UpdateBasicInfo(string id, [FromBody] OrderUpda
         return StatusCode(500, "Internt serverfel vid sparande.");
     }
 }
+
+[HttpGet("GetCustomsRate")]
+public async Task<IActionResult> GetCustomsRate(string customerId)
+{
+    try 
+    {
+        var customer = await customerRepository.GetCustomerByIdAsync(customerId);
+        if (customer == null) return NotFound("Kund saknas");
+
+        decimal rate = _customsService.GetCustomsRate(customer.Country);
+        return Ok(new { 
+            customsRate = rate, 
+            country = customer.Country 
+        });
+    }
+    catch (Exception ex) 
+    {
+        return StatusCode(500, $"Kunde inte hämta tullsatsen: {ex.Message}");
+    }
+}
+
     }
 }
