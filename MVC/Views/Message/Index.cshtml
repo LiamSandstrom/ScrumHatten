@@ -24,7 +24,7 @@
 
             <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Grupper</h5>
-                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#createGroupModal">
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
@@ -34,7 +34,7 @@
                 {
                     <a asp-action="Index" asp-route-groupId="@group.Id" class="list-group-item list-group-item-action py-3">
                         <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">G</div>
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">G</div>
                             <h6 class="mb-0">@group.Name</h6>
                         </div>
                     </a>
@@ -45,14 +45,14 @@
                 @foreach (var user in (IEnumerable<User>)ViewBag.Users)
                 {
                     bool isSelected = ViewBag.SelectedUserId?.ToString() == user.Id.ToString();
-                    <a asp-action="Index" asp-route-id="@user.Id" class="list-group-item list-group-item-action py-3 @(isSelected ? "active border-primary" : "")">
+                    <a asp-action="Index" asp-route-id="@user.Id" class="list-group-item list-group-item-action py-3 @(isSelected ? "active border-success" : "")">
                         <div class="d-flex align-items-center">
                             <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; flex-shrink: 0;">
                                 @(user.Name?[0].ToString().ToUpper() ?? "?")
                             </div>
                             <div class="text-truncate">
                                 <h6 class="mb-0 text-truncate">@user.Name</h6>
-                                <small class="@(isSelected ? "text-white-50" : "text-muted")">Anställd</small>
+                                <small class="text-secondary">Anställd</small>
                             </div>
                         </div>
                     </a>
@@ -65,9 +65,9 @@
     <h5 class="mb-0">
         @if (ViewBag.IsGroupChat == true)
         {
-            <span class="text-primary">Gruppchatt:</span>
+            <span class="text-success">Gruppchatt:</span>
             @ViewBag.SelectedUserName
-            <button class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#groupSettingsModal">
+            <button class="btn btn-sm btn-outline-success ms-2" data-bs-toggle="modal" data-bs-target="#groupSettingsModal">
     <i class="bi bi-gear-fill me-1"></i> Hantera grupp
 </button>
         }
@@ -109,7 +109,7 @@
                     <form asp-action="@(ViewBag.IsGroupChat == true ? "SendGroupMessage" : "SendMessage")" method="post" class="d-flex gap-2">
                         <input type="hidden" name="receiverId" value="@ViewBag.SelectedUserId" />
                         <input type="text" name="content" class="form-control rounded-pill" placeholder="Skriv ett meddelande..." required autocomplete="off" />
-                        <button type="submit" class="btn btn-primary rounded-circle px-3">
+                        <button type="submit" class="btn btn-success rounded-circle px-3">
                             <i class="bi bi-send-fill"></i>
                         </button>
                     </form>
@@ -154,7 +154,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                    <button type="submit" class="btn btn-primary">Skapa grupp</button>
+                    <button type="submit" class="btn btn-success">Skapa grupp</button>
                 </div>
             </form>
         </div>
@@ -211,7 +211,7 @@
                         }
                     }
                     </div>
-                    <button type="submit" class="btn btn-sm btn-primary w-100">
+                    <button type="submit" class="btn btn-sm btn-success w-100">
                         <i class="bi bi-person-plus"></i> Lägg till markerade
                     </button>
                 </form>
