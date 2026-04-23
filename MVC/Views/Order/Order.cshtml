@@ -72,7 +72,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <form id="createOrderForm" method="post" action="/Order/Create">
+<<<<<<< HEAD
+            <form id="createOrderForm" enctype="multipart/form-data" method="post" action="/Order/Create">
                     <div class="modal-body">
 
                     <!-- ===================== DETALJER ===================== -->
@@ -373,10 +374,13 @@
 
                                         </div>
 
+<<<<<<< HEAD
                                     <div class="form-check mt-3">
                                         <input name="FastOrder" id="fastOrder" class="form-check-input" type="checkbox"
                                                value="true" />
                                         <label class="form-check-label" for="FastOrder">Snabborder</label>
+=======
+>>>>>>> main
                                     </div>
                                 </div>
                             </div>
@@ -448,10 +452,14 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
                         <button type="submit" class="btn btn-primary">Skapa</button>
                     </div>
+<<<<<<< HEAD
 
                     </div>
                     <!-- GENERELLT FEL -->
                     <div id="formError" class="text-danger mt-3 d-none"></div>
+=======
+>>>>>>> main
+
                 </form>
 
             </div>
@@ -584,9 +592,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+<<<<<<< HEAD
                     <button type="button"id="prevBtn" class="btn btn-secondary" >Tillbaka</button>
                     <button type="button" id="nextBtn" class="btn btn-primary">Nästa</button>
+=======
                     <button type="submit" class="btn btn-primary">Spara ändringar</button>
+>>>>>>> main
                 </div>
             </form>
         </div>
@@ -624,13 +635,52 @@
             font-size: 1.5rem;
             color: #4E342E;
         }
-    </style>
 
+
+<<<<<<< HEAD
+    h1::after {
+        content: "";
+        display: block;
+        width: 50px;
+        height: 3px;
+        background-color: #7d563b;
+        margin-top: 5px;
+        border-radius: 2px;
+    }
+</style>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="~/js/kanban.js"></script>
+    <script src="~/js/order.js" asp-append-version="true" type="module"></script>
+    <script>
+        handleFormSubmit("createOrderForm");
+    </script>
+}
+=======
+        h1::after {
+            content: "";
+            display: block;
+            width: 50px;
+            height: 3px;
+            background-color: #7d563b;
+            margin-top: 5px;
+            border-radius: 2px;
+        }
+    </style>
     @section Scripts {
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
         <script src="~/js/kanban.js"></script>
         <script src="~/js/order.js" asp-append-version="true"></script>
+        <script src="~/js/account.js"></script>
         <script>
             handleFormSubmit("createOrderForm");
+
+            document.getElementById("createOrderForm").addEventListener("submit", async () => {
+            if (rowValidationFailed) return;
+            await new Promise(r => setTimeout(r, 500));
+            const modal = document.getElementById("createOrderModal");
+            bootstrap.Modal.getInstance(modal)?.hide();
+            }, false);
         </script>
     }
+>>>>>>> main
