@@ -6,6 +6,9 @@
 }
 
 <style>
+    /* =========================================
+       SIDANS YTTRE LAYOUT
+    ========================================= */
     .hat-page {
         max-width: 1100px;
         margin: 0 auto;
@@ -19,25 +22,28 @@
         margin-bottom: 0;
     }
 
+    /* =========================================
+       KNAPPAR
+    ========================================= */
     .clean-btn-primary {
-    background-color: #2563eb;
-    border: 1px solid #2563eb;
-    color: white;
-    border-radius: 10px;
-    padding: 0.55rem 1rem;
-    font-weight: 600;
-    font-size: 0.92rem;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.22);
-    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
+        background-color: #2563eb;
+        border: 1px solid #2563eb;
+        color: white;
+        border-radius: 10px;
+        padding: 0.55rem 1rem;
+        font-weight: 600;
+        font-size: 0.92rem;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.22);
+        transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
 
-.clean-btn-primary:hover {
-    background-color: #1d4ed8;
-    border-color: #1d4ed8;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28);
-}
+    .clean-btn-primary:hover {
+        background-color: #1d4ed8;
+        border-color: #1d4ed8;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28);
+    }
 
     .clean-btn-outline {
         background-color: white;
@@ -49,11 +55,11 @@
         font-size: 0.9rem;
     }
 
-        .clean-btn-outline:hover {
-            background-color: #f8fafc;
-            border-color: #94a3b8;
-            color: #0f172a;
-        }
+    .clean-btn-outline:hover {
+        background-color: #f8fafc;
+        border-color: #94a3b8;
+        color: #0f172a;
+    }
 
     .clean-btn-danger {
         background-color: white;
@@ -65,12 +71,15 @@
         font-size: 0.9rem;
     }
 
-        .clean-btn-danger:hover {
-            background-color: #fef2f2;
-            border-color: #fca5a5;
-            color: #b91c1c;
-        }
+    .clean-btn-danger:hover {
+        background-color: #fef2f2;
+        border-color: #fca5a5;
+        color: #b91c1c;
+    }
 
+    /* =========================================
+       HATTKORT
+    ========================================= */
     .hat-card {
         border: 1px solid #e5e7eb;
         border-radius: 14px;
@@ -81,16 +90,16 @@
         height: 100%;
     }
 
-        .hat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
-        }
+    .hat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
+    }
 
-        .hat-card img {
-            height: 180px;
-            object-fit: contain;
-            width: 100%;
-        }
+    .hat-card img {
+        height: 180px;
+        object-fit: contain;
+        width: 100%;
+    }
 
     .hat-card-body {
         padding: 0.85rem;
@@ -117,6 +126,9 @@
         font-size: 0.9rem;
     }
 
+    /* =========================================
+       MATERIALRUTA I HATTKORT
+    ========================================= */
     .hat-material-box {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
@@ -140,6 +152,9 @@
         font-size: 0.84rem;
     }
 
+    /* =========================================
+       ALERTS & MODALS
+    ========================================= */
     .clean-alert {
         border-radius: 12px;
         border: 1px solid transparent;
@@ -161,6 +176,9 @@
         color: #111827;
     }
 
+    /* =========================================
+       FORMULÄR
+    ========================================= */
     .form-label-clean {
         font-weight: 500;
         color: #374151;
@@ -182,6 +200,9 @@
         margin-bottom: 0.7rem;
     }
 
+    /* =========================================
+       TOMT LÄGE
+    ========================================= */
     .empty-state {
         text-align: center;
         padding: 2.5rem 1rem;
@@ -193,6 +214,10 @@
 </style>
 
 <div class="hat-page">
+
+    <!-- =========================================
+         SIDHUVUD
+    ========================================= -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title">Alla hattar</h1>
 
@@ -203,6 +228,9 @@
         </button>
     </div>
 
+    <!-- =========================================
+         FEEDBACKMEDDELANDEN
+    ========================================= -->
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success clean-alert">
@@ -217,6 +245,9 @@
         </div>
     }
 
+    <!-- =========================================
+         OM DET INTE FINNS NÅGRA HATTAR
+    ========================================= -->
     @if (Model == null || !Model.Hats.Any())
     {
         <div class="empty-state">
@@ -226,19 +257,25 @@
     }
     else
     {
+        <!-- =========================================
+             LISTA MED ALLA HATTAR
+        ========================================= -->
         <div class="row">
             @foreach (var hat in Model.Hats)
             {
                 <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                     <div class="hat-card">
                         <img src="@(string.IsNullOrWhiteSpace(hat.ImageUrl) ? "/images/placeholder-hat.png" : hat.ImageUrl)"
-                             alt="@hat.Name" 
+                             alt="@hat.Name"
                              class="img-fluid"
-                             onerror="this.src'/images/placeholder-hat.png';"/>
+                             onerror="this.src='/images/placeholder-hat.png';" />
 
                         <div class="hat-card-body">
+
+                            <!-- Hattnamn -->
                             <div class="hat-name">@hat.Name</div>
 
+                            <!-- Kort beskrivning -->
                             <div class="hat-description">
                                 @{
                                     var beskrivning = string.IsNullOrWhiteSpace(hat.Description) ? "Ingen beskrivning ännu." : hat.Description;
@@ -247,9 +284,11 @@
                                 @kortBeskrivning
                             </div>
 
+                            <!-- Pris och lagerstatus -->
                             <div class="hat-meta"><strong>Pris:</strong> @hat.Price kr</div>
                             <div class="hat-meta"><strong>I lager:</strong> @hat.Quantity</div>
 
+                            <!-- Materiallista -->
                             @if (hat.Materials != null && hat.Materials.Any())
                             {
                                 <div class="hat-material-box">
@@ -264,6 +303,7 @@
                                 </div>
                             }
 
+                            <!-- Knappar för redigera / ta bort -->
                             <div class="d-flex gap-2">
                                 <button class="clean-btn-outline"
                                         data-bs-toggle="modal"
@@ -285,21 +325,25 @@
                     </div>
                 </div>
 
+                <!-- =========================================
+                     MODAL: REDIGERA BEFINTLIG HATT
+                ========================================= -->
                 <div class="modal fade clean-modal" id="editHatModal_@hat.Id" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
 
                             <form asp-action="UpdateHat" method="post" enctype="multipart/form-data">
-
                                 <div class="modal-header">
                                     <h5 class="modal-title">Ändra hatt</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
 
                                 <div class="modal-body">
+                                    <!-- Dolda fält -->
                                     <input type="hidden" name="Id" value="@hat.Id" />
                                     <input type="hidden" name="ImageUrl" value="@hat.ImageUrl" />
 
+                                    <!-- Grundinfo -->
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label-clean">Namn</label>
@@ -307,16 +351,18 @@
                                         </div>
 
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label-clean">Pris</label>
+                                            <label class="form-label-clean">Pris(Kr)</label>
                                             <input name="Price" type="number" class="form-control" value="@hat.Price" required />
                                         </div>
                                     </div>
 
+                                    <!-- Beskrivning -->
                                     <div class="mb-3">
                                         <label class="form-label-clean">Beskrivning</label>
                                         <textarea name="Description" class="form-control">@hat.Description</textarea>
                                     </div>
 
+                                    <!-- Bild + lager -->
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label-clean">Byt bild</label>
@@ -330,6 +376,8 @@
                                     </div>
 
                                     <hr />
+
+                                    <!-- Material -->
                                     <div class="section-subtitle">Material per hatt</div>
 
                                     <div id="editMaterialRows_@hat.Id">
@@ -400,7 +448,6 @@
                                         Spara ändringar
                                     </button>
                                 </div>
-
                             </form>
 
                         </div>
@@ -411,6 +458,9 @@
     }
 </div>
 
+<!-- =========================================
+     MODAL: LÄGG TILL NY HATT
+========================================= -->
 <div class="modal fade clean-modal" id="addHatModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -424,6 +474,7 @@
 
                 <div class="modal-body">
 
+                    <!-- Grundinfo -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label-clean">Namn</label>
@@ -431,16 +482,18 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label-clean">Pris</label>
+                            <label class="form-label-clean">Pris(Kr)</label>
                             <input name="Price" type="number" class="form-control" required />
                         </div>
                     </div>
 
+                    <!-- Beskrivning -->
                     <div class="mb-3">
                         <label class="form-label-clean">Beskrivning</label>
                         <textarea name="Description" class="form-control"></textarea>
                     </div>
 
+                    <!-- Bild + lager -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label-clean">Bild</label>
@@ -455,6 +508,7 @@
 
                     <hr />
 
+                    <!-- Material -->
                     <div class="section-subtitle">Material per hatt</div>
 
                     <div id="materialRows"></div>
@@ -488,16 +542,25 @@
 
 @section Scripts {
     <script>
+        /* =========================================
+           GLOBALT INDEX FÖR NYA MATERIALRADER
+        ========================================= */
         let materialIndex = 0;
 
+        /* =========================================
+           HTML-ALTERNATIV FÖR MATERIAL-DROPDOWN
+        ========================================= */
         const materialOptions = `
             <option value="">-- Välj material --</option>
             @foreach (var material in Model.Materials)
             {
-                        <option value="@material.Id">@material.Name</option>
+                <option value="@material.Id">@material.Name</option>
             }
         `;
 
+        /* =========================================
+           LÄGG TILL MATERIALRAD I "LÄGG TILL HATT"
+        ========================================= */
         function addMaterialRow() {
             const container = document.getElementById("materialRows");
             const currentIndex = materialIndex;
@@ -536,6 +599,9 @@
             materialIndex++;
         }
 
+        /* =========================================
+           TA BORT EN MATERIALRAD
+        ========================================= */
         function removeMaterialRow(button) {
             const row = button.closest(".material-row");
             if (row) {
@@ -543,8 +609,14 @@
             }
         }
 
+        /* =========================================
+           HÅLLA REDA PÅ INDEX FÖR REDIGERINGSMODALER
+        ========================================= */
         const editMaterialIndexes = {};
 
+        /* =========================================
+           LÄGG TILL MATERIALRAD I "REDIGERA HATT"
+        ========================================= */
         function addEditMaterialRow(hatId) {
             const container = document.getElementById("editMaterialRows_" + hatId);
 
@@ -590,10 +662,16 @@
             editMaterialIndexes[hatId]++;
         }
 
+        /* =========================================
+           LÄGG TILL EN TOM MATERIALRAD NÄR SIDAN LADDAS
+        ========================================= */
         document.addEventListener("DOMContentLoaded", function () {
             addMaterialRow();
         });
 
+        /* =========================================
+           ÅTERSTÄLL "LÄGG TILL HATT"-MODALEN NÄR DEN STÄNGS
+        ========================================= */
         const addHatModal = document.getElementById("addHatModal");
         if (addHatModal) {
             addHatModal.addEventListener("hidden.bs.modal", function () {
