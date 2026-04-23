@@ -23,53 +23,24 @@
             </div>
 
             <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Grupper</h5>
-    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
-        <i class="bi bi-plus-lg"></i>
-    </button>
-</div>
-
-<div class="list-group list-group-flush border-bottom">
-    @foreach (var group in (IEnumerable<GroupChat>)ViewBag.Groups)
-    {
-        <a asp-action="Index" asp-route-groupId="@group.Id" class="list-group-item list-group-item-action py-3">
-            <div class="d-flex align-items-center">
-                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                    G
-                </div>
-                <h6 class="mb-0">@group.Name</h6>
+                <h5 class="mb-0">Grupper</h5>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
             </div>
-        </a>
-    }
-</div>
 
-<div class="modal fade" id="createGroupModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="CreateGroup" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title">Skapa ny gruppchatt</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="text" name="groupName" class="form-control mb-3" placeholder="Gruppnamn" required />
-                    <h6>Välj kollegor:</h6>
-                    @foreach (var user in (IEnumerable<User>)ViewBag.Users)
-                    {
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="selectedUsers" value="@user.Id" id="user_@user.Id">
-                            <label class="form-check-label" for="user_@user.Id">@user.Name</label>
+            <div class="list-group list-group-flush border-bottom">
+                @foreach (var group in (IEnumerable<GroupChat>)ViewBag.Groups)
+                {
+                    <a asp-action="Index" asp-route-groupId="@group.Id" class="list-group-item list-group-item-action py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">G</div>
+                            <h6 class="mb-0">@group.Name</h6>
                         </div>
-                    }
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Skapa grupp</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-            
+                    </a>
+                }
+            </div>
+
             <div class="list-group list-group-flush scrollable-content">
                 @foreach (var user in (IEnumerable<User>)ViewBag.Users)
                 {
@@ -87,9 +58,7 @@
                     </a>
                 }
             </div>
-        </div>
-
-        <div class="col-md-9 p-0 chat-window-column bg-white">
+        </div> <div class="col-md-9 p-0 chat-window-column bg-white">
             @if (ViewBag.SelectedUserId != null)
             {
                 <div class="p-3 border-bottom bg-white flex-shrink-0">
@@ -99,12 +68,16 @@
                 <div class="scrollable-content p-4" id="chatContainer">
                     @foreach (var msg in Model.OrderBy(m => m.Timestamp))
                     {
-                        bool isSentByMe = msg.SenderId.ToString() == currentUserId;
+                        bool isSentByMe = msg.SenderId?.ToString() == currentUserId;
                         <div class="w-100 d-flex mb-3 @(isSentByMe ? "justify-content-end" : "justify-content-start")">
                             <div class="msg-bubble @(isSentByMe ? "sent" : "received")">
                                 <p class="mb-1">@msg.Content</p>
                                 <div class="text-end" style="font-size: 0.65rem; opacity: 0.8;">
                                     @msg.Timestamp.ToString("HH:mm")
+                                    @if (ViewBag.IsGroupChat == true && !isSentByMe)
+                                    {
+                                        <small class="text-muted d-block mb-1">@msg.SenderName</small>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -112,7 +85,7 @@
                 </div>
 
                 <div class="chat-input-area">
-                    <form asp-action="SendMessage" method="post" class="d-flex gap-2">
+                    <form asp-action="@(ViewBag.IsGroupChat == true ? "SendGroupMessage" : "SendMessage")" method="post" class="d-flex gap-2">
                         <input type="hidden" name="receiverId" value="@ViewBag.SelectedUserId" />
                         <input type="text" name="content" class="form-control rounded-pill" placeholder="Skriv ett meddelande..." required autocomplete="off" />
                         <button type="submit" class="btn btn-primary rounded-circle px-3">
@@ -128,6 +101,41 @@
                     <p>Välj en kollega för att börja chatta.</p>
                 </div>
             }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="createGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CreateGroup" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createGroupModalLabel">Skapa ny gruppchatt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Gruppnamn</label>
+                        <input type="text" name="groupName" class="form-control" placeholder="T.ex. Grupp 1" required />
+                    </div>
+                    
+                    <h6>Välj kollegor som ska ingå:</h6>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                        @foreach (var user in (IEnumerable<User>)ViewBag.Users)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="selectedUsers" value="@user.Id" id="user_@user.Id">
+                                <label class="form-check-label" for="user_@user.Id">
+                                    @user.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary">Skapa grupp</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

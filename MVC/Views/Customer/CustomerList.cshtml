@@ -62,6 +62,7 @@
                     <th scope="col">Postnummer</th>
                     <th scope="col">Stad</th>
                     <th scope="col">Land</th>
+                    <th scope="col">Rabatt</th>
                     
                 </tr>
             </thead>
@@ -77,6 +78,7 @@
                         <td class="tableCell">@Model.allCustomers[i].ZipCode</td>
                         <td class="tableCell">@Model.allCustomers[i].City</td>
                         <td class="tableCell">@Model.allCustomers[i].Country</td>
+                        <td class="tabelCell">@Model.allCustomers[i].Discount%</td>
 
                         <td>
                           <a href="mailto:@Model.allCustomers[i].Email" class="btn btn-sm btn-outline-secondary" title="Skicka mail">
