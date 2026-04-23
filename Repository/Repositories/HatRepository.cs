@@ -21,10 +21,11 @@ namespace Repository.Repositories
                     .Project<Hat>(Builders<Hat>.Projection.Exclude(h => h.ImageBase64))
                     .ToListAsync();
             }
-            catch
-            {
-                return new List<Hat>();
-            }
+             catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+        throw;
+    }
         }
 
         public async Task<List<Hat>> GetAllCustomHatsAsync()
