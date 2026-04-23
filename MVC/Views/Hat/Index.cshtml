@@ -289,12 +289,17 @@
                             <div class="hat-meta"><strong>I lager:</strong> @hat.Quantity</div>
 
                             @if (hat.Sizes != null && hat.Sizes.Any())
-                            {
-                                <div class="hat-meta">
-                                <strong>Storlekar:</strong>
-                                @string.Join(", ", hat.Sizes.Select(s => $"{s.Quantity} st {s.Label}"))
-                                </div>
-                            }
+{
+    <div class="hat-material-box">
+        <div class="hat-material-title">Storlekar</div>
+        <ul class="hat-material-list">
+            @foreach (var size in hat.Sizes)
+            {
+                <li>@size.Quantity st @size.Label</li>
+            }
+        </ul>
+    </div>
+}
 
                             <!-- Materiallista -->
                             @if (hat.Materials != null && hat.Materials.Any())
