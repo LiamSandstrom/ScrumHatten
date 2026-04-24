@@ -26,5 +26,12 @@ namespace Repository
 
     public async Task<List<Message>> GetGroupMessagesAsync(string groupId) =>
         await _messages.Find(m => m.ReceiverId == groupId).ToListAsync();
+        
+    public async Task UpdateGroupMembersAsync(string groupId, List<string> memberIds)
+{
+    var filter = Builders<GroupChat>.Filter.Eq(g => g.Id, groupId);
+    var update = Builders<GroupChat>.Update.Set(g => g.MemberIds, memberIds);
+    await _groups.UpdateOneAsync(filter, update);
+}
 }
 }
