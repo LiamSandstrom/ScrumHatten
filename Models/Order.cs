@@ -1,14 +1,26 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Models
-
 {
-    public enum Priority { Low, Medium, High }
-    public enum Status { Pending, InProgress, Completed, Delivered }
+    public enum Priority
+    {
+        Low,
+        Medium,
+        High,
+    }
+
+    public enum Status
+    {
+        Pending,
+        InProgress,
+        Completed,
+        Delivered,
+    }
+
     public class Order
     {
         [BsonId]
@@ -42,5 +54,8 @@ namespace Models
 
         public decimal CustomsFee { get; set; }
 
+        public bool IsReturned { get; set; }
+
+        public bool IsReclaimed { get; set; }
     }
 }
