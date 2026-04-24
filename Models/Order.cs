@@ -1,8 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Models
 
@@ -41,6 +38,8 @@ namespace Models
         public string? MakerName { get; set; }
 
         public decimal CustomsFee { get; set; }
+
+        public decimal Discount { get; set; }
 
     }
 }

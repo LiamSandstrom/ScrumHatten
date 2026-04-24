@@ -1,3 +1,4 @@
+using BL.Services;
 using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +8,6 @@ using MongoDB.Driver;
 using MVC.ViewModels;
 using Repository;
 using Repository.Repositories;
-using Services;
-using BL.Services;
 
 
 namespace MVC.Controllers
