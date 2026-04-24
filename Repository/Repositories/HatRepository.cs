@@ -70,7 +70,6 @@ namespace Repository.Repositories
                 Description = hat.Description,
                 ImageUrl = hat.ImageUrl,
                 CustomHat = hat.CustomHat,
-                Quantity = hat.Quantity,
                 Materials = hat.Materials
                     .Where(m => materialDict.ContainsKey(m.MaterialId))
                     .Select(m => new HatMaterialDetail
@@ -104,7 +103,6 @@ namespace Repository.Repositories
                 Description = hat.Description,
                 ImageUrl = hat.ImageUrl,
                 CustomHat = hat.CustomHat,
-                Quantity = hat.Quantity,
                 Materials = hat.Materials
                     .Where(m => materialDict.ContainsKey(m.MaterialId))
                     .Select(m => new HatMaterialDetail

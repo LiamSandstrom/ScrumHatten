@@ -219,7 +219,7 @@
          SIDHUVUD
     ========================================= -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="page-title">Alla hattar</h1>
+        <h1 class="page-title">Lagerförda hattar</h1>
 
         <button class="clean-btn-primary"
                 data-bs-toggle="modal"
@@ -286,14 +286,32 @@
 
                             <!-- Pris och lagerstatus -->
                             <div class="hat-meta"><strong>Pris:</strong> @hat.Price kr</div>
-                            <div class="hat-meta"><strong>I lager:</strong> @hat.Quantity</div>
+                            
 
                             @if (hat.Sizes != null && hat.Sizes.Any())
 {
+    var sizeOrder = new List<string>
+    {
+        "0–6 månader (35–43 cm)",
+        "6–12 månader (43–47 cm)",
+        "1–2 år (48–50 cm)",
+        "2–4 år (50–52 cm)",
+        "5–7 år (52–54 cm)",
+        "8–12 år (54–56 cm)",
+        "S (55–56 cm)",
+        "M (57–58 cm)",
+        "L (59–60 cm)",
+        "XL (61–62 cm)"
+    };
+
+    var sortedSizes = hat.Sizes
+        .OrderBy(s => sizeOrder.IndexOf(s.Label))
+        .ToList();
+
     <div class="hat-material-box">
-        <div class="hat-material-title">Storlekar</div>
+        <div class="hat-material-title">Lager</div>
         <ul class="hat-material-list">
-            @foreach (var size in hat.Sizes)
+            @foreach (var size in sortedSizes)
             {
                 <li>@size.Quantity st @size.Label</li>
             }
@@ -384,10 +402,6 @@
                                             <input name="ImageFile" type="file" class="form-control" accept="image/*" />
                                         </div>
 
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label-clean">Antal i lager</label>
-                                            <input name="Quantity" type="number" class="form-control" value="@hat.Quantity" required />
-                                        </div>
                                     </div>
 
                                     <hr />
@@ -449,6 +463,62 @@
                                             onclick="addEditMaterialRow('@hat.Id')">
                                         Lägg till material
                                     </button>
+                                    <hr />
+
+<div class="section-subtitle">Storlekar</div>
+
+<div id="editSizeRows_@hat.Id">
+    @if (hat.Sizes != null && hat.Sizes.Any())
+    {
+        for (int i = 0; i < hat.Sizes.Count; i++)
+        {
+            var size = hat.Sizes[i];
+
+            <div class="row align-items-end material-row">
+                <input type="hidden" name="Sizes.Index" value="@i" />
+
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <label class="form-label-clean">Storlek</label>
+                    <select name="Sizes[@i].Label" class="form-control">
+                        <option value="">-- Välj storlek --</option>
+                        <option value="0–6 månader (35–43 cm)" selected="@(size.Label == "0–6 månader (35–43 cm)")">0–6 månader (35–43 cm)</option>
+                        <option value="6–12 månader (43–47 cm)" selected="@(size.Label == "6–12 månader (43–47 cm)")">6–12 månader (43–47 cm)</option>
+                        <option value="1–2 år (48–50 cm)" selected="@(size.Label == "1–2 år (48–50 cm)")">1–2 år (48–50 cm)</option>
+                        <option value="2–4 år (50–52 cm)" selected="@(size.Label == "2–4 år (50–52 cm)")">2–4 år (50–52 cm)</option>
+                        <option value="5–7 år (52–54 cm)" selected="@(size.Label == "5–7 år (52–54 cm)")">5–7 år (52–54 cm)</option>
+                        <option value="8–12 år (54–56 cm)" selected="@(size.Label == "8–12 år (54–56 cm)")">8–12 år (54–56 cm)</option>
+                        <option value="S (55–56 cm)" selected="@(size.Label == "S (55–56 cm)")">S (55–56 cm)</option>
+                        <option value="M (57–58 cm)" selected="@(size.Label == "M (57–58 cm)")">M (57–58 cm)</option>
+                        <option value="L (59–60 cm)" selected="@(size.Label == "L (59–60 cm)")">L (59–60 cm)</option>
+                        <option value="XL (61–62 cm)" selected="@(size.Label == "XL (61–62 cm)")">XL (61–62 cm)</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <label class="form-label-clean">Antal i lager</label>
+                    <input name="Sizes[@i].Quantity"
+                           type="number"
+                           min="0"
+                           class="form-control"
+                           value="@size.Quantity" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                            class="clean-btn-danger w-100"
+                            onclick="removeMaterialRow(this)">
+                        Ta bort
+                    </button>
+                </div>
+            </div>
+        }
+    }
+</div>
+<button type="button"
+        class="clean-btn-outline mt-2"
+        onclick="addEditSizeRow('@hat.Id')">
+    Lägg till storlek
+</button>
                                 </div>
 
                                 <div class="modal-footer">
@@ -515,10 +585,7 @@
                             <input name="ImageFile" type="file" class="form-control" accept="image/*" />
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label-clean">Antal i lager</label>
-                            <input name="Quantity" type="number" class="form-control" required />
-                        </div>
+                        
                     </div>
 
                     <hr />
@@ -749,6 +816,63 @@
             container.appendChild(row);
             editMaterialIndexes[hatId]++;
         }
+
+        const editSizeIndexes = {};
+
+function addEditSizeRow(hatId) {
+    const container = document.getElementById("editSizeRows_" + hatId);
+
+    if (!container) return;
+
+    if (editSizeIndexes[hatId] === undefined) {
+        editSizeIndexes[hatId] = container.querySelectorAll(".material-row").length;
+    }
+
+    const currentIndex = editSizeIndexes[hatId];
+
+    const row = document.createElement("div");
+    row.className = "row align-items-end material-row";
+
+    row.innerHTML = `
+        <input type="hidden" name="Sizes.Index" value="${currentIndex}" />
+
+        <div class="col-md-6 mb-2 mb-md-0">
+            <label class="form-label-clean">Storlek</label>
+            <select name="Sizes[${currentIndex}].Label" class="form-control">
+                <option value="">-- Välj storlek --</option>
+                <option value="0–6 månader (35–43 cm)">0–6 månader (35–43 cm)</option>
+                <option value="6–12 månader (43–47 cm)">6–12 månader (43–47 cm)</option>
+                <option value="1–2 år (48–50 cm)">1–2 år (48–50 cm)</option>
+                <option value="2–4 år (50–52 cm)">2–4 år (50–52 cm)</option>
+                <option value="5–7 år (52–54 cm)">5–7 år (52–54 cm)</option>
+                <option value="8–12 år (54–56 cm)">8–12 år (54–56 cm)</option>
+                <option value="S (55–56 cm)">S (55–56 cm)</option>
+                <option value="M (57–58 cm)">M (57–58 cm)</option>
+                <option value="L (59–60 cm)">L (59–60 cm)</option>
+                <option value="XL (61–62 cm)">XL (61–62 cm)</option>
+            </select>
+        </div>
+
+        <div class="col-md-4 mb-2 mb-md-0">
+            <label class="form-label-clean">Antal i lager</label>
+            <input name="Sizes[${currentIndex}].Quantity"
+                   type="number"
+                   min="0"
+                   class="form-control" />
+        </div>
+
+        <div class="col-md-2">
+            <button type="button"
+                    class="clean-btn-danger w-100"
+                    onclick="removeMaterialRow(this)">
+                Ta bort
+            </button>
+        </div>
+    `;
+
+    container.appendChild(row);
+    editSizeIndexes[hatId]++;
+}
 
         /* =========================================
            LÄGG TILL EN TOM MATERIALRAD NÄR SIDAN LADDAS
