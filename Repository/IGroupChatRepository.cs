@@ -8,5 +8,8 @@ namespace Repository
         Task<List<GroupChat>> GetGroupsForUserAsync(string userId);
         Task<GroupChat> GetGroupByIdAsync(string groupId);
         Task<List<Message>> GetGroupMessagesAsync(string groupId);
+        Task UpdateGroupMembersAsync(string groupId, List<string> memberIds);
+        Task DeleteGroupAsync(string groupId);
+        Task UpdateGroupAsync(GroupChat group);
     }
 }
