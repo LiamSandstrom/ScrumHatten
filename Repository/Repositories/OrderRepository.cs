@@ -1,10 +1,12 @@
 using Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace Repository
 {
@@ -130,6 +132,80 @@ public async Task SetIsDeliveredAsync(string id, bool isDelivered)
 
             await _collection.UpdateOneAsync(filter, update);
         }
-}
+
+    public async Task<List<Order>> GetOrdersBetweenDates(DateTime startDate, DateTime endDate)
+    {
+        var builder = Builders<Order>.Filter;
+
+        var filter = builder.And(
+            builder.Gte(x => x.OrderDate, startDate),
+            builder.Lte(x => x.OrderDate, endDate)
+            );
+
+        List<Order> orders = await _collection.Find(filter).ToListAsync();
+
+        return orders;
+    }
+
+    public async Task<List<Hat>> GetMostSoldHats(int amountToTake)
+    {
+
+        var aggregate = _collection.Aggregate()
+            .Unwind("Hats")
+
+            .Group(new BsonDocument
+            {
+        { "_id", "$Hats._id" },
+        { "count", new BsonDocument("$sum", 1) },
+        { "hatDoc", new BsonDocument("$first", "$Hats") }
+            })
+
+            .Sort(new BsonDocument("count", -1))
+
+            .Limit(amountToTake);
+
+        var results = await aggregate.ToListAsync();
+
+        return results.Select(doc =>
+            BsonSerializer.Deserialize<Hat>(doc["hatDoc"].AsBsonDocument)
+        ).ToList();
+    }
+
+    public async Task<List<Customer>> GetTopCustomers(int amountToTake)
+        {
+            int topN = 5;
+
+            var pipeline = new[]
+            {
+    new BsonDocument("$group", new BsonDocument
+    {
+        { "_id", "$CustomerId" },
+        { "TotalSpent", new BsonDocument("$sum", "$FinalPrice") }
+    }),
+
+    new BsonDocument("$sort", new BsonDocument("TotalSpent", -1)),
+
+    new BsonDocument("$limit", topN),
+
+    new BsonDocument("$lookup", new BsonDocument
+    {
+        { "from", "Customers" },
+        { "localField", "_id" },
+        { "foreignField", "_id" },
+        { "as", "CustomerDetails" }
+    }),
+
+    new BsonDocument("$unwind", "$CustomerDetails"),
+
+    new BsonDocument("$replaceRoot", new BsonDocument
+    {
+        { "newRoot", "$CustomerDetails" }
+    })
+    };
+
+     return await _collection.Aggregate<Customer>(pipeline).ToListAsync();
+
+        }
+    }
 }
 

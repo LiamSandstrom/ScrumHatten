@@ -30,5 +30,11 @@ namespace Repository
 
         Task AssignOrderToMakerAsync(string orderId, Guid makerId);
 
+        Task<List<Order>> GetOrdersBetweenDates(DateTime startDate, DateTime endDate);
+
+        Task<List<Hat>> GetMostSoldHats(int amountToTake);
+
+        Task<List<Customer>> GetTopCustomers(int amountToTake);
+
     }
 }

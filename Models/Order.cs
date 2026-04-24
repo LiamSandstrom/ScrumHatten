@@ -9,6 +9,7 @@ namespace Models
 {
     public enum Priority { Low, Medium, High }
     public enum Status { Pending, InProgress, Completed, Delivered }
+    [BsonDiscriminator]
     public class Order
     {
         [BsonId]
