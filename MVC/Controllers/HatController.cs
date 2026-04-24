@@ -87,6 +87,18 @@ namespace MVC.Controllers
                     .ToList()
                 ?? new List<HatMaterial>();
 
+               var hatSizes =
+                model
+                .Sizes?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Quantity >= 0)
+                .Select(s => new HatSize
+                {
+                      Label = s.Label,
+                    Quantity = s.Quantity,
+                  })
+                    .ToList()
+                    ?? new List<HatSize>();
+
+
             Hat newHat = new Hat
             {
                 Name = model.Name,
@@ -96,6 +108,7 @@ namespace MVC.Controllers
                 ImageUrl = imagePath,
                 ImageBase64 = imageBase64,
                 Materials = hatMaterials,
+                Sizes = hatSizes,
             };
 
             try
@@ -140,7 +153,8 @@ namespace MVC.Controllers
             int Quantity,
             string ImageUrl,
             IFormFile? ImageFile,
-            List<HatMaterialInputViewModel> Materials
+            List<HatMaterialInputViewModel> Materials,
+            List<HatSizeInputViewModel> Sizes
         )
         {
             try
@@ -190,6 +204,18 @@ namespace MVC.Controllers
                         .ToList()
                     ?? new List<HatMaterial>();
 
+
+                    var hatSizes =
+                    Sizes
+                    ?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Quantity >= 0)
+                    .Select(s => new HatSize
+                    {
+                    Label = s.Label,
+                    Quantity = s.Quantity,
+                     })
+                    .ToList()
+                    ?? new List<HatSize>();
+
                 Hat updatedHat = new Hat
                 {
                     Id = Id,
@@ -200,6 +226,7 @@ namespace MVC.Controllers
                     ImageUrl = imagePath,
                     ImageBase64 = imageBase64,
                     Materials = hatMaterials,
+                    Sizes = hatSizes,
                 };
 
                 await _hatService.UpdateHat(updatedHat);

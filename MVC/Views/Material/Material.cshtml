@@ -1,34 +1,63 @@
+@* =========================
+   MATERIALSIDA - ÖVERSIKT
+   Visar allt material i lager
+   ========================= *@
 <div class="container-fluid px-5 mt-4">
-    
+
+    @* =========================
+       SIDHUVUD
+       Rubrik + knappar för att fylla på och lägga till material
+       ========================= *@
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="fw-bold text-dark m-0">Materiallager</h1>
+        <h1 class="fw-bold material-title m-0">Materiallager</h1>
+
         <div>
-            <button type="button" class="btn btn-outline-primary rounded-pill px-4 me-2" data-bs-toggle="modal" data-bs-target="#restockMaterialModal">
+            <button type="button"
+                    class="btn btn-outline-primary rounded-pill px-4 me-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#restockMaterialModal">
                 <i class="bi bi-plus-circle me-1"></i> Fyll på material
             </button>
-            <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+
+            <button type="button"
+                    class="btn btn-primary rounded-pill px-4 shadow-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addMaterialModal">
                 <i class="bi bi-magic me-1"></i> Lägg till nytt
             </button>
         </div>
     </div>
 
+    @* =========================
+       MATERIALKORT
+       Loopar igenom alla material i Model och visar ett kort per material
+       ========================= *@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
         @foreach (var item in Model)
         {
             <div class="col">
                 <div class="card h-100 shadow-sm position-relative material-card">
-                    <a href="javascript:void(0)" onclick="editMaterial('@item.Id')"
-                           class="position-absolute top-0 end-0 m-2 text-warning" style="text-decoration: none;"
-                           title="Redigera material">
-                        <i class="bi bi-pencil-fill" style="font-size: 1.1rem;" data-bs-target="#editMaterialModal"></i>
+
+                    @* Redigeringsikon uppe i hörnet *@
+                    <a href="javascript:void(0)"
+                       onclick="editMaterial('@item.Id')"
+                       class="position-absolute top-0 end-0 m-2 text-warning"
+                       style="text-decoration: none;"
+                       title="Redigera material">
+                        <i class="bi bi-pencil-fill"
+                           style="font-size: 1.1rem;"
+                           data-bs-target="#editMaterialModal"></i>
                     </a>
 
+                    @* Kortets innehåll: namn och antal *@
                     <div class="card-body text-center">
                         <h5 class="card-title">@item.Name</h5>
                         <p class="card-text text-muted">
                             <strong>@item.Quantity</strong> @item.Unit
                         </p>
                     </div>
+
+                    @* Pris längst ner på kortet *@
                     <div class="card-footer bg-transparent border-top-0 text-center">
                         <small class="text-primary">@item.PricePerUnit kr/@item.Unit</small>
                     </div>
@@ -38,19 +67,29 @@
     </div>
 </div>
 
+@* =========================
+   MODAL - LÄGG TILL NYTT MATERIAL
+   Öppnas när användaren klickar på "Lägg till nytt"
+   ========================= *@
 <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
+
+            @* Modalens rubrik *@
             <div class="modal-header">
                 <h5 class="modal-title">Nytt material</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            @* Formulär för nytt material *@
             <div class="modal-body">
                 <form id="addMaterialForm">
+
                     <div class="mb-3">
                         <label class="form-label" for="matName">Namn</label>
                         <input type="text" id="matName" class="form-control" required />
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="matUnit">Enhet</label>
                         <select id="matUnit" class="form-control" required>
@@ -66,16 +105,20 @@
                             <option value="kg">Kilogram (kg)</option>
                         </select>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="matPrice">Pris per enhet</label>
                         <input type="number" id="matPrice" class="form-control" step="0.01" min="0" required />
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="matAmount">Antal</label>
                         <input type="number" id="matAmount" class="form-control" step="0.1" min="0" />
                     </div>
                 </form>
             </div>
+
+            @* Knappar längst ner i modalen *@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
                 <button type="button" class="btn btn-primary" onclick="saveMaterial()">Spara material</button>
@@ -84,23 +127,27 @@
     </div>
 </div>
 
+@* =========================
+   MODAL - FYLL PÅ MATERIAL
+   Visar en tabell där man kan lägga till mer mängd på befintliga material
+   ========================= *@
 <div class="modal fade" id="restockMaterialModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
+
+            @* Modalens rubrik *@
             <div class="modal-header">
-                <h5 class="modal-title"> Fyll på material</h5>
+                <h5 class="modal-title">Fyll på material</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
+            @* Tabell med alla material *@
             <div class="modal-body">
                 <table class="table">
-
                     <thead>
-
                         <tr>
-
                             <th>Material</th>
-                            <th> Nuvarande</th>
+                            <th>Nuvarande</th>
                             <th>Fyll på</th>
                             <th></th>
                         </tr>
@@ -109,44 +156,50 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-
                             <tr>
                                 <td>@item.Name</td>
                                 <td>@item.Quantity @item.Unit</td>
 
                                 <td>
-                                    <input type="number" id="restock-@item.Id" class="form-control forn-control-sm" min="0"
+                                    <input type="number"
+                                           id="restock-@item.Id"
+                                           class="form-control form-control-sm"
+                                           min="0"
                                            placeholder="0" />
                                 </td>
+
                                 <td>
-       
                                 </td>
                             </tr>
                         }
-
                     </tbody>
-
                 </table>
-
             </div>
 
+            @* Knappar längst ner *@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
                 <button type="button" class="btn btn-primary" onclick="saveAllRestocks()">Spara påfyllning</button>
             </div>
         </div>
-
     </div>
-
 </div>
 
+@* =========================
+   MODAL - REDIGERA MATERIAL
+   Används för att ändra namn, enhet, pris och antal
+   ========================= *@
 <div class="modal fade" id="editMaterialModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"> 
+
+            @* Modalens rubrik *@
+            <div class="modal-header">
                 <h5 class="modal-title">Redigera material</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            @* Formulär för att redigera material *@
             <div class="modal-body">
                 <form id="editMaterialForm">
                     <input type="hidden" id="editMatId" />
@@ -155,6 +208,7 @@
                         <label class="form-label" for="editMatName">Namn</label>
                         <input type="text" id="editMatName" class="form-control" required />
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="editMatUnit">Enhet</label>
                         <select id="editMatUnit" class="form-control" required>
@@ -164,6 +218,7 @@
                             <option value="g">Gram (g)</option>
                         </select>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="editMatPrice">Pris per enhet</label>
                         <input type="number" id="editMatPrice" class="form-control" step="0.01" min="0" required />
@@ -175,24 +230,34 @@
                     </div>
                 </form>
             </div>
+
+            @* Knappar längst ner:
+               vänster = ta bort
+               höger = avbryt / spara ändringar *@
             <div class="modal-footer d-flex justify-content-between">
                 <button type="button" class="btn btn-danger" onclick="deleteMaterial()">Ta bort</button>
-                
+
                 <div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
                     <button type="button" class="btn btn-primary" onclick="updateMaterial()">Spara ändringar</button>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
-            
 
+@* =========================
+   JAVASCRIPT-FIL
+   Här finns funktioner som saveMaterial, updateMaterial, deleteMaterial osv.
+   ========================= *@
 @section Scripts {
     <script src="~/js/material.js"></script>
 }
 
+@* =========================
+   CSS-FIL
+   Här ligger stilar för materialsidan
+   ========================= *@
 @section Styles {
     <link rel="stylesheet" href="~/css/material.css" asp-append-version="true" />
 }
