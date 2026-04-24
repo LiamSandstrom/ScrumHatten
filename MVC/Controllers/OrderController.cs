@@ -140,13 +140,14 @@ namespace MVC.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(OrderViewModel model)
         {
-            var ignoreFields = new[] { "OrderList", "Users", "Customers", "StockHats", "CustomHats", "Moms" };
-            foreach (var field in ignoreFields)
-                ModelState.Remove(field);
-
             if (!ModelState.IsValid)
             {
                 return Json(ModelStateErrorResponse("Validering misslyckades"));
+            }
+
+            foreach (var hat in model.Rows)
+            {
+                Console.WriteLine(hat);
             }
 
             var customer = await customerRepository.GetCustomerByIdAsync(model.SelectedCustomerId);
