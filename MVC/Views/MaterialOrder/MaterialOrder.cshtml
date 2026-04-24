@@ -31,19 +31,42 @@
                 </div>
 
                 <div id="materialRows">
-                    <div class="material-row" style="margin-bottom:10px;">
-                        <select name="Items[0].MaterialId">
-                            <option value="">Välj material</option>
-                            @if (materials != null)
-                            {
-                                @foreach (var material in materials)
-                                {
-                                    <option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option>
-                                }
-                            }
-                        </select>
+                    <div class="material-row" style="margin-bottom:10px; display:flex; gap:8px; align-items:flex-start;">
 
-                        <input type="number" name="Items[0].Quantity" step="0.1" min="0.1" placeholder="Antal" />
+                        <div style="width:300px; position:relative;">
+                            <input type="text"
+                                   class="form-control material-search"
+                                   placeholder="Sök material..."
+                                   onkeyup="filterMaterialList(this)"
+                                   onfocus="showMaterialList(this)" />
+
+                            <input type="hidden" name="Items[0].MaterialId" class="material-id-input" />
+
+                            <div class="material-list"
+                                 style="display:none; max-height:160px; overflow-y:auto; border:1px solid #ced4da; border-radius:6px; background:white; position:absolute; width:100%; z-index:1000;">
+                                @if (materials != null)
+                                {
+                                    @foreach (var material in materials)
+                                    {
+                                        <div class="material-option"
+                                             data-id="@material.Id"
+                                             data-name="@material.Name - @material.PricePerUnit kr/@material.Unit"
+                                             onclick="selectMaterialOption(this)"
+                                             style="padding:6px 10px; cursor:pointer;">
+                                            @material.Name - @material.PricePerUnit kr/@material.Unit
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <input type="number"
+                               name="Items[0].Quantity"
+                               step="0.1"
+                               min="0.1"
+                               placeholder="Antal"
+                               class="form-control"
+                               style="width:120px;" />
 
                         <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMaterialOrderRow(this)">
                             X
@@ -180,37 +203,87 @@
     </div>
 </div>
 
+<div id="materialTemplate" style="display:none;">
+    @if (materials != null)
+    {
+        @foreach (var material in materials)
+        {
+            <div class="material-option"
+                 data-id="@material.Id"
+                 data-name="@material.Name - @material.PricePerUnit kr/@material.Unit"
+                 onclick="selectMaterialOption(this)"
+                 style="padding:6px 10px; cursor:pointer;">
+                @material.Name - @material.PricePerUnit kr/@material.Unit
+            </div>
+        }
+    }
+</div>
+
 <script>
     let rowIndex = 1;
 
     function addMaterialRow() {
         const container = document.getElementById("materialRows");
+        const template = document.getElementById("materialTemplate").innerHTML;
 
         const newRow = document.createElement("div");
         newRow.className = "material-row";
         newRow.style.marginBottom = "10px";
+        newRow.style.display = "flex";
+        newRow.style.gap = "8px";
+        newRow.style.alignItems = "flex-start";
 
-        newRow.innerHTML = `
-            <select name="Items[${rowIndex}].MaterialId">
-                <option value="">Välj material</option>
-                @if (materials != null)
-                {
-                        foreach (var material in materials)
-                        {
-                                <text><option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option></text>
-                        }
-                }
-            </select>
-
-            <input type="number" name="Items[${rowIndex}].Quantity" step="0.1" min="0.1" placeholder="Antal" />
-
-            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMaterialOrderRow(this)">
-                X
-            </button>
-        `;
+        newRow.innerHTML =
+            '<div style="width:300px; position:relative;">' +
+                '<input type="text" class="form-control material-search" placeholder="Sök material..." onkeyup="filterMaterialList(this)" onfocus="showMaterialList(this)" />' +
+                '<input type="hidden" name="Items[' + rowIndex + '].MaterialId" class="material-id-input" />' +
+                '<div class="material-list" style="display:none; max-height:160px; overflow-y:auto; border:1px solid #ced4da; border-radius:6px; background:white; position:absolute; width:100%; z-index:1000;">' +
+                    template +
+                '</div>' +
+            '</div>' +
+            '<input type="number" name="Items[' + rowIndex + '].Quantity" step="0.1" min="0.1" placeholder="Antal" class="form-control" style="width:120px;" />' +
+            '<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMaterialOrderRow(this)">X</button>';
 
         container.appendChild(newRow);
         rowIndex++;
+    }
+
+    function showMaterialList(input) {
+        const row = input.closest(".material-row");
+        const list = row.querySelector(".material-list");
+
+        list.style.display = "block";
+        filterMaterialList(input);
+    }
+
+    function filterMaterialList(input) {
+        const row = input.closest(".material-row");
+        const list = row.querySelector(".material-list");
+        const options = list.querySelectorAll(".material-option");
+        const searchValue = input.value.toLowerCase();
+
+        list.style.display = "block";
+
+        options.forEach(option => {
+            const text = option.innerText.toLowerCase();
+
+            if (text.startsWith(searchValue) || text.includes(searchValue)) {
+                option.style.display = "block";
+            } else {
+                option.style.display = "none";
+            }
+        });
+    }
+
+    function selectMaterialOption(option) {
+        const row = option.closest(".material-row");
+        const input = row.querySelector(".material-search");
+        const hiddenInput = row.querySelector(".material-id-input");
+        const list = row.querySelector(".material-list");
+
+        input.value = option.getAttribute("data-name");
+        hiddenInput.value = option.getAttribute("data-id");
+        list.style.display = "none";
     }
 
     function removeMaterialOrderRow(button) {
@@ -233,4 +306,12 @@
             button.textContent = "Visa mer";
         }
     }
+
+    document.addEventListener("click", function (event) {
+        if (!event.target.closest(".material-row")) {
+            document.querySelectorAll(".material-list").forEach(list => {
+                list.style.display = "none";
+            });
+        }
+    });
 </script>
