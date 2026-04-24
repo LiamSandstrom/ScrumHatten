@@ -4,6 +4,7 @@ using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MVC.ViewModels;
 using Repository;
@@ -145,54 +146,107 @@ namespace MVC.Controllers
                 return Json(ModelStateErrorResponse("Validering misslyckades"));
             }
 
+            List<Hat> hatsInOrder = new();
+
             foreach (var hat in model.Rows)
             {
-                Console.WriteLine(hat);
+                if (hat.HatId == null)
+                {
+                    Hat customHat = new Hat
+                    {
+                        CustomHat = true,
+                        Name = "Custom",
+                        Price = (double)hat.CustomPrice,
+                        Description = hat.CustomDescription,
+                        Materials = hat.Materials,
+                        Quantity = hat.Quantity,
+                        Sizes = new List<HatSize>
+                {
+                    new HatSize { Label = hat.Size, Quantity = hat.Quantity }
+                }
+                    };
+                    hatsInOrder.Add(customHat);
+                    continue;
+                }
+
+                var baseHat = await hatRepository.GetHatById(hat.HatId);
+                if (baseHat == null)
+                    return Json(CreateResponse(false, $"Hatt med id {hat.HatId} hittades inte"));
+
+                if (hat.Materials.Count > 0)
+                {
+                    var mergedMaterials = baseHat.Materials.Select(bm =>
+                    {
+                        var extra = hat.Materials.FirstOrDefault(om => om.MaterialId == bm.MaterialId);
+                        if (extra != null)
+                            return new HatMaterial { MaterialId = bm.MaterialId, Amount = bm.Amount + extra.Amount };
+                        return bm;
+                    }).ToList();
+
+                    var newMaterials = hat.Materials
+                        .Where(om => !baseHat.Materials.Any(bm => bm.MaterialId == om.MaterialId))
+                        .ToList();
+
+                    mergedMaterials.AddRange(newMaterials);
+
+                    Hat modifiedHat = new Hat
+                    {
+                        CustomHat = true,
+                        Name = baseHat.Name,
+                        Price = baseHat.Price,
+                        Description = baseHat.Description,
+                        ImageUrl = baseHat.ImageUrl,
+                        Materials = mergedMaterials,
+                        Quantity = hat.Quantity,
+                        Sizes = new List<HatSize>
+                            {
+                                new HatSize { Label = hat.Size, Quantity = hat.Quantity }
+                            }
+                    };
+                    hatsInOrder.Add(modifiedHat);
+                    continue;
+                }
+
+                baseHat.Quantity = hat.Quantity;
+                baseHat.Sizes = new List<HatSize>
+                {
+                    new HatSize { Label = hat.Size, Quantity = hat.Quantity }
+                };
+                hatsInOrder.Add(baseHat);
             }
 
-            var customer = await customerRepository.GetCustomerByIdAsync(model.SelectedCustomerId);
-            decimal customsRate = customer != null ? _customsService.GetCustomsRate(customer.Country) : 0;
+            // Price calc
+            decimal subtotal = hatsInOrder.Sum(h => (decimal)h.Price * h.Quantity);
+            decimal discountFraction = model.Discount / 100;
+            decimal customsFraction = model.Customs / 100;
 
-            var allHats = await hatRepository.GetAllHats();
-
-            var orderHats = model.Rows
-                .Where(r => r.HatId != null)
-                .SelectMany(r =>
-                {
-                    var hat = allHats.FirstOrDefault(h => h.Id == r.HatId);
-                    if (hat == null) return Enumerable.Empty<Hat>();
-                    return Enumerable.Repeat(hat, r.Quantity);
-                })
-                .ToList();
-
-            decimal hatSubtotal = orderHats
-            .GroupBy(h => h.Id)
-            .Sum(g => (decimal)g.First().Price * g.Count());
-
-
-            decimal calculatedCustoms = hatSubtotal * customsRate;
-            decimal subtotalWithFees = hatSubtotal + model.TransportPrice + calculatedCustoms;
-            decimal fastOrderSurcharge = model.FastOrder ? subtotalWithFees * 0.20m : 0m;
-            decimal finalPrice = (subtotalWithFees + fastOrderSurcharge) * 1.25m;
+            decimal discounted = subtotal * (1 - discountFraction);
+            decimal vat = discounted * 0.25m;
+            decimal fast = model.FastOrder ? discounted * 0.20m : 0;
+            decimal customs = discounted * customsFraction;
+            decimal finalPrice = discounted + vat + fast + customs + model.TransportPrice;
 
             var order = new Order
             {
-                FastOrder = model.FastOrder,
-                TransportPrice = model.TransportPrice,
-                DateToFinish = model.DateToFinish,
+                Hats = hatsInOrder,
                 TimeToMake = model.TimeToMake,
+                DateToFinish = model.DateToFinish,
+                OrderDate = DateTime.UtcNow,
+                TransportPrice = model.TransportPrice,
+                FinalPrice = finalPrice,
+                FastOrder = model.FastOrder,
                 CustomerId = model.SelectedCustomerId,
-                MakerId = Guid.TryParse(model.SelectedUserId, out var guid) ? guid : Guid.Empty,
-                OrderDate = DateTime.Now,
+                MakerId = Guid.Parse(model.SelectedUserId),
                 Status = Status.Pending,
-                Hats = orderHats,
-                CustomsFee = calculatedCustoms,
-                FinalPrice = finalPrice
+                Priority = Priority.Medium,
+                IsDelivered = false,
+                Discount = model.Discount,
+                CustomsFee = customs
             };
 
             await orderRepository.CreateOrderAsync(order);
 
-            return Json(CreateResponse(true, message: "Order skapad!", notify: true, redirectUrl: "refresh"));
+            return Json(CreateResponse(true, "Order skapad", notify: true, redirectUrl: "/Order/"));
         }
 
         [HttpGet("GetAllMaterials")]

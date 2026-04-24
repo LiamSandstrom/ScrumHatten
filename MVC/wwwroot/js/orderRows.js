@@ -36,8 +36,8 @@ export const setMaterialRowNames = (materialList, rowIdx) => {
     for (const row of rows) {
         const sel = row.querySelector(".form-control");
         const qty = row.querySelector(".material-quantity");
-        if (sel) sel.name = `Rows[${rowIdx}].Materials[${mIdx}].Id`;
-        if (qty) qty.name = `Rows[${rowIdx}].Materials[${mIdx}].Quantity`;
+        if (sel) sel.name = `Rows[${rowIdx}].Materials[${mIdx}].MaterialId`;
+        if (qty) qty.name = `Rows[${rowIdx}].Materials[${mIdx}].Amount`;
         mIdx++;
     }
 };
@@ -154,16 +154,14 @@ const addMaterialRow = (materialList) => {
         reIndexRows();
     });
 
-    const parentRow = materialList.closest(".row-item");
-    const rIndex = [...document.querySelectorAll(".row-item")].indexOf(parentRow);
-    setMaterialRowNames(materialList, rIndex);
-
     for (const [id, name] of allMaterials) {
         const option = document.createElement("option");
         option.value = id;
         option.textContent = name;
         select.appendChild(option);
     }
+
+    reIndexRows();
 };
 
 export const initRowListeners = () => {

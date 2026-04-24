@@ -1,9 +1,7 @@
 import { updateOrderTotal } from "./orderPricing.js"
 
 export const setupServices = () => {
-    console.log("hi")
     const select = document.getElementById("SelectedCustomerId")
-    console.log(select)
     select.addEventListener("change", customerChanged)
     document.getElementById("createOrderModal").addEventListener("hide.bs.modal", () => {
         document.activeElement?.blur();
