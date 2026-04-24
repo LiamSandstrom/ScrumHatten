@@ -1,8 +1,8 @@
-using Models;
-using MongoDB.Bson.IO;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Models;
+using MongoDB.Bson.IO;
 
 namespace Repository
 {
@@ -16,9 +16,9 @@ namespace Repository
         Task UpdateOrderAsync(string id, Order updatedOrder);
         Task DeleteOrderAsync(string id);
         Task<List<Order>> GetOrderByMakerIdAsync(Guid makerId);
- 
-        Task OrderDateAsync(string id, DateTime newDate);
+        Task<Order> GetDeliveredOrdersAsync(string id);
 
+        Task OrderDateAsync(string id, DateTime newDate);
 
         Task SetTransportPriceAsync(string id, decimal newPrice);
 
@@ -29,6 +29,6 @@ namespace Repository
         Task SetIsDeliveredAsync(string id, bool isDelivered);
 
         Task AssignOrderToMakerAsync(string orderId, Guid makerId);
-
     }
 }
+

@@ -19,6 +19,8 @@ namespace Models
         InProgress,
         Completed,
         Delivered,
+        Returned,
+        Reclaimed,
     }
 
     public class Order
@@ -54,8 +56,6 @@ namespace Models
 
         public decimal CustomsFee { get; set; }
 
-        public bool IsReturned { get; set; }
-
-        public bool IsReclaimed { get; set; }
+        public string? ReturnReason { get; set; }
     }
 }

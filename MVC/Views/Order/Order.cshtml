@@ -51,7 +51,7 @@
             </div>
             <div class="col-md-3">
                 <div class="card bg-light border-0">
-                    <div class="card-header custom-header-brown text-white fw-bold"> Levererade</div>
+                    <div class="card-header custom-header-brown text-white fw-bold"> LEVERERADE</div>
                     <div class="card-body p-2 kanban-col" id="delivered">
                         @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Delivered))
                         {
@@ -527,8 +527,16 @@
     <button type="button" id="btnAssignToMe" class="btn btn-success d-none">
         <i class="bi bi-person-plus"></i> Ta mig an beställning
     </button>
-    
-    <a id="btnEditOrder" href="#" class="btn btn-primary">
+
+    <a id="btnReclaim" href="#" class="btn btn-danger">
+        <i class="bi bi-arrow-repeat"></i> Reklamera
+    </a>
+
+    <a id="btnReturn" href="#" class="btn btn-danger d-none">
+        <i class="bi bi-arrow-left-circle"></i> Returnera
+    </a>
+
+    <a id="btnEditOrder" href="#" class="btn btn-primary d-none">
         <i class="bi bi-pencil"></i> Redigera
     </a>
 </div>
@@ -596,6 +604,8 @@
         </div>
     </div>
 </div>
+
+
 
 <style>
     .custom-header-brown {
