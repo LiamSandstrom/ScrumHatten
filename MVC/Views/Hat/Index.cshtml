@@ -286,20 +286,38 @@
 
                             <!-- Pris och lagerstatus -->
                             <div class="hat-meta"><strong>Pris:</strong> @hat.Price kr</div>
-                            <!-- <div class="hat-meta"><strong>I lager:</strong> @hat.Quantity</div> -->
+                            
 
                             @if (hat.Sizes != null && hat.Sizes.Any())
-                            {
-                            <div class="hat-material-box">
-                            <div class="hat-material-title">Lager</div>
-                            <ul class="hat-material-list">
-                             @foreach (var size in hat.Sizes)
-                            {
-                                <li>@size.Quantity st @size.Label</li>
-                            }
-                                </ul>
-                                </div>
-                            }
+{
+    var sizeOrder = new List<string>
+    {
+        "0–6 månader (35–43 cm)",
+        "6–12 månader (43–47 cm)",
+        "1–2 år (48–50 cm)",
+        "2–4 år (50–52 cm)",
+        "5–7 år (52–54 cm)",
+        "8–12 år (54–56 cm)",
+        "S (55–56 cm)",
+        "M (57–58 cm)",
+        "L (59–60 cm)",
+        "XL (61–62 cm)"
+    };
+
+    var sortedSizes = hat.Sizes
+        .OrderBy(s => sizeOrder.IndexOf(s.Label))
+        .ToList();
+
+    <div class="hat-material-box">
+        <div class="hat-material-title">Lager</div>
+        <ul class="hat-material-list">
+            @foreach (var size in sortedSizes)
+            {
+                <li>@size.Quantity st @size.Label</li>
+            }
+        </ul>
+    </div>
+}
 
                             <!-- Materiallista -->
                             @if (hat.Materials != null && hat.Materials.Any())
@@ -384,10 +402,6 @@
                                             <input name="ImageFile" type="file" class="form-control" accept="image/*" />
                                         </div>
 
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label-clean">Antal i lager</label>
-                                            <input name="Quantity" type="number" class="form-control" value="@hat.Quantity" required />
-                                        </div>
                                     </div>
 
                                     <hr />
