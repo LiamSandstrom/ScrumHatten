@@ -1,3 +1,4 @@
+using System.Reflection.Emit;
 using Models;
 using MongoDB.Driver;
 
@@ -26,5 +27,28 @@ namespace Repository
 
     public async Task<List<Message>> GetGroupMessagesAsync(string groupId) =>
         await _messages.Find(m => m.ReceiverId == groupId).ToListAsync();
+        
+    public async Task UpdateGroupMembersAsync(string groupId, List<string> memberIds)
+{
+    var filter = Builders<GroupChat>.Filter.Eq(g => g.Id, groupId);
+    var update = Builders<GroupChat>.Update.Set(g => g.MemberIds, memberIds);
+    await _groups.UpdateOneAsync(filter, update);
+}
+
+public async Task DeleteGroupAsync(string groupId)
+{
+    await _groups.DeleteOneAsync(g => g.Id == groupId);
+ 
+    await _messages.DeleteManyAsync(m => m.ReceiverId == groupId);
+}
+
+public async Task UpdateGroupAsync(GroupChat group)
+{
+    var filter = Builders<GroupChat>.Filter.Eq(g => g.Id, group.Id);
+    var update = Builders<GroupChat>.Update.Set(g => g.Name, group.Name)
+        .Set(g => g.MemberIds, group.MemberIds)
+        .Set(g => g.CreatedAt, group.CreatedAt);
+    await _groups.UpdateOneAsync(filter, update);
+}
 }
 }

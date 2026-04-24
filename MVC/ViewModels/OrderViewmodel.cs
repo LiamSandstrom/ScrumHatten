@@ -32,31 +32,30 @@ namespace MVC.ViewModels
 
         [ValidateNever]
         public List<Order> OrderList { get; set; }
-        public List<SelectListItem> Hats { get; set; } = new();
 
-        [Range(0, double.MaxValue, ErrorMessage = "Ogiltig tid")]
+        [ValidateNever]
+        public List<SelectListItem> Users { get; set; }
+
+        [ValidateNever]
+        public List<SelectListItem> Customers { get; set; } = new();
+
+        [Range(0, double.MaxValue)]
         public decimal TimeToMake { get; set; }
 
-        [Required(ErrorMessage = "Datum krävs")]
-        [DataType(DataType.Date)]
+        [Required, DataType(DataType.Date)]
         [CustomValidation(typeof(OrderViewModel), nameof(ValidateDate))]
         public DateTime DateToFinish { get; set; } = DateTime.Today;
 
-        [Range(0, double.MaxValue, ErrorMessage = "Ogiltig transportkostnad")]
+        [Range(0, double.MaxValue)]
         public decimal TransportPrice { get; set; }
 
-        public decimal Moms { get; set; }
         public bool FastOrder { get; set; } = false;
 
         [Required(ErrorMessage = "Välj utförare")]
         public string SelectedUserId { get; set; }
 
-        public List<SelectListItem> Users { get; set; }
-
         [Required(ErrorMessage = "Välj kund")]
         public string SelectedCustomerId { get; set; }
-
-        public List<SelectListItem> Customers { get; set; } = new();
 
         public static ValidationResult ValidateDate(DateTime date, ValidationContext ctx)
         {
