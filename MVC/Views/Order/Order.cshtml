@@ -335,9 +335,10 @@
                                         <div class="col-12 col-sm-6" >
                                             <label class="form-label">Tull</label>
                                             <div class="input-group">
-                                                <input name="Customs" class="form-control" type="number" min="0"
-                                                       value="0" step="10" />
-                                                <span class="input-group-text">kr</span>
+                                                       <input name="Customs" class="form-control" type="number" min="0"
+                                                           value="0" max="100" step="1" readonly
+                                                           style="background-color:#e9ecef; cursor:not-allowed;" />
+                                                <span class="input-group-text" >%</span>
                                             </div>
                                             <p id="error-Customs" class="error-text"></p>
                                         </div>

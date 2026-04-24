@@ -256,5 +256,6 @@ namespace MVC.Controllers
             TempData["SuccessMessage"] = "Kunden har raderats.";
             return RedirectToAction(nameof(CustomerList));
         }
+
     }
 }
