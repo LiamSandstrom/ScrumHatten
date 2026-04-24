@@ -391,5 +391,25 @@ namespace MVC.Controllers
             return View("ShippingDocument", (order, customer));
         }
 
+        [HttpGet("GetCustomerById")]
+        public async Task<IActionResult> GetCustomerById(string id)
+        {
+            if (string.IsNullOrEmpty(id) || id.Length != 24)
+            {
+                return BadRequest("Ogiltigt id för kund.");
+            }
+
+            var customer = await customerRepository.GetCustomerByIdAsync(id);
+
+            if (customer == null)
+            {
+                return NotFound($"Ingen kund med ID: {id} hittades.");
+            }
+
+            return Ok(customer);
+        }
+
     }
+
+
 }
