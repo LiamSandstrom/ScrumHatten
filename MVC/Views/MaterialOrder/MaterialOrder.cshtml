@@ -6,16 +6,15 @@
     var materials = ViewBag.Materials as List<Material>;
 
     var completedOrders = Model?
-    .Where(o => o.Status == "Klar")
-    .OrderByDescending(o => o.CreatedAt)
-    .ToList() ?? new List<Models.MaterialOrder>();
+        .Where(o => o.Status == "Klar")
+        .OrderByDescending(o => o.CreatedAt)
+        .ToList() ?? new List<Models.MaterialOrder>();
 
     var visibleCompletedOrders = completedOrders.Take(3).ToList();
     var hiddenCompletedOrders = completedOrders.Skip(3).ToList();
 }
 
 <div style="padding: 12px 16px;">
-    <!-- 👈 LITEN PADDING -->
 
     <h1>Materialordrar</h1>
 
@@ -25,27 +24,60 @@
             <h2>Skapa ny materialorder</h2>
 
             <form asp-controller="MaterialOrder" asp-action="Create" method="post">
-                <div id="materialRows">
-                    <div class="material-row" style="margin-bottom:10px;">
-                        <select name="Items[0].MaterialId">
-                            <option value="">Välj material</option>
-                            @if (materials != null)
-                            {
-                                @foreach (var material in materials)
-                                {
-                                    <option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit
-                                    </option>
-                                }
-                            }
-                        </select>
 
-                        <input type="number" name="Items[0].Quantity" step="0.1" min="0.1" placeholder="Antal" />
+                <div class="mb-3">
+                    <label><strong>Leverantör</strong></label>
+                    <input type="text" name="Supplier" class="form-control" placeholder="Ange leverantör" required />
+                </div>
+
+                <div id="materialRows">
+                    <div class="material-row" style="margin-bottom:10px; display:flex; gap:8px; align-items:flex-start;">
+
+                        <div style="width:300px; position:relative;">
+                            <input type="text"
+                                   class="form-control material-search"
+                                   placeholder="Sök material..."
+                                   onkeyup="filterMaterialList(this)"
+                                   onfocus="showMaterialList(this)" />
+
+                            <input type="hidden" name="Items[0].MaterialId" class="material-id-input" />
+
+                            <div class="material-list"
+                                 style="display:none; max-height:160px; overflow-y:auto; border:1px solid #ced4da; border-radius:6px; background:white; position:absolute; width:100%; z-index:1000;">
+                                @if (materials != null)
+                                {
+                                    @foreach (var material in materials)
+                                    {
+                                        <div class="material-option"
+                                             data-id="@material.Id"
+                                             data-name="@material.Name - @material.PricePerUnit kr/@material.Unit"
+                                             onclick="selectMaterialOption(this)"
+                                             style="padding:6px 10px; cursor:pointer;">
+                                            @material.Name - @material.PricePerUnit kr/@material.Unit
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <input type="number"
+                               name="Items[0].Quantity"
+                               step="0.1"
+                               min="0.1"
+                               placeholder="Antal"
+                               class="form-control"
+                               style="width:120px;" />
+
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMaterialOrderRow(this)">
+                            X
+                        </button>
                     </div>
                 </div>
 
                 <button type="button" class="btn btn-outline-primary me-2" onclick="addMaterialRow()">
-                        Lägg till material
+                    Lägg till material
                 </button>
+
                 <button type="submit" class="btn btn-primary">
                     Beställ
                 </button>
@@ -55,21 +87,18 @@
 
             <h2>Påbörjade materialordrar</h2>
 
-            @if (Model == null || !Model.Any(o => o.Status != "Klar"))
+            @if (Model == null || !Model.Any(o => o.Status != "Klar" && o.Status != "Avbruten"))
             {
                 <p>Det finns inga påbörjade materialordrar.</p>
             }
             else
             {
-                @foreach (var order in Model.Where(o => o.Status != "Klar").OrderByDescending(o => o.CreatedAt))
+                @foreach (var order in Model.Where(o => o.Status != "Klar" && o.Status != "Avbruten").OrderByDescending(o => o.CreatedAt))
                 {
-                    <div
-                        style="border:1px solid #ccc; 
-                        padding:15px; margin-bottom:15px;
-                        border-radius:8px; 
-                        background-color:white;">
+                    <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px; background-color:white;">
                         <p><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
-                        <p><strong>Ordernummer:</strong> @order.Id</p> 
+                        <p><strong>Ordernummer:</strong> @order.Id</p>
+                        <p><strong>Leverantör:</strong> @order.Supplier</p>
                         <p><strong>Status:</strong> @order.Status</p>
                         <p><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
 
@@ -80,10 +109,19 @@
                             }
                         </ul>
 
-                        <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post">
+                        <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post" style="display:inline-block;">
                             <input type="hidden" name="id" value="@order.Id" />
                             <button type="submit" class="btn btn-success">
-                            Markera som klar
+                                Markera som klar
+                            </button>
+                        </form>
+
+                        <form asp-controller="MaterialOrder" asp-action="Cancel" method="post" style="display:inline-block; margin-left:8px;">
+                            <input type="hidden" name="id" value="@order.Id" />
+                            <button type="submit"
+                                    class="btn btn-outline-danger"
+                                    onclick="return confirm('Är du säker på att du vill avbryta denna materialorder?')">
+                                Avbryt order
                             </button>
                         </form>
                     </div>
@@ -96,20 +134,16 @@
 
             @if (!completedOrders.Any())
             {
-                <p>Det finns inga klara materialodrar.</p>
+                <p>Det finns inga klara materialordrar.</p>
             }
             else
             {
                 @foreach (var order in visibleCompletedOrders)
                 {
-                    <div
-                        style="border:1px solid
-                         #7fbf7f; padding:8px;
-                          margin-bottom:10px; 
-                          border-radius:6px; 
-                          background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                    <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                         <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                         <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
+                        <p style="margin:0 0 4px 0;"><strong>Leverantör:</strong> @order.Supplier</p>
                         <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
                         <p style="margin:0 0 6px 0;"><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
 
@@ -120,33 +154,29 @@
                             }
                         </ul>
 
-                       <a asp-controller="MaterialOrder"
-                            asp-action="Print"
-                            asp-route-id="@order.Id"
-                            target="_blank"
-                            class="btn btn-primary mt-2">
+                        <a asp-controller="MaterialOrder"
+                               asp-action="Print"
+                               asp-route-id="@order.Id"
+                               target="_blank"
+                               class="btn btn-primary mt-2">
                             Skriv ut
                         </a>
                     </div>
-
                 }
-
-
 
                 @if (hiddenCompletedOrders.Any())
                 {
                     <button type="button" class="btn btn-secondary mt-2" onclick="toggleCompletedOrders()" id="toggleButton">
-                    Visa mer
+                        Visa mer
                     </button>
 
                     <div id="moreCompletedOrders" style="display:none; margin-top:10px;">
-
                         @foreach (var order in hiddenCompletedOrders)
                         {
-                            <div
-                                style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                            <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                                 <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                                 <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
+                                <p style="margin:0 0 4px 0;"><strong>Leverantör:</strong> @order.Supplier</p>
                                 <p style="margin:0 0 4px 0;"><strong>Status:</strong> @order.Status</p>
                                 <p style="margin:0 0 6px 0;"><strong>Slutsumma:</strong> @order.TotalPrice kr</p>
 
@@ -156,12 +186,13 @@
                                         <li>@item.MaterialName - @item.Quantity</li>
                                     }
                                 </ul>
+
                                 <a asp-controller="MaterialOrder"
-                                asp-action="Print"
-                                asp-route-id="@order.Id"
-                                target="_blank"
-                                class="btn btn-primary mt-2">
-                                Skriv ut
+                                       asp-action="Print"
+                                       asp-route-id="@order.Id"
+                                       target="_blank"
+                                       class="btn btn-primary mt-2">
+                                    Skriv ut
                                 </a>
                             </div>
                         }
@@ -170,36 +201,97 @@
             }
         </div>
     </div>
+</div>
 
-</div> <!-- 👈 STÄNGER WRAPPERN -->
+<div id="materialTemplate" style="display:none;">
+    @if (materials != null)
+    {
+        @foreach (var material in materials)
+        {
+            <div class="material-option"
+                 data-id="@material.Id"
+                 data-name="@material.Name - @material.PricePerUnit kr/@material.Unit"
+                 onclick="selectMaterialOption(this)"
+                 style="padding:6px 10px; cursor:pointer;">
+                @material.Name - @material.PricePerUnit kr/@material.Unit
+            </div>
+        }
+    }
+</div>
 
 <script>
     let rowIndex = 1;
 
     function addMaterialRow() {
         const container = document.getElementById("materialRows");
+        const template = document.getElementById("materialTemplate").innerHTML;
 
         const newRow = document.createElement("div");
         newRow.className = "material-row";
         newRow.style.marginBottom = "10px";
+        newRow.style.display = "flex";
+        newRow.style.gap = "8px";
+        newRow.style.alignItems = "flex-start";
 
-        newRow.innerHTML = `
-            <select name="Items[${rowIndex}].MaterialId">
-                <option value="">Välj material</option>
-                @if (materials != null)
-                {
-                            foreach (var material in materials)
-                            {
-                                        <text><option value="@material.Id">@material.Name - @material.PricePerUnit kr/@material.Unit</option></text>
-                            }
-                }
-            </select>
-
-            <input type="number" name="Items[${rowIndex}].Quantity" step="0.1" min="0.1" placeholder="Antal" />
-        `;
+        newRow.innerHTML =
+            '<div style="width:300px; position:relative;">' +
+                '<input type="text" class="form-control material-search" placeholder="Sök material..." onkeyup="filterMaterialList(this)" onfocus="showMaterialList(this)" />' +
+                '<input type="hidden" name="Items[' + rowIndex + '].MaterialId" class="material-id-input" />' +
+                '<div class="material-list" style="display:none; max-height:160px; overflow-y:auto; border:1px solid #ced4da; border-radius:6px; background:white; position:absolute; width:100%; z-index:1000;">' +
+                    template +
+                '</div>' +
+            '</div>' +
+            '<input type="number" name="Items[' + rowIndex + '].Quantity" step="0.1" min="0.1" placeholder="Antal" class="form-control" style="width:120px;" />' +
+            '<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMaterialOrderRow(this)">X</button>';
 
         container.appendChild(newRow);
         rowIndex++;
+    }
+
+    function showMaterialList(input) {
+        const row = input.closest(".material-row");
+        const list = row.querySelector(".material-list");
+
+        list.style.display = "block";
+        filterMaterialList(input);
+    }
+
+    function filterMaterialList(input) {
+        const row = input.closest(".material-row");
+        const list = row.querySelector(".material-list");
+        const options = list.querySelectorAll(".material-option");
+        const searchValue = input.value.toLowerCase();
+
+        list.style.display = "block";
+
+        options.forEach(option => {
+            const text = option.innerText.toLowerCase();
+
+            if (text.startsWith(searchValue) || text.includes(searchValue)) {
+                option.style.display = "block";
+            } else {
+                option.style.display = "none";
+            }
+        });
+    }
+
+    function selectMaterialOption(option) {
+        const row = option.closest(".material-row");
+        const input = row.querySelector(".material-search");
+        const hiddenInput = row.querySelector(".material-id-input");
+        const list = row.querySelector(".material-list");
+
+        input.value = option.getAttribute("data-name");
+        hiddenInput.value = option.getAttribute("data-id");
+        list.style.display = "none";
+    }
+
+    function removeMaterialOrderRow(button) {
+        const row = button.closest(".material-row");
+
+        if (row) {
+            row.remove();
+        }
     }
 
     function toggleCompletedOrders() {
@@ -214,4 +306,12 @@
             button.textContent = "Visa mer";
         }
     }
+
+    document.addEventListener("click", function (event) {
+        if (!event.target.closest(".material-row")) {
+            document.querySelectorAll(".material-list").forEach(list => {
+                list.style.display = "none";
+            });
+        }
+    });
 </script>
