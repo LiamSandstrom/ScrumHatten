@@ -1,3 +1,4 @@
+using BL.Services;
 using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +8,6 @@ using MongoDB.Driver;
 using MVC.ViewModels;
 using Repository;
 using Repository.Repositories;
-using Services;
-using BL.Services;
 
 
 namespace MVC.Controllers
@@ -141,13 +140,14 @@ namespace MVC.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(OrderViewModel model)
         {
-            var ignoreFields = new[] { "OrderList", "Users", "Customers", "StockHats", "CustomHats", "Moms" };
-            foreach (var field in ignoreFields)
-                ModelState.Remove(field);
-
             if (!ModelState.IsValid)
             {
                 return Json(ModelStateErrorResponse("Validering misslyckades"));
+            }
+
+            foreach (var hat in model.Rows)
+            {
+                Console.WriteLine(hat);
             }
 
             var customer = await customerRepository.GetCustomerByIdAsync(model.SelectedCustomerId);
@@ -391,5 +391,25 @@ namespace MVC.Controllers
             return View("ShippingDocument", (order, customer));
         }
 
+        [HttpGet("GetCustomerById")]
+        public async Task<IActionResult> GetCustomerById(string id)
+        {
+            if (string.IsNullOrEmpty(id) || id.Length != 24)
+            {
+                return BadRequest("Ogiltigt id för kund.");
+            }
+
+            var customer = await customerRepository.GetCustomerByIdAsync(id);
+
+            if (customer == null)
+            {
+                return NotFound($"Ingen kund med ID: {id} hittades.");
+            }
+
+            return Ok(customer);
+        }
+
     }
+
+
 }

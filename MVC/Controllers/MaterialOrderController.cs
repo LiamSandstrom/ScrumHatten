@@ -70,6 +70,7 @@ namespace MVC.Controllers
             var order = new MaterialOrder
             {
                 Items = orderItems,
+                Supplier = model.Supplier,
                 Status = "Påbörjad",
                 TotalPrice = totalPrice,
                 CreatedAt = DateTime.Now
@@ -77,6 +78,13 @@ namespace MVC.Controllers
 
             await _materialOrderRepository.AddOrderAsync(order);
 
+            return RedirectToAction("MaterialOrder");
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> Cancel(string id)
+        {
+            await _materialOrderRepository.UpdateStatusAsync(id, "Avbruten");
             return RedirectToAction("MaterialOrder");
         }
 

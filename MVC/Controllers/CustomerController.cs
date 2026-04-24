@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using MVC.ViewModels.CustomerViewModels;
 using Repository;
 
@@ -8,10 +9,12 @@ namespace MVC.Controllers
     public class CustomerController : Controller
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public CustomerController(ICustomerRepository customerRepository)
+        public CustomerController(ICustomerRepository customerRepository, IOrderRepository orderRepository)
         {
             _customerRepository = customerRepository;
+            _orderRepository = orderRepository;
         }
 
 
@@ -256,5 +259,39 @@ namespace MVC.Controllers
             TempData["SuccessMessage"] = "Kunden har raderats.";
             return RedirectToAction(nameof(CustomerList));
         }
+
+
+        public async Task<IActionResult> History(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return RedirectToAction(nameof(CustomerList));
+            }
+
+
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
+            if (customer == null)
+            {
+                return NotFound($"Ingen finns med kund med id: {id}.");
+            }
+
+
+            List<Order> orders = await _orderRepository.GetOrdersByCustomerIdAsync(id);
+
+
+            var vm = new HistoryCustomerViewModel
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                Discount = customer.ToString(),
+                allOrders = orders
+
+
+            };
+
+
+            return View(vm);
+        }
+
     }
 }

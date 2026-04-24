@@ -187,6 +187,7 @@ export const initRowListeners = () => {
         }
     });
 
+
     document.getElementById("addHatBtn").addEventListener("click", addRow);
     document.getElementById("addCustomHatBtn").addEventListener("click", addCustomRow);
 };

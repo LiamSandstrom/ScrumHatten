@@ -136,21 +136,28 @@ public async Task<IActionResult> CreateGroup(string groupName, List<string> sele
 [HttpPost]
 public async Task<IActionResult> LeaveGroup(string groupId)
 {
-    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    var group = await _groupRepo.GetGroupByIdAsync(groupId);
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     
-    if (group != null)
+    // 1. Hämta gruppen
+    var group = await _groupRepo.GetGroupByIdAsync(groupId);
+    if (group == null) return RedirectToAction("Index");
+
+    // 2. Ta bort den aktuella användaren ur listan
+    group.MemberIds.Remove(currentUserId);
+
+    // 3. KOLLEN: Är gruppen tom nu?
+    if (group.MemberIds.Count == 0)
     {
-        group.MemberIds.Remove(userId);
-        if (group.MemberIds.Count == 0)
-        {
-            // Valfritt: Ta bort gruppen helt om ingen är kvar
-        }
-        else
-        {
-            await _groupRepo.UpdateGroupMembersAsync(groupId, group.MemberIds);
-        }
+        // Om ingen är kvar -> RADERA gruppen helt
+        await _groupRepo.DeleteGroupAsync(groupId);
     }
+    else
+    {
+        // Om folk är kvar -> UPPDATERA gruppen (ta bort dig själv)
+        await _groupRepo.UpdateGroupAsync(group);
+    }
+
+    // Skicka användaren tillbaka till en tom chattvy
     return RedirectToAction("Index");
 }
 

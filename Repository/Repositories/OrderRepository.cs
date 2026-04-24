@@ -22,7 +22,7 @@ namespace Repository
 
             await _collection.Find(o => o.Id == id).FirstOrDefaultAsync();
 
-        public async Task<List<Order>> GetAllOrdersAsync() => 
+        public async Task<List<Order>> GetAllOrdersAsync() =>
             await _collection.Find(_ => true).ToListAsync();
         public async Task CreateOrderAsync(Order newOrder)
         {
@@ -57,78 +57,78 @@ namespace Repository
             return order?.TimeToMake ?? 0;
         }
 
-    
 
 
-    public async Task OrderDateAsync(string id, DateTime newDate)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.OrderDate, newDate);
-        await _collection.UpdateOneAsync(filter, update);
-    }
 
-    public async Task SetTransportPriceAsync(string id, decimal newPrice)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.TransportPrice, newPrice);
-        await _collection.UpdateOneAsync(filter, update);
-    }
-
-    public async Task SetPriorityAsync(string id, Priority newPriority)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.Priority, newPriority);
-        await _collection.UpdateOneAsync(filter, update);
-
-    }
-
-    public async Task SetStatusAsync(string id, Status newStatus)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.Status, newStatus);
-        await _collection.UpdateOneAsync(filter, update);
-    }
-
-    public async Task SetFastOrderAsync(string id, bool isFastOrder)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.FastOrder, isFastOrder);
-        await _collection.UpdateOneAsync(filter, update);
-}
-public async Task UpdatePriorityAsync(string id, Priority newPriority)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.Priority, newPriority);
-        await _collection.UpdateOneAsync(filter, update);
-
-}
-
-public async Task UpdateStatusAsync(string id, Status newStatus)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.Status, newStatus);
-        await _collection.UpdateOneAsync(filter, update);
-}
-
-public async Task UpdateFastOrderAsync(string id, bool isFastOrder)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.FastOrder, isFastOrder);
-        await _collection.UpdateOneAsync(filter, update);
-}
-
-public async Task SetIsDeliveredAsync(string id, bool isDelivered)
-    {
-        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
-        var update = Builders<Order>.Update.Set(o => o.IsDelivered, isDelivered);
-        await _collection.UpdateOneAsync(filter, update);
-    }
-
-    public async Task AssignOrderToMakerAsync(string orderId, Guid makerId)
+        public async Task OrderDateAsync(string id, DateTime newDate)
         {
-            var filter = Builders<Order>.Filter.Eq(o=>o.Id, orderId);
-            var update = Builders<Order>.Update.Set(o=>o.MakerId,  makerId)
-            .Set(o=>o.Status, Status.InProgress);
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.OrderDate, newDate);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task SetTransportPriceAsync(string id, decimal newPrice)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.TransportPrice, newPrice);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task SetPriorityAsync(string id, Priority newPriority)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.Priority, newPriority);
+            await _collection.UpdateOneAsync(filter, update);
+
+        }
+
+        public async Task SetStatusAsync(string id, Status newStatus)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.Status, newStatus);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task SetFastOrderAsync(string id, bool isFastOrder)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.FastOrder, isFastOrder);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+        public async Task UpdatePriorityAsync(string id, Priority newPriority)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.Priority, newPriority);
+            await _collection.UpdateOneAsync(filter, update);
+
+        }
+
+        public async Task UpdateStatusAsync(string id, Status newStatus)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.Status, newStatus);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateFastOrderAsync(string id, bool isFastOrder)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.FastOrder, isFastOrder);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task SetIsDeliveredAsync(string id, bool isDelivered)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+            var update = Builders<Order>.Update.Set(o => o.IsDelivered, isDelivered);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task AssignOrderToMakerAsync(string orderId, Guid makerId)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId);
+            var update = Builders<Order>.Update.Set(o => o.MakerId, makerId)
+            .Set(o => o.Status, Status.InProgress);
 
             await _collection.UpdateOneAsync(filter, update);
         }
@@ -207,5 +207,15 @@ public async Task SetIsDeliveredAsync(string id, bool isDelivered)
 
         }
     }
+        public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerid)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.CustomerId, customerid);
+
+
+            return await _collection.Find(filter).ToListAsync();
+        }
+    }
+
 }
+
 
