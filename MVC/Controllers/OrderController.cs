@@ -159,7 +159,6 @@ namespace MVC.Controllers
                         Price = (double)hat.CustomPrice,
                         Description = hat.CustomDescription,
                         Materials = hat.Materials,
-                        Quantity = hat.Quantity,
                         Sizes = new List<HatSize>
                 {
                     new HatSize { Label = hat.Size, Quantity = hat.Quantity }
@@ -197,26 +196,24 @@ namespace MVC.Controllers
                         Description = baseHat.Description,
                         ImageUrl = baseHat.ImageUrl,
                         Materials = mergedMaterials,
-                        Quantity = hat.Quantity,
                         Sizes = new List<HatSize>
-                            {
-                                new HatSize { Label = hat.Size, Quantity = hat.Quantity }
-                            }
+                {
+                    new HatSize { Label = hat.Size, Quantity = hat.Quantity }
+                }
                     };
                     hatsInOrder.Add(modifiedHat);
                     continue;
                 }
 
-                baseHat.Quantity = hat.Quantity;
                 baseHat.Sizes = new List<HatSize>
-                {
-                    new HatSize { Label = hat.Size, Quantity = hat.Quantity }
-                };
+        {
+            new HatSize { Label = hat.Size, Quantity = hat.Quantity }
+        };
                 hatsInOrder.Add(baseHat);
             }
 
             // Price calc
-            decimal subtotal = hatsInOrder.Sum(h => (decimal)h.Price * h.Quantity);
+            decimal subtotal = hatsInOrder.Sum(h => (decimal)h.Price * h.Sizes.Sum(s => s.Quantity));
             decimal discountFraction = model.Discount / 100;
             decimal customsFraction = model.Customs / 100;
 
