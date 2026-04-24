@@ -4,6 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Models
 {
+    [BsonIgnoreExtraElements]
     public class Hat
     {
         [BsonId]
@@ -20,6 +21,8 @@ namespace Models
 
         public List<HatMaterial> Materials { get; set; } = new();
         public int Quantity { get; set; }
+
+        public List<HatSize> Sizes { get; set; } = new();
     }
 }
 

@@ -11,12 +11,13 @@ namespace Repository
     public class MaterialRepository : IMaterialRepository
     {
         private readonly IMongoCollection<Material> _collection;
-        public MaterialRepository(MongoConnector connector) {
-            
+        public MaterialRepository(MongoConnector connector)
+        {
+
             _collection = connector._database.GetCollection<Material>("Materials");
         }
-        public async Task<double>GetPriceByIdAsync(string id)
-                    {
+        public async Task<double> GetPriceByIdAsync(string id)
+        {
             var price = await _collection.Find(m => m.Id == id)
                 .Project(m => m.PricePerUnit)
                 .FirstOrDefaultAsync();
@@ -31,6 +32,7 @@ namespace Repository
             return quantity;
         }
 
+
         public async Task<string> GetUnitByIdAsync(string id)
         {
             var unit = await _collection.Find(m => m.Id == id)
@@ -40,7 +42,7 @@ namespace Repository
         }
         public async Task<List<Material>> GetAllMaterialsAsync()
         {
-           return await _collection.Find(_ => true).ToListAsync();
+            return await _collection.Find(_ => true).ToListAsync();
         }
 
         public async Task<Material> GetMaterialByIdAsync(string id)
@@ -49,7 +51,7 @@ namespace Repository
             return material;
         }
 
-        
+
 
         public async Task AddMaterialAsync(Material newMaterial)
         {
@@ -57,7 +59,7 @@ namespace Repository
         }
 
 
-public async Task UpdateQuantityAsync(string id, double addedAmount)
+        public async Task UpdateQuantityAsync(string id, double addedAmount)
 
         {
             var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
@@ -67,7 +69,7 @@ public async Task UpdateQuantityAsync(string id, double addedAmount)
 
         }
 
-public async Task ReplaceQuantityAsync(string id, double newQuantity)
+        public async Task ReplaceQuantityAsync(string id, double newQuantity)
         {
             var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
             var update = Builders<Material>.Update.Set(m => m.Quantity, newQuantity);
@@ -108,7 +110,7 @@ public async Task ReplaceQuantityAsync(string id, double newQuantity)
 
 
 
-    }
+        }
 
     }
 }
