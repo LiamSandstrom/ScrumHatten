@@ -1,0 +1,46 @@
+﻿
+.noDisplay {
+    display: none;
+}
+
+.orderSum {
+    font-size: 2rem;
+}
+
+.orderAvg {
+    font-size: 2rem;
+}
+
+
+
+.salesSumFooter {
+    height: 10rem;
+}
+
+.statGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    row-gap: 0rem;
+}
+
+.statGrid > .card {
+    height: 300px;
+}
+
+.SalesSumContainer {
+    margin-bottom: 0.5rem;
+}
+
+.lineChartCard {
+    grid-column: 1 / span 2;
+    height: 300px !important;
+}
+
+.lineChartInner {
+   
+}
+
+#salesChart {
+    height: 250px;
+}

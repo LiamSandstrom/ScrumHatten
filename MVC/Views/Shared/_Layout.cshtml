@@ -28,9 +28,6 @@
                 </a>
                 </div>
 
-
-
-
                     <ul class="nav nav-pills flex-column mb-auto" id="menu">
 
                         <li class="nav-item">
@@ -99,15 +96,17 @@
                         <li><a asp-action="Create" asp-controller="Customer" class="dropdown-item">Lägg till ny kund</a></li>
                     </ul>
                 </div>
-
-
-                   
-                        <li>
-                            <a asp-controller="Account" asp-action="Logout" class="nav-link text-white">
-                               <i class="bi bi-x-circle"></i> Logga ut
-                            </a>
-                        </li>
-                    </ul>
+                <li>
+                    <a asp-controller="Statistics" asp-action="Overview" class="nav-link text-white">
+                            <i class="bi bi-graph-up-arrow"></i> Statistik
+                    </a>
+                </li>                   
+                <li>
+                    <a asp-controller="Account" asp-action="Logout" class="nav-link text-white">
+                        <i class="bi bi-x-circle"></i> Logga ut
+                    </a>
+                </li>
+            </ul>
 
                 </div>
             </div>
