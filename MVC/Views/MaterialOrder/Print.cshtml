@@ -13,7 +13,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 40px;
+            margin: 20px;
             color: black;
         }
 
@@ -55,6 +55,12 @@
             border-radius: 4px;
         }
 
+        @@page {
+            size: auto;
+            margin: 12mm;
+}
+
+
         @@media print {
             .print-button {
                 display: none;
@@ -64,6 +70,17 @@
                 margin: 20px;
             }
         }
+
+table { 
+    width: 100%;
+    table-layout: fixed;
+    }
+
+    th, td { 
+        word-wrap: break-word;
+          }
+        }
+
     </style>
 </head>
 <body>
@@ -81,7 +98,7 @@
             <tr>
                 <th>Material</th>
                 <th>Antal</th>
-                <th>Pris per styck</th>
+                <th>Pris per enhet</th>
             </tr>
         </thead>
         <tbody>
