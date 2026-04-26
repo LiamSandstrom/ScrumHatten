@@ -12,9 +12,6 @@
 }
 
 
-.salesSumCard {
-    height: 190px;
-}
 
 .salesSumFooter {
     height: 10rem;
@@ -24,8 +21,26 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
+    row-gap: 0rem;
+}
+
+.statGrid > .card {
+    height: 300px;
 }
 
 .SalesSumContainer {
     margin-bottom: 0.5rem;
+}
+
+.lineChartCard {
+    grid-column: 1 / span 2;
+    height: 300px !important;
+}
+
+.lineChartInner {
+   
+}
+
+#salesChart {
+    height: 250px;
 }

@@ -28,12 +28,14 @@
 
 <link rel="stylesheet" href="~/css/statistics.css" />
 <script src="~/js/statistics.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 <div class="statGrid">
 
-    <div class="card m-5 salesSumCard" style="width: 25rem;">
+    <div class="card m-3 salesSumCard" style="width: 25rem;">
         <div class="card-body">
-            <h5 class="card-title">Omsättning <i class="bi bi-graph-up-arrow"></i></h5>
+            <h5 class="card-title">Summa omsättning <i class="bi bi-graph-up-arrow"></i></h5>
 
             <div class="SalesSumContainer">
                 <p class="card-text noDisplay orderSum" id="pastYearSum">@pastYearsOrders kr</p>
@@ -84,7 +86,7 @@
 
 
     <!--Avg order worth-->
-    <div class="card m-5 salesAvgCard" style="width: 25rem;">
+    <div class="card m-3 salesAvgCard" style="width: 25rem;">
         <div class="card-body">
             <h5 class="card-title">Medelsumma av order <i class="bi bi-plus-slash-minus"></i></h5>
 
@@ -128,7 +130,7 @@
 
     </div>
 
-    <div class="card m-5 topListCard" style="width: 25rem;">
+    <div class="card m-3 topListCard" style="width: 25rem;">
         <div class="card-body">
             <h5 class="card-title">Produkttopplista <i class="bi bi-graph-up-arrow"></i></h5>
 
@@ -140,4 +142,15 @@
             </ul>
         </div>
     </div>
+
+    <div class="card m-3 lineChartCard">
+        <div class="card-body">
+            <h5 class="card-title">Omsättning över tid <i class="bi bi-graph-up-arrow"></i></h5>
+            <div>
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+
 </div>

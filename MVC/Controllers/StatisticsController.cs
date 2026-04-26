@@ -64,5 +64,17 @@ namespace MVC.Controllers
 
             return View(vm);
         }
+
+
+        public async Task<IActionResult> SalesData([FromQuery] int monthsBack)
+        {
+            DateTime endDate = DateTime.Now.Date;
+            DateTime startDate = endDate.AddMonths(-monthsBack).Date;
+
+            List<SalesMonth> salesMonths = await _orderRepository.GetOrdersByMonth(startDate, endDate);
+
+            return Json(salesMonths);
+
+        }
     }
 }
