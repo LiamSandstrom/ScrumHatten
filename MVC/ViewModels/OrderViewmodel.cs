@@ -7,7 +7,7 @@ namespace MVC.ViewModels
 {
     public class OrderRowViewModel
     {
-        public string? HatId { get; set; } // ingen [Required] — custom har null
+        public string? HatId { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Antal måste vara minst 1")]
         public int Quantity { get; set; } = 1;
@@ -16,13 +16,7 @@ namespace MVC.ViewModels
         public string? CustomDescription { get; set; }
         public string? Size { get; set; }
         public IFormFile? CustomImage { get; set; }
-        public List<MaterialRowViewModel> Materials { get; set; } = new();
-    }
-
-    public class MaterialRowViewModel
-    {
-        public string Id { get; set; }
-        public int Quantity { get; set; }
+        public List<HatMaterial> Materials { get; set; } = new();
     }
 
     public class OrderViewModel
@@ -35,6 +29,12 @@ namespace MVC.ViewModels
 
         [ValidateNever]
         public List<SelectListItem> Users { get; set; }
+
+        [Range(0, 100)]
+        public decimal Discount { get; set; } = 0;
+
+        [Range(0, 100)]
+        public decimal Customs { get; set; } = 0;
 
         [ValidateNever]
         public List<SelectListItem> Customers { get; set; } = new();

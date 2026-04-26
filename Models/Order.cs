@@ -6,8 +6,8 @@ namespace Models
 {
     public enum Priority { Low, Medium, High }
     public enum Status { Pending, InProgress, Completed, Delivered }
-    [BsonIgnoreExtraElements]
 
+    [BsonIgnoreExtraElements]
     public class Order
     {
         [BsonId]
