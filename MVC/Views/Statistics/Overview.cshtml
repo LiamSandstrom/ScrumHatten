@@ -33,9 +33,11 @@
 
 <div class="statGrid">
 
+
+    <!--Sum Sales card-->
     <div class="card m-3 salesSumCard" style="width: 25rem;">
         <div class="card-body">
-            <h5 class="card-title">Summa omsättning <i class="bi bi-graph-up-arrow"></i></h5>
+            <h5 class="card-title">Summa omsättning <i class="bi bi-cash-coin"></i></h5>
 
             <div class="SalesSumContainer">
                 <p class="card-text noDisplay orderSum" id="pastYearSum">@pastYearsOrders kr</p>
@@ -130,9 +132,10 @@
 
     </div>
 
+    <!--Top hats-->
     <div class="card m-3 topListCard" style="width: 25rem;">
         <div class="card-body">
-            <h5 class="card-title">Produkttopplista <i class="bi bi-graph-up-arrow"></i></h5>
+            <h5 class="card-title">Produkttopplista <i class="bi bi-cart"></i></i></h5>
 
             <ul class="list-group">
                 @for (int i = 0; i < 5; i++)
@@ -142,13 +145,27 @@
             </ul>
         </div>
     </div>
-
+    <!--Sales Graph-->
     <div class="card m-3 lineChartCard">
         <div class="card-body">
             <h5 class="card-title">Omsättning över tid <i class="bi bi-graph-up-arrow"></i></h5>
-            <div>
+            <div class="lineChartInner">
                 <canvas id="salesChart"></canvas>
             </div>
+        </div>
+    </div>
+
+    <!--Top Customers-->
+    <div class="card m-3 topListCard" style="width: 25rem;">
+        <div class="card-body">
+            <h5 class="card-title">Toppkunder <i class="bi bi-person"></i></h5>
+
+            <ul class="list-group">
+                @for (int i = 0; i < 5; i++)
+                {
+                    <li class="list-group-item">@(i + 1) @Model.TopCustomers[i].Name</li>
+                }
+            </ul>
         </div>
     </div>
 

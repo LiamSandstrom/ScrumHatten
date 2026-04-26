@@ -58,6 +58,7 @@ namespace MVC.Controllers
                 PastYearsOrders = pastYearsOrders,
                 ThisYearsOrders = thisYearsOrders,
                 TopHats = topFiveHats,
+                TopCustomers = topFiveCustomers
             };
 
 

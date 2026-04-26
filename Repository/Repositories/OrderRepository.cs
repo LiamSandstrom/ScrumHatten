@@ -168,25 +168,27 @@ namespace Repository
 
         public async Task<List<Customer>> GetTopCustomers(int amountToTake)
         {
-            int topN = 5;
-
             var pipeline = new[]
             {
-                new BsonDocument("$group", new BsonDocument
+            new BsonDocument("$group", new BsonDocument
             {
-            { "_id", "$CustomerId" },
-            { "TotalSpent", new BsonDocument("$sum", "$FinalPrice") }
-                }),
+                { "_id", "$CustomerId" },
+                { "TotalSpent", new BsonDocument("$sum", "$FinalPrice") }
+            }),
 
             new BsonDocument("$sort", new BsonDocument("TotalSpent", -1)),
+            new BsonDocument("$limit", amountToTake),
 
-            new BsonDocument("$limit", topN),
+            new BsonDocument("$addFields", new BsonDocument
+            {
+                { "ConvertedId", new BsonDocument("$toObjectId", "$_id") }
+            }),
 
             new BsonDocument("$lookup", new BsonDocument
             {
                 { "from", "Customers" },
-                { "localField", "_id" },
-                { "foreignField", "_id" },
+                { "localField", "ConvertedId" }, 
+                { "foreignField", "_id" },        
                 { "as", "CustomerDetails" }
             }),
 
@@ -196,7 +198,7 @@ namespace Repository
             {
                 { "newRoot", "$CustomerDetails" }
             })
-            };
+        };
 
             return await _collection.Aggregate<Customer>(pipeline).ToListAsync();
 
