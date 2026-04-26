@@ -41,6 +41,12 @@
    
 }
 
+.pageTitleContainer {
+    margin: 1rem 1.7rem !important;
+}
+
 #salesChart {
     height: 250px;
 }
+
+
