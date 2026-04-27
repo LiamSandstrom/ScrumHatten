@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -101,16 +102,27 @@ namespace Repository
             await _collection.UpdateOneAsync(filter, update);
         }
 
+        public async Task UpdateLowInventoryWarningPoint(string id, double newPoint)
+        {
+            var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
+            var update = Builders<Material>.Update.Set(m => m.LowInventoryWarningPoint, newPoint);
+
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+
         public async Task DeleteMaterialAsync(string id)
         {
             var filter = Builders<Material>.Filter.Eq(m => m.Id, id);
             await _collection.DeleteOneAsync(filter);
 
-
-
-
-
         }
 
+        public async Task<List<Material>> GetLowInventoryMaterials()
+        {
+
+            return _collection.AsQueryable().Where(m => m.Quantity <= m.LowInventoryWarningPoint).ToList();
+
+        }
     }
 }

@@ -1,0 +1,26 @@
+﻿
+.widgetFlexBox {
+    display: flex;
+    flex-direction: row;
+    margin: 1rem;
+}
+
+.statisticsContainer {
+/*    border: 1px solid;
+    border-color: rgba(0, 0, 0, 0.17);
+    border-radius: 10px;*/
+min-width: 450px;
+}
+
+.cardHeaderContainer {
+    display: flex;
+    justify-content:space-between;
+}
+
+.calenderWidget {
+    min-width: 300px;   
+}
+
+.inventoryWidget {
+    min-width: 300px;
+}

@@ -93,15 +93,10 @@ namespace MVC.Controllers
             try
             {
                 await _materialRepository.UpdateNameAsync(updatedMaterial.Id, updatedMaterial.Name);
-                await _materialRepository.UpdatePricePerUnitAsync(
-                    updatedMaterial.Id,
-                    updatedMaterial.PricePerUnit
-                );
+                await _materialRepository.UpdatePricePerUnitAsync(updatedMaterial.Id, updatedMaterial.PricePerUnit);
                 await _materialRepository.UpdateUnitAsync(updatedMaterial.Id, updatedMaterial.Unit);
-                await _materialRepository.ReplaceQuantityAsync(
-                    updatedMaterial.Id,
-                    updatedMaterial.Quantity
-                );
+                await _materialRepository.ReplaceQuantityAsync(updatedMaterial.Id,updatedMaterial.Quantity);
+                await _materialRepository.UpdateLowInventoryWarningPoint(updatedMaterial.Id, updatedMaterial.LowInventoryWarningPoint);
                 return Ok();
             }
             catch (Exception ex)
