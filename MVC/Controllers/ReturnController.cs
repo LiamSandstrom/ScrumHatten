@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Repository.Repositories;
 using MVC.ViewModels;
 using Repository;
+using MongoDB.Bson;
 namespace MVC.Controllers
 
 {
@@ -24,10 +25,12 @@ namespace MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitReturn(ReturnViewModel model)
+        public async Task<IActionResult> SubmitReturn([FromBody] ReturnViewModel model)
         {
+            Console.WriteLine(model.ToJson());
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("faiaiasddsaldsallsdldssla");
                 return BadRequest(ModelState);
             }
 
@@ -36,7 +39,7 @@ namespace MVC.Controllers
                 Console.WriteLine($"Updating hat with ID: {hatId} to returned");
                 await _hatRepository.UpdateReturned(hatId, true);
             }
-             return Ok("Retur skickad");
+            return Ok("Retur skickad");
         }
 
         [HttpPost]

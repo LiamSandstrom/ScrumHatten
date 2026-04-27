@@ -238,42 +238,42 @@ function generateOrderPDF() {
     window.open(url, '_blank');
 }
 
- document.getElementById('btnReturn')?.addEventListener('click', function (e) {
+document.getElementById('btnReturn')?.addEventListener('click', function(e) {
     e.preventDefault();
     openReturnReclaimModal('Returned');
-  });
-  document.getElementById('btnReclaim')?.addEventListener('click', function (e) {
+});
+document.getElementById('btnReclaim')?.addEventListener('click', function(e) {
     e.preventDefault();
     openReturnReclaimModal('Reclaimed');
-  });
+});
 
-  function openReturnReclaimModal(statusType) {
-  const detailModalEl = document.getElementById('orderDetailModal');
-  const detailInstance = bootstrap.Modal.getInstance(detailModalEl);
-  if (detailInstance) {
-    detailInstance.hide();
-  }
+function openReturnReclaimModal(statusType) {
+    const detailModalEl = document.getElementById('orderDetailModal');
+    const detailInstance = bootstrap.Modal.getInstance(detailModalEl);
+    if (detailInstance) {
+        detailInstance.hide();
+    }
 
-  const title = document.getElementById('actionModalTitle');
-  const statusInput = document.getElementById('currentActionStatus');
-  const checklist = document.getElementById('orderHatsChecklist');
-  const commentArea = document.getElementById('actionComment');
+    const title = document.getElementById('actionModalTitle');
+    const statusInput = document.getElementById('currentActionStatus');
+    const checklist = document.getElementById('orderHatsChecklist');
+    const commentArea = document.getElementById('actionComment');
 
-  statusInput.value = statusType;
-  title.innerText = statusType === 'Returned' ? 'Registrera Retur' : 'Registrera Reklamation';
+    statusInput.value = statusType;
+    title.innerText = statusType === 'Returned' ? 'Registrera Retur' : 'Registrera Reklamation';
 
-  commentArea.value = '';
-  checklist.innerHTML = '';
-  if (window.lastFetchedOrder && window.lastFetchedOrder.hats) {
-    let globalIndex = 0; // För att ge varje checkbox ett helt unikt ID
+    commentArea.value = '';
+    checklist.innerHTML = '';
+    if (window.lastFetchedOrder && window.lastFetchedOrder.hats) {
+        let globalIndex = 0; // För att ge varje checkbox ett helt unikt ID
 
-    window.lastFetchedOrder.hats.forEach((hat) => {
-      // Hämta antal, eller standardisera till 1 om det saknas
-      const quantity = hat.quantity || 1;
+        window.lastFetchedOrder.hats.forEach((hat) => {
+            // Hämta antal, eller standardisera till 1 om det saknas
+            const quantity = hat.quantity || 1;
 
-      // Loopa igenom antalet för just denna hatt-typ
-      for (let i = 0; i < quantity; i++) {
-        const item = `
+            // Loopa igenom antalet för just denna hatt-typ
+            for (let i = 0; i < quantity; i++) {
+                const item = `
           <div class="list-group-item d-flex align-items-center py-1">
               <input class="form-check-input me-2 hat-checkbox" 
                      type="checkbox" 
@@ -283,16 +283,16 @@ function generateOrderPDF() {
                   ${hat.name}
               </label>
           </div>`;
-        checklist.innerHTML += item;
-        globalIndex++;
-      }
-    });
-  } else {
-    checklist.innerHTML = '<div class="p-2 text-muted small">Inga hattar hittades på ordern.</div>';
-  }
+                checklist.innerHTML += item;
+                globalIndex++;
+            }
+        });
+    } else {
+        checklist.innerHTML = '<div class="p-2 text-muted small">Inga hattar hittades på ordern.</div>';
+    }
 
-  const actionModal = new bootstrap.Modal(document.getElementById('returnReclaimModal'));
-  actionModal.show();
+    const actionModal = new bootstrap.Modal(document.getElementById('returnReclaimModal'));
+    actionModal.show();
 }
 
 document.getElementById('actionSubmitBtn').addEventListener('click', async function() {
@@ -301,6 +301,13 @@ document.getElementById('actionSubmitBtn').addEventListener('click', async funct
     const orderId = window.lastFetchedOrder.id;
     const actionComment = document.getElementById('actionComment').value;
     const customerId = window.lastFetchedOrder.customerId;
+    const payload = {
+        OrderId: orderId,
+        CustomerId: customerId,
+        HatIds: selectedHats,
+        Description: actionComment
+    };
+    console.log(JSON.stringify(payload));
 
     try {
         const response = await fetch(`/Return/SubmitReturn`, {
@@ -309,10 +316,11 @@ document.getElementById('actionSubmitBtn').addEventListener('click', async funct
             body: JSON.stringify({
                 OrderId: orderId,
                 CustomerId: customerId,
-                SelectedHats: selectedHats,
-                Comment: actionComment
+                HatIds: selectedHats,       // var: SelectedHats
+                Description: actionComment  // var: Comment
             })
         });
+
 
         if (response.ok) {
             const actionModal = bootstrap.Modal.getInstance(document.getElementById('returnReclaimModal'));
