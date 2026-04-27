@@ -31,14 +31,12 @@
                 </div>
 
                 <div id="materialRows">
-                    <div class="material-row" style="margin-bottom:10px; display:flex; gap:8px; align-items:flex-start;">
+                    <div class="material-row"
+                         style="margin-bottom:10px; display:flex; gap:8px; align-items:flex-start;">
 
                         <div style="width:300px; position:relative;">
-                            <input type="text"
-                                   class="form-control material-search"
-                                   placeholder="Sök material..."
-                                   onkeyup="filterMaterialList(this)"
-                                   onfocus="showMaterialList(this)" />
+                            <input type="text" class="form-control material-search" placeholder="Sök material..."
+                                   onkeyup="filterMaterialList(this)" onfocus="showMaterialList(this)" />
 
                             <input type="hidden" name="Items[0].MaterialId" class="material-id-input" />
 
@@ -48,11 +46,9 @@
                                 {
                                     @foreach (var material in materials)
                                     {
-                                        <div class="material-option"
-                                             data-id="@material.Id"
+                                        <div class="material-option" data-id="@material.Id"
                                              data-name="@material.Name - @material.PricePerUnit kr/@material.Unit"
-                                             onclick="selectMaterialOption(this)"
-                                             style="padding:6px 10px; cursor:pointer;">
+                                             onclick="selectMaterialOption(this)" style="padding:6px 10px; cursor:pointer;">
                                             @material.Name - @material.PricePerUnit kr/@material.Unit
                                         </div>
                                     }
@@ -60,15 +56,11 @@
                             </div>
                         </div>
 
-                        <input type="number"
-                               name="Items[0].Quantity"
-                               step="0.1"
-                               min="0.1"
-                               placeholder="Antal"
-                               class="form-control"
-                               style="width:120px;" />
+                        <input type="number" name="Items[0].Quantity" step="0.1" min="0.1" placeholder="Antal"
+                               class="form-control" style="width:120px;" />
 
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMaterialOrderRow(this)">
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                onclick="removeMaterialOrderRow(this)">
                             X
                         </button>
                     </div>
@@ -93,9 +85,11 @@
             }
             else
             {
-                @foreach (var order in Model.Where(o => o.Status != "Klar" && o.Status != "Avbruten").OrderByDescending(o => o.CreatedAt))
+                @foreach (var order in Model.Where(o => o.Status != "Klar" && o.Status != "Avbruten").OrderByDescending(o =>
+                            o.CreatedAt))
                 {
-                    <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px; background-color:white;">
+                    <div
+                        style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px; background-color:white;">
                         <p><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                         <p><strong>Ordernummer:</strong> @order.Id</p>
                         <p><strong>Leverantör:</strong> @order.Supplier</p>
@@ -109,17 +103,18 @@
                             }
                         </ul>
 
-                        <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post" style="display:inline-block;">
+                        <form asp-controller="MaterialOrder" asp-action="MarkAsDone" method="post"
+                              style="display:inline-block;">
                             <input type="hidden" name="id" value="@order.Id" />
                             <button type="submit" class="btn btn-success">
                                 Markera som klar
                             </button>
                         </form>
 
-                        <form asp-controller="MaterialOrder" asp-action="Cancel" method="post" style="display:inline-block; margin-left:8px;">
+                        <form asp-controller="MaterialOrder" asp-action="Cancel" method="post"
+                              style="display:inline-block; margin-left:8px;">
                             <input type="hidden" name="id" value="@order.Id" />
-                            <button type="submit"
-                                    class="btn btn-outline-danger"
+                            <button type="submit" class="btn btn-outline-danger"
                                     onclick="return confirm('Är du säker på att du vill avbryta denna materialorder?')">
                                 Avbryt order
                             </button>
@@ -133,22 +128,28 @@
             <h2>Klara materialordrar</h2>
 
             <div class="mb-3" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
-    <div>
-        <label for="completedFromDate"><strong>Från datum</strong></label>
-        <input type="date" id="completedFromDate" class="form-control" onchange="filterCompletedOrdersByDate()" />
-    </div>
+                <div>
+                    <label for="completedFromDate"><strong>Från datum</strong></label>
+                    <input type="date" id="completedFromDate" class="form-control" onchange="filterCompletedOrders()" />
+                </div>
 
-    <div>
-        <label for="completedToDate"><strong>Till datum</strong></label>
-        <input type="date" id="completedToDate" class="form-control" onchange="filterCompletedOrdersByDate()" />
-    </div>
+                <div>
+                    <label for="completedToDate"><strong>Till datum</strong></label>
+                    <input type="date" id="completedToDate" class="form-control" onchange="filterCompletedOrders()" />
+                </div>
 
-    <div>
-        <button type="button" class="btn btn-outline-secondary" onclick="clearCompletedDateFilter()">
-            Rensa filter
-        </button>
-    </div>
-</div>
+                <div>
+                    <label for="completedSupplierFilter"><strong>Leverantör</strong></label>
+                    <input type="text" id="completedSupplierFilter" class="form-control" placeholder="Sök leverantör..."
+                           oninput="filterCompletedOrders()" />
+                </div>
+
+                <div>
+                    <button type="button" class="btn btn-outline-secondary" onclick="clearCompletedDateFilter()">
+                        Rensa filter
+                    </button>
+                </div>
+            </div>
 
             @if (!completedOrders.Any())
             {
@@ -158,8 +159,8 @@
             {
                 @foreach (var order in visibleCompletedOrders)
                 {
-                    <div class="completed-order-card"
-                         data-date="@order.CreatedAt.ToString("yyyy-MM-dd")"
+                    <div class="completed-order-card" data-date="@order.CreatedAt.ToString("yyyy-MM-dd")"
+                         data-supplier="@order.Supplier"
                          style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                         <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                         <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
@@ -174,10 +175,7 @@
                             }
                         </ul>
 
-                        <a asp-controller="MaterialOrder"
-                               asp-action="Print"
-                               asp-route-id="@order.Id"
-                               target="_blank"
+                        <a asp-controller="MaterialOrder" asp-action="Print" asp-route-id="@order.Id" target="_blank"
                                class="btn btn-primary mt-2">
                             Skriv ut
                         </a>
@@ -193,9 +191,9 @@
                     <div id="moreCompletedOrders" style="display:none; margin-top:10px;">
                         @foreach (var order in hiddenCompletedOrders)
                         {
-                            <div class="completed-order-card"
-                                 data-date="@order.CreatedAt.ToString("yyyy-MM-dd")"
-                                style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                            <div class="completed-order-card" data-date="@order.CreatedAt.ToString("yyyy-MM-dd")"
+                                 data-supplier="@order.Supplier"
+                                 style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                                 <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                                 <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
                                 <p style="margin:0 0 4px 0;"><strong>Leverantör:</strong> @order.Supplier</p>
@@ -209,10 +207,7 @@
                                     }
                                 </ul>
 
-                                <a asp-controller="MaterialOrder"
-                                       asp-action="Print"
-                                       asp-route-id="@order.Id"
-                                       target="_blank"
+                                <a asp-controller="MaterialOrder" asp-action="Print" asp-route-id="@order.Id" target="_blank"
                                        class="btn btn-primary mt-2">
                                     Skriv ut
                                 </a>
@@ -230,10 +225,8 @@
     {
         @foreach (var material in materials)
         {
-            <div class="material-option"
-                 data-id="@material.Id"
-                 data-name="@material.Name - @material.PricePerUnit kr/@material.Unit"
-                 onclick="selectMaterialOption(this)"
+            <div class="material-option" data-id="@material.Id"
+                 data-name="@material.Name - @material.PricePerUnit kr/@material.Unit" onclick="selectMaterialOption(this)"
                  style="padding:6px 10px; cursor:pointer;">
                 @material.Name - @material.PricePerUnit kr/@material.Unit
             </div>
@@ -257,11 +250,11 @@
 
         newRow.innerHTML =
             '<div style="width:300px; position:relative;">' +
-                '<input type="text" class="form-control material-search" placeholder="Sök material..." onkeyup="filterMaterialList(this)" onfocus="showMaterialList(this)" />' +
-                '<input type="hidden" name="Items[' + rowIndex + '].MaterialId" class="material-id-input" />' +
-                '<div class="material-list" style="display:none; max-height:160px; overflow-y:auto; border:1px solid #ced4da; border-radius:6px; background:white; position:absolute; width:100%; z-index:1000;">' +
-                    template +
-                '</div>' +
+            '<input type="text" class="form-control material-search" placeholder="Sök material..." onkeyup="filterMaterialList(this)" onfocus="showMaterialList(this)" />' +
+            '<input type="hidden" name="Items[' + rowIndex + '].MaterialId" class="material-id-input" />' +
+            '<div class="material-list" style="display:none; max-height:160px; overflow-y:auto; border:1px solid #ced4da; border-radius:6px; background:white; position:absolute; width:100%; z-index:1000;">' +
+            template +
+            '</div>' +
             '</div>' +
             '<input type="number" name="Items[' + rowIndex + '].Quantity" step="0.1" min="0.1" placeholder="Antal" class="form-control" style="width:120px;" />' +
             '<button type="button" class="btn btn-outline-danger btn-sm" onclick="removeMaterialOrderRow(this)">X</button>';
@@ -337,31 +330,38 @@
         }
     });
 
+    function filterCompletedOrders() {
+        const fromDate = document.getElementById("completedFromDate").value;
+        const toDate = document.getElementById("completedToDate").value;
+        const supplier = document.getElementById("completedSupplierFilter").value.toLowerCase();
+        const orders = document.querySelectorAll(".completed-order-card");
 
-    function filterCompletedOrdersByDate() {
-    const fromDate = document.getElementById("completedFromDate").value;
-    const toDate = document.getElementById("completedToDate").value;
-    const orders = document.querySelectorAll(".completed-order-card");
+        orders.forEach(order => {
+            const orderDate = order.getAttribute("data-date");
+            const orderSupplier = (order.getAttribute("data-supplier") || "").toLowerCase();
 
-    orders.forEach(order => {
-        const orderDate = order.getAttribute("data-date");
-        let show = true;
+            let show = true;
 
-        if (fromDate && orderDate < fromDate) {
-            show = false;
-        }
+            if (fromDate && orderDate < fromDate) {
+                show = false;
+            }
 
-        if (toDate && orderDate > toDate) {
-            show = false;
-        }
+            if (toDate && orderDate > toDate) {
+                show = false;
+            }
 
-        order.style.display = show ? "block" : "none";
-    });
-}
+            if (supplier && !orderSupplier.includes(supplier)) {
+                show = false;
+            }
 
-function clearCompletedDateFilter() {
-    document.getElementById("completedFromDate").value = "";
-    document.getElementById("completedToDate").value = "";
-    filterCompletedOrdersByDate();
-}
+            order.style.display = show ? "block" : "none";
+        });
+    }
+
+    function clearCompletedDateFilter() {
+        document.getElementById("completedFromDate").value = "";
+        document.getElementById("completedToDate").value = "";
+        document.getElementById("completedSupplierFilter").value = "";
+        filterCompletedOrders();
+    }
 </script>
