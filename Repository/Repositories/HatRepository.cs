@@ -51,13 +51,22 @@ namespace Repository.Repositories
             var hat = await _hatCollection.Find(h => h.Id == id).FirstOrDefaultAsync();
             if (hat == null) return null;
 
-            var materialIds = hat.Materials.Select(m => m.MaterialId).ToList();
+            var materialIds = hat.Materials?.Select(m => m.MaterialId).ToList() ?? new List<string>();
 
             var materials = await _materialCollection
                 .Find(m => materialIds.Contains(m.Id))
                 .ToListAsync();
 
             var materialDict = materials.ToDictionary(m => m.Id);
+
+            var quantityFromSizes = hat.Sizes?.Sum(s => s.Quantity) ?? 0;
+            var quantityFromMaterials = hat.Materials != null
+                ? hat.Materials
+                    .Where(m => m.Amount > 0 && materialDict.ContainsKey(m.MaterialId))
+                    .Select(m => (int)Math.Floor(materialDict[m.MaterialId].Quantity / m.Amount))
+                    .DefaultIfEmpty(0)
+                    .Min()
+                : 0;
 
             return new HatWithMaterial
             {
@@ -67,6 +76,8 @@ namespace Repository.Repositories
                 Description = hat.Description,
                 ImageUrl = hat.ImageUrl,
                 CustomHat = hat.CustomHat,
+                Quantity = quantityFromSizes > 0 ? quantityFromSizes : quantityFromMaterials,
+                Sizes = hat.Sizes ?? new List<HatSize>(),
                 Materials = hat.Materials
                     .Where(m => materialDict.ContainsKey(m.MaterialId))
                     .Select(m => new HatMaterialDetail
@@ -84,7 +95,7 @@ namespace Repository.Repositories
         {
             var hats = await _hatCollection.Find(_ => true).ToListAsync();
 
-            var allMaterials = hats.SelectMany(h => h.Materials.Select(m => m.MaterialId))
+            var allMaterials = hats.SelectMany(h => h.Materials?.Select(m => m.MaterialId) ?? Enumerable.Empty<string>())
                 .Distinct()
                 .ToList();
 
@@ -92,25 +103,38 @@ namespace Repository.Repositories
 
             var materialDict = materials.ToDictionary(m => m.Id);
 
-            return hats.Select(hat => new HatWithMaterial
-            {
-                Id = hat.Id,
-                Name = hat.Name,
-                Price = hat.Price,
-                Description = hat.Description,
-                ImageUrl = hat.ImageUrl,
-                CustomHat = hat.CustomHat,
-                Materials = hat.Materials
-                    .Where(m => materialDict.ContainsKey(m.MaterialId))
-                    .Select(m => new HatMaterialDetail
-                    {
-                        MaterialId = m.MaterialId,
-                        Amount = m.Amount,
-                        Name = materialDict[m.MaterialId].Name,
-                        Quantity = materialDict[m.MaterialId].Quantity,
-                        PricePerUnit = materialDict[m.MaterialId].PricePerUnit,
-                        Unit = materialDict[m.MaterialId].Unit
-                    }).ToList()
+            return hats.Select(hat => {
+                var quantityFromSizes = hat.Sizes?.Sum(s => s.Quantity) ?? 0;
+                var quantityFromMaterials = hat.Materials != null
+                    ? hat.Materials
+                        .Where(m => m.Amount > 0 && materialDict.ContainsKey(m.MaterialId))
+                        .Select(m => (int)Math.Floor(materialDict[m.MaterialId].Quantity / m.Amount))
+                        .DefaultIfEmpty(0)
+                        .Min()
+                    : 0;
+
+                return new HatWithMaterial
+                {
+                    Id = hat.Id,
+                    Name = hat.Name,
+                    Price = hat.Price,
+                    Description = hat.Description,
+                    ImageUrl = hat.ImageUrl,
+                    CustomHat = hat.CustomHat,
+                    Quantity = quantityFromSizes > 0 ? quantityFromSizes : quantityFromMaterials,
+                    Sizes = hat.Sizes ?? new List<HatSize>(),
+                    Materials = hat.Materials
+                        .Where(m => materialDict.ContainsKey(m.MaterialId))
+                        .Select(m => new HatMaterialDetail
+                        {
+                            MaterialId = m.MaterialId,
+                            Amount = m.Amount,
+                            Name = materialDict[m.MaterialId].Name,
+                            Quantity = materialDict[m.MaterialId].Quantity,
+                            PricePerUnit = materialDict[m.MaterialId].PricePerUnit,
+                            Unit = materialDict[m.MaterialId].Unit
+                        }).ToList()
+                };
             }).ToList();
         }
 

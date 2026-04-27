@@ -80,6 +80,8 @@ async function fetchOrderDetails(id) {
         // --- HATTAR ---
         const list = document.getElementById('detailHatsList');
         list.innerHTML = order.hats?.map(h => {
+            console.log('Hat sizes:', h.sizes, 'Size label:', h.sizes?.[0]?.Label);
+
             let statusBadge = '';
             let nameHtml = h.name;
 
@@ -97,8 +99,8 @@ async function fetchOrderDetails(id) {
                         data-hat-img="${h.imageUrl || ''}">
                         <span>${nameHtml}${statusBadge}</span>
                         <span class="d-flex gap-3 align-items-center">
-                            <span class="text-muted small">${h.quantity || 1} st</span>
-                            <span class="text-muted small">${h.sizes || 'Storlek saknas'}</span>
+                            <span class="text-muted small">${h.sizes?.[0]?.quantity || 1} st</span>
+                            <span class="text-muted small">${h.sizes?.[0]?.label || 'Storlek saknas'}</span>
                         </span>
                     </li>`;
         }).join('') || '<li class="list-group-item">Inga hattar valda</li>';
@@ -326,23 +328,45 @@ function openReturnReclaimModal(statusType) {
         let globalIndex = 0; // För att ge varje checkbox ett helt unikt ID
 
         window.lastFetchedOrder.hats.forEach((hat) => {
-            // Hämta antal, eller standardisera till 1 om det saknas
-            const quantity = hat.quantity || 1;
-
-            // Loopa igenom antalet för just denna hatt-typ
-            for (let i = 0; i < quantity; i++) {
-                const item = `
-          <div class="list-group-item d-flex align-items-center py-1">
-              <input class="form-check-input me-2 hat-checkbox" 
-                     type="checkbox" 
-                     value="${hat.name}" 
-                     id="${hat.id}">
-              <label class="form-check-label stretched-link small" for="${hat.id}">
-                  ${hat.name}
-              </label>
-          </div>`;
-                checklist.innerHTML += item;
-                globalIndex++;
+            // Loopa igenom varje storlek för denna hatt
+            if (hat.sizes && hat.sizes.length > 0) {
+                hat.sizes.forEach((size) => {
+                    const sizeQuantity = size.quantity || 1;
+                    // Loopa igenom antalet för just denna storlek
+                    for (let i = 0; i < sizeQuantity; i++) {
+                        const uniqueId = `${hat.id}_${size.label}_${i}`;
+                        const item = `
+              <div class="list-group-item d-flex align-items-center py-1">
+                  <input class="form-check-input me-2 hat-checkbox"
+                         type="checkbox"
+                         value="${hat.id}"
+                         id="${uniqueId}">
+                  <label class="form-check-label stretched-link small" for="${uniqueId}">
+                      ${hat.name} (${size.label})
+                  </label>
+              </div>`;
+                        checklist.innerHTML += item;
+                        globalIndex++;
+                    }
+                });
+            } else {
+                // Fallback om inga storlekar finns
+                const quantity = 1; // Standard till 1 om inga storlekar
+                for (let i = 0; i < quantity; i++) {
+                    const uniqueId = `${hat.id}_no_size_${i}`;
+                    const item = `
+              <div class="list-group-item d-flex align-items-center py-1">
+                  <input class="form-check-input me-2 hat-checkbox"
+                         type="checkbox"
+                         value="${hat.id}"
+                         id="${uniqueId}">
+                  <label class="form-check-label stretched-link small" for="${uniqueId}">
+                      ${hat.name}
+                  </label>
+              </div>`;
+                    checklist.innerHTML += item;
+                    globalIndex++;
+                }
             }
         });
     } else {
