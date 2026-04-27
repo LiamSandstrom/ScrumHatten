@@ -30,26 +30,32 @@ public class HomeController : Controller
 
         // Orders
         DateTime endDate = DateTime.Today.AddDays(1).AddTicks(-1);
-        List<Order> thisDaysOrders = await _orderRepository.GetOrdersBetweenDates(todayOnlyDate, today);
-
         DateTime oneDayAgo = todayOnlyDate.AddHours(-24);
-        List<Order> pastDaysOrders = await _orderRepository.GetOrdersBetweenDates(oneDayAgo, today);
-
         DateTime oneWeekAgo = todayOnlyDate.AddDays(-7);
-        List<Order> pastWeeksOrders = await _orderRepository.GetOrdersBetweenDates(oneWeekAgo, today);
-
         DateTime oneMonthAgo = todayOnlyDate.AddMonths(-1);
-        List<Order> pastMonthsOrders = await _orderRepository.GetOrdersBetweenDates(oneMonthAgo, today);
-
         DateTime oneYearAgo = todayOnlyDate.AddYears(-1);
-        List<Order> pastYearsOrders = await _orderRepository.GetOrdersBetweenDates(oneYearAgo, today);
-
         DateTime firstDayOfThisYear = new DateTime(DateTime.Now.Year, 1, 1);
-        List<Order> thisYearsOrders = await _orderRepository.GetOrdersBetweenDates(firstDayOfThisYear, today);
 
-        List<Hat> topFiveHats = await _orderRepository.GetMostSoldHats(5);
+        var thisDaysTask = _orderRepository.GetOrdersBetweenDates(todayOnlyDate, today);
+        var pastDaysTask = _orderRepository.GetOrdersBetweenDates(oneDayAgo, today);
+        var pastWeeksTask = _orderRepository.GetOrdersBetweenDates(oneWeekAgo, today);
+        var pastMonthsTask = _orderRepository.GetOrdersBetweenDates(oneMonthAgo, today);
+        var pastYearsTask = _orderRepository.GetOrdersBetweenDates(oneYearAgo, today);
+        var thisYearsTask = _orderRepository.GetOrdersBetweenDates(firstDayOfThisYear, today);
+        var topHatsTask = _orderRepository.GetMostSoldHats(5);
+        var topCustomersTask = _orderRepository.GetTopCustomers(5);
 
-        List<Customer> topFiveCustomers = await _orderRepository.GetTopCustomers(5);
+        await Task.WhenAll(thisDaysTask, pastDaysTask, pastWeeksTask, pastMonthsTask, pastYearsTask, thisYearsTask, topHatsTask, topCustomersTask);
+
+        List<Order> thisDaysOrders = await thisDaysTask;
+        List<Order> pastDaysOrders = await pastDaysTask;
+        List<Order> pastWeeksOrders = await pastWeeksTask;
+        List<Order> pastMonthsOrders = await pastMonthsTask;
+        List<Order> pastYearsOrders = await pastYearsTask;
+        List<Order> thisYearsOrders = await thisYearsTask;
+        List<Hat> topFiveHats = await topHatsTask;
+        List<Customer> topFiveCustomers = await topCustomersTask;
+
 
         StatisticsOverviewViewModel vm = new StatisticsOverviewViewModel
         {
@@ -59,8 +65,6 @@ public class HomeController : Controller
             PastMonthsOrders = pastMonthsOrders,
             PastYearsOrders = pastYearsOrders,
             ThisYearsOrders = thisYearsOrders,
-            TopHats = topFiveHats,
-            TopCustomers = topFiveCustomers
         };
 
         return View(vm);
