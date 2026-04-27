@@ -49,15 +49,13 @@
         }
 
         #btnDelete:hover {
-            background-color: #600000 !important;
-            color: #eeeeee !important;
-            .form-check-input {
-            border: 1px solid #006039 !important;
-            background-color: #fff;
-        }}
-        .form-check-input {
-            border: 1px solid #006039 !important;
-            background-color: #ffffff;
+        background-color: #600000 !important;
+        color: #eeeeee !important;
+        }
+
+       .form-check-input { 
+        border: 1px solid #006039 !important;
+        background-color: #fff;
         }
         
         .form-check-input:checked {
@@ -126,10 +124,21 @@
                     .then(data => {
                         var processedEvents = data.map(function(ev) {
                             var eventOwner = (ev.userName || ev.ownerName || "").toLowerCase().trim();
+                            var assignedTo = (ev.assignedToName || "").toLowerCase().trim();
                             var currentUser = currentUserName.toLowerCase().trim();
-                            var isMine = eventOwner === currentUser; 
 
-                            if (isMine) {
+                            // Determine styling: if assignedTo is current user => dark green (mine)
+                            // if assignedTo is someone else => brown (assigned to another)
+                            // otherwise public/default => light green
+                            if (assignedTo && assignedTo === currentUser) {
+                                ev.backgroundColor = '#006039'; 
+                                ev.borderColor = '#A37E2C';
+                                ev.textColor = '#ffffff';
+                            } else if (assignedTo && assignedTo !== currentUser) {
+                                ev.backgroundColor = '#A37E2C';
+                                ev.borderColor = '#663300';
+                                ev.textColor = '#ffffff';
+                            } else if (eventOwner === currentUser) {
                                 ev.backgroundColor = '#006039'; 
                                 ev.borderColor = '#A37E2C';
                                 ev.textColor = '#ffffff';
@@ -138,6 +147,8 @@
                                 ev.borderColor = '#7dcf7d';
                                 ev.textColor = '#000000';
                             }
+
+                            // Ensure title already includes order number (server may have prefixed it)
                             return ev;
                         });
                         successCallback(processedEvents);
@@ -197,6 +208,21 @@
         function openModalForNew(dateStr = "") {
         currentEditId = null;
         document.getElementById('eventTitle').value = "";
+        document.getElementById('eventOrder').value = "";
+        fetch('/Calendar/GetMyOrders')
+        .then(res => res.json())
+        .then(orders => {
+            var orderSelect = document.getElementById('eventOrder');
+            orderSelect.innerHTML = '<option value="">-- Välj en order --</option>';
+            
+            orders.forEach(order => {
+                var opt = document.createElement('option');
+                opt.value = order.id;
+                var cName = order.customerName ? " - " + order.customerName : "";
+                opt.innerHTML = order.orderNumber + " - " + order.customerName;
+                orderSelect.appendChild(opt);
+            });
+        });
         if (dateStr) document.getElementById('eventDate').value = dateStr;
         document.getElementById('btnDelete').style.display = 'none';
         document.getElementById('eventModalLabel').innerText = 'Lägg till händelse';
@@ -221,6 +247,7 @@
         end: new Date(endDateValue).toISOString(),
         targetType: document.getElementById('eventTarget').value,
         targetUserNames: selectedUsers,
+        orderId: document.getElementById('eventOrder').value,
         color: "#006039" 
         };
 
@@ -280,6 +307,12 @@
                 <div class="mb-3">
                     <label>Sluttid</label>
                     <input type="datetime-local" id="eventEndDate" class="form-control" />
+                </div>
+                <div class="mb-3">
+                 <label>Dina tilldelade ordrar (frivilligt)</label>
+                  <select id="eventOrder" class="form-control">
+                <option value="">-- Välj en order --</option>
+                 </select>
                 </div>
                 <div class="mb-3">
                     <label>Vem ska se detta?</label>

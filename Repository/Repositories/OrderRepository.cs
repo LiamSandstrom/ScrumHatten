@@ -250,8 +250,15 @@ namespace Repository
 
             return salesMonths;
         }
+        public async Task<IEnumerable<Order>> GetOrdersByUserAsync(string userName)
+        {
+            var filter = Builders<Order>.Filter.Regex(o => o.MakerName,
+               new MongoDB.Bson.BsonRegularExpression("^" + userName + "$", "i"));
 
+            return await _collection.Find(filter).ToListAsync();
         }
+
+    }
 
 
 }

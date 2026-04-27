@@ -18,7 +18,13 @@ namespace Models
         public DateTime Start { get; set; }
         public DateTime? End { get; set; }
         public string Color { get; set; } = "#007bff";
-        public string TargetType { get; set; } = "private"; // "public" or "private"
+        public string TargetType { get; set; } = "private"; 
         public List<string> TargetUserNames { get; set; } = new List<string>();
+        public string? OrderId { get; set; }
+
+        [BsonIgnore]
+        public Order? Order { get; set; }
+        [BsonIgnore]
+        public string? AssignedToName { get; set; }
     }
 }
