@@ -10,4 +10,5 @@ public class Material
     public double Quantity { get; set; }
     public double PricePerUnit { get; set; }
     public string Unit { get; set; }
+    public double LowInventoryWarningPoint { get; set; }
 }

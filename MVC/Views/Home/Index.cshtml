@@ -1,5 +1,29 @@
-﻿@{
+﻿@model MVC.ViewModels.StatisticsViewModels.StatisticsOverviewViewModel
+
+@{
     ViewData["Title"] = "Home Page";
+
+    int thisYearsOrders = (int)Model.ThisYearsOrders.Sum(x => x.FinalPrice);
+    int pastYearsOrders = (int)Model.PastYearsOrders.Sum(x => x.FinalPrice);
+    int pastWeeksOrders = (int)Model.PastWeeksOrders.Sum(x => x.FinalPrice);
+    int pastMonthsOrders = (int)Model.PastMonthsOrders.Sum(x => x.FinalPrice);
+    int pastDaysOrders = (int)Model.PastDaysOrders.Sum(x => x.FinalPrice);
+    int thisDaysOrders = (int)Model.ThisDaysOrders.Sum(x => x.FinalPrice);
+
+    int thisYearHatAmount = Model.ThisYearsOrders.Sum(x => x.Hats.Count());
+    int pastYearHatAmount = Model.PastYearsOrders.Sum(x => x.Hats.Count());
+    int pastWeekHatAmount = Model.PastWeeksOrders.Sum(x => x.Hats.Count());
+    int pastMonthHatAmount = Model.PastMonthsOrders.Sum(x => x.Hats.Count());
+    int pastDayHatAmount = Model.PastDaysOrders.Sum(x => x.Hats.Count());
+    int thisDayHatAmount = Model.ThisDaysOrders.Sum(x => x.Hats.Count());
+
+    int thisYearsAvgOrder = (int)Model.ThisYearsOrders.Select(x => x.FinalPrice).DefaultIfEmpty(0).Average();
+    int pastYearsAvgOrder = (int)Model.PastYearsOrders.Select(x => x.FinalPrice).DefaultIfEmpty(0).Average();
+    int pastWeeksAvgOrder = (int)Model.PastWeeksOrders.Select(x => x.FinalPrice).DefaultIfEmpty(0).Average();
+    int pastMonthAvgOrder = (int)Model.PastMonthsOrders.Select(x => x.FinalPrice).DefaultIfEmpty(0).Average();
+    int pastDaysAvgOrder = (int)Model.PastDaysOrders.Select(x => x.FinalPrice).DefaultIfEmpty(0).Average();
+    int thisDaysAvgOrder = (int)Model.ThisDaysOrders.Select(x => x.FinalPrice).DefaultIfEmpty(0).Average();
+
 }
 
 
@@ -13,25 +37,179 @@
     }
 </div> *@
 
+<script src="~/js/statistics.js"></script>
+<script src="~/js/home.js"></script>
+<link rel="stylesheet" href="~/css/statistics.css" />
+<link rel="stylesheet" href="~/css/home.css" />
+
 <div class="container mt-4">
     <div class="row">
-        @if (User.Identity.IsAuthenticated)
+        @if (User.Identity!.IsAuthenticated)
         {
             <div class="col-md-9">
                 <h1>Välkommen @User.Identity.Name!</h1>
-            </div> <div class="col-md-3">
-                <div class="card shadow-sm border-0">
+            </div>  }
+        </div> 
+    </div>
+
+    <!--Widget container-->
+    <div class="widgetFlexBox">
+
+    <div class="statisticsContainer card"> 
+        <div class="card-header" style="background-color: #006039; color : #A37E2C ">
+            <div class="cardHeaderContainer">
+                <h5 class="mb-0">Försäljningsinsikter</h5>
+                <a asp-controller="Statistics" asp-action="Overview">
+                    <div>
+                        <h5 class="mb-0">Se mer</h5> 
+                    </div>
+                </a>
+            </div>
+
+        </div>
+        <div class="card-body">
+
+        <!--Sum Sales card-->
+        <div class="card m-3 salesSumCard" style="width: 25rem;">
+            <div class="card-body">
+                <h5 class="card-title">Summa omsättning <i class="bi bi-cash-coin"></i></h5>
+
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderSum" id="pastYearSum">@pastYearsOrders kr</p>
+                    <p class="card-text noDisplay hatSum" id="pastYearHatSum">@pastYearHatAmount hattar sålda senaste året</p>
+                </div>
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderSum" id="thisYearSum">@thisYearsOrders kr</p>
+                    <p class="card-text noDisplay hatSum" id="thisYearHatSum">@thisYearHatAmount hattar sålda detta år</p>
+                </div>
+
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderSum" id="pastWeekSum">@pastWeeksOrders kr</p>
+                    <p class="card-text noDisplay hatSum" id="pastWeekHatSum">@pastWeekHatAmount hattar sålda senaste veckan</p>
+                </div>
+
+
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderSum" id="pastMonthSum">@pastMonthsOrders kr</p>
+                    <p class="card-text noDisplay hatSum" id="pastMonthHatSum">@pastMonthHatAmount hattar sålda senaste månaden</p>
+                </div>
+
+
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderSum" id="pastDaySum">@pastDaysOrders kr</p>
+                    <p class="card-text noDisplay hatSum" id="pastDayHatSum">@pastDayHatAmount hattar sålda senaste 24 timmarna</p>
+                </div>
+
+
+                <div class="SalesSumContainer">
+                    <p class="card-text  orderSum" id="thisDaySum">@thisDaysOrders kr</p>
+                    <p class="card-text hatSum" id="thisDayHatSum">@thisDayHatAmount hattar sålda idag</p>
+                </div>
+
+
+
+                <div class="btn-group" role="group">
+                    <button type="button" onclick="showSalesToday()" class="btn btn-outline-primary" id="thisDaySumBtn">TDY</button>
+                    <button type="button" onclick="showSalesPastDay()" class="btn btn-outline-primary" id="pastDaySumBtn">1D</button>
+                    <button type="button" onclick="showSalesPastWeek()" class="btn btn-outline-primary" id="pastWeekSUmBtn">1W</button>
+                    <button type="button" onclick="showSalesPastMonth()" class="btn btn-outline-primary" id="pastMonthSumBtn">1M</button>
+                    <button type="button" onclick="showSalesPastYear()" class="btn btn-outline-primary" id="pastYearSumBtn">1Y</button>
+                    <button type="button" onclick="showSalesThisYear()" class="btn btn-outline-primary" id="thisYearSumBtn">YTD</button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!--Avg order worth-->
+        <div class="card m-3 salesAvgCard" style="width: 25rem;">
+            <div class="card-body">
+                <h5 class="card-title">Medelsumma av order <i class="bi bi-plus-slash-minus"></i></h5>
+
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderAvg" id="pastYearAvg">@pastYearsAvgOrder kr</p>
+                </div>
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderAvg" id="thisYearAvg">@thisYearsAvgOrder kr</p>
+                </div>
+
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderAvg" id="pastWeekAvg">@pastWeeksAvgOrder kr</p>
+                </div>
+
+
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderAvg" id="pastMonthAvg">@pastMonthAvgOrder kr</p>
+                </div>
+
+
+                <div class="SalesSumContainer">
+                    <p class="card-text noDisplay orderAvg" id="pastDayAvg">@pastDaysAvgOrder kr</p>
+                </div>
+
+                <div class="SalesSumContainer">
+                    <p class="card-text  orderAvg" id="thisDayAvg">@thisDaysAvgOrder kr</p>
+                </div>
+
+
+
+                <div class="btn-group" role="group">
+                    <button type="button" onclick="showAvgSalesToday()" class="btn btn-outline-primary" id="thisDayAvgBtn">TDY</button>
+                    <button type="button" onclick="showAvgSalesPastDay()" class="btn btn-outline-primary" id="pastDayAvgBtn">1D</button>
+                    <button type="button" onclick="showAvgSalesPastWeek()" class="btn btn-outline-primary" id="pastWeekAvgBtn">1W</button>
+                    <button type="button" onclick="showAvgSalesPastMonth()" class="btn btn-outline-primary" id="pastMonthAvgBtn">1M</button>
+                    <button type="button" onclick="showAvgSalesPastYear()" class="btn btn-outline-primary" id="pastYearAvgBtn">1Y</button>
+                    <button type="button" onclick="showAvgSalesThisYear()" class="btn btn-outline-primary" id="thisYearAvgBtn">YTD</button>
+                </div>
+
+            </div>
+
+        </div>
+        </div>
+    </div>
+
+<div class="container">
+    <div class="row">
+         <div class="col-md-3">
+                <div class="card calenderWidget shadow-sm border-0">
                 <div class="card-header" style="background-color: #006039; color : #A37E2C ">
-                        <h5 class="mb-0">Såhär ser din dag ut idag</h5>
+                    <h5 class="mb-0">Dagens aktiviteter</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul id="today-events-list" class="list-group list-group-flush">
+                        <li class="list-group-item text-muted">Laddar dagens schema...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card inventoryWidget shadow-sm border-0">
+                    <div class="card-header" style="background-color: #006039; color : #A37E2C ">
+                        <h5 class="mb-0">Lagerbevakning</h5>
                     </div>
                     <div class="card-body p-0">
-                        <ul id="today-events-list" class="list-group list-group-flush">
+                        <ul id="lowInventoryList" class="list-group list-group-flush">
                             <li class="list-group-item text-muted">Laddar dagens schema...</li>
                         </ul>
                     </div>
                 </div>
-            </div> }
-    </div> </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
 
 
 @section Scripts {
@@ -51,13 +229,6 @@
                         list.innerHTML = '<li class="list-group-item">Inga händelser idag.</li>';
                         return;
                     }
-
-                    // list.innerHTML = todaysEvents.map(e => `
-                    //     <li class="list-group-item">
-                    //         <small class="badge bg-info text-dark">${new Date(e.start).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'})}</small>
-                    //         ${e.title}
-                    //     </li>
-                    // `).join('');
                     list.innerHTML = todaysEvents.map(e => {
                      const time = new Date(e.start).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'});
                          return `

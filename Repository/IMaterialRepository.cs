@@ -19,8 +19,11 @@ namespace DAL.Repositories
         Task UpdateNameAsync(string id, string newName);
         Task UpdatePricePerUnitAsync(string id, double newPrice);
         Task UpdateUnitAsync(string id, string newUnit);
+
+        Task UpdateLowInventoryWarningPoint(string id, double newPoint);
         Task DeleteMaterialAsync(string id);
         Task ReplaceQuantityAsync(string id, double newQuantity);
+        Task<List<Material>> GetLowInventoryMaterials();
         
     }
 }
