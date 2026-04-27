@@ -7,10 +7,10 @@
 
     <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Orderöversikt</h1>
+            <h1 style="color: #006039; >Orderöversikt</h1>
             <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                 <span class="badge bg-dark">Totalt: @Model.OrderList.Count ordrar</span>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+            <button class="btn btn-primary" style="background-color: #006039; border-color: #A37E2C; color: #A37E2C;" data-bs-toggle="modal" data-bs-target="#createOrderModal">
                     Ny order
                 </button>
             </div>
@@ -18,8 +18,9 @@
         <div class="row g-3">
             <div class="col-md-3">
                 <div class="card bg-light border-0">
-                    <div class="card-header custom-header-brown text-white fw-bold"> INKOMMANDE</div>
-                    <div class="card-body p-2 kanban-col" id="pending">
+                <div class="card-header text-white fw-bold" style="background-color: #006039; text-align: center;"> INKOMMANDE</div>
+@*                     <div class="card-header custom-header-brown text-white fw-bold"> INKOMMANDE</div>
+ *@                    <div class="card-body p-2 kanban-col" id="pending">
                         @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Pending))
                         {
                             @Html.Partial("_OrderCard", order)
@@ -29,7 +30,7 @@
             </div>
             <div class="col-md-3">
                 <div class="card bg-light border-0">
-                    <div class="card-header custom-header-brown text-white fw-bold"> PÅGÅENDE</div>
+                   <div class="card-header text-white fw-bold" style="background-color: #006039; text-align: center;"> PÅGÅENDE</div>
                     <div class="card-body p-2 kanban-col" id="inprogress">
                         @foreach (var order in Model.OrderList.Where(o => o.Status == Status.InProgress))
                         {
@@ -40,7 +41,8 @@
             </div>
             <div class="col-md-3">
                 <div class="card bg-light border-0">
-                    <div class="card-header custom-header-brown text-white fw-bold"> KLARA</div>
+            <div class="card-header text-white fw-bold" style="background-color: #006039; text-align: center;"> KLARA</div>
+
                     <div class="card-body p-2 kanban-col" id="completed">
                         @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Completed))
                         {
@@ -51,7 +53,8 @@
             </div>
             <div class="col-md-3">
                 <div class="card bg-light border-0">
-                    <div class="card-header custom-header-brown text-white fw-bold"> Levererade</div>
+            <div class="card-header text-white fw-bold" style="background-color: #006039; text-align: center;"> LEVERERADE</div>
+
                     <div class="card-body p-2 kanban-col" id="delivered">
                         @foreach (var order in Model.OrderList.Where(o => o.Status == Status.Delivered))
                         {
