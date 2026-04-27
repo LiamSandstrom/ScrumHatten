@@ -280,7 +280,7 @@ function generateOrderPDF() {
                      value="${hat.name}" 
                      id="hat_${globalIndex}">
               <label class="form-check-label stretched-link small" for="hat_${globalIndex}">
-                  ${hat.name} (Hatt ${i + 1} av ${quantity})
+                  ${hat.name}
               </label>
           </div>`;
         checklist.innerHTML += item;
