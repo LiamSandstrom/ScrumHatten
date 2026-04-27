@@ -132,6 +132,24 @@
         <div style="flex:1;">
             <h2>Klara materialordrar</h2>
 
+            <div class="mb-3" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+    <div>
+        <label for="completedFromDate"><strong>Från datum</strong></label>
+        <input type="date" id="completedFromDate" class="form-control" onchange="filterCompletedOrdersByDate()" />
+    </div>
+
+    <div>
+        <label for="completedToDate"><strong>Till datum</strong></label>
+        <input type="date" id="completedToDate" class="form-control" onchange="filterCompletedOrdersByDate()" />
+    </div>
+
+    <div>
+        <button type="button" class="btn btn-outline-secondary" onclick="clearCompletedDateFilter()">
+            Rensa filter
+        </button>
+    </div>
+</div>
+
             @if (!completedOrders.Any())
             {
                 <p>Det finns inga klara materialordrar.</p>
@@ -140,7 +158,9 @@
             {
                 @foreach (var order in visibleCompletedOrders)
                 {
-                    <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                    <div class="completed-order-card"
+                         data-date="@order.CreatedAt.ToString("yyyy-MM-dd")"
+                         style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                         <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                         <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
                         <p style="margin:0 0 4px 0;"><strong>Leverantör:</strong> @order.Supplier</p>
@@ -173,7 +193,9 @@
                     <div id="moreCompletedOrders" style="display:none; margin-top:10px;">
                         @foreach (var order in hiddenCompletedOrders)
                         {
-                            <div style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
+                            <div class="completed-order-card"
+                                 data-date="@order.CreatedAt.ToString("yyyy-MM-dd")"
+                                style="border:1px solid #7fbf7f; padding:8px; margin-bottom:10px; border-radius:6px; background-color:rgba(0, 128, 0, 0.12); font-size:0.9rem;">
                                 <p style="margin:0 0 4px 0;"><strong>Datum:</strong> @order.CreatedAt.ToString("yyyy-MM-dd")</p>
                                 <p style="margin:0 0 4px 0;"><strong>Ordernummer:</strong> @order.Id</p>
                                 <p style="margin:0 0 4px 0;"><strong>Leverantör:</strong> @order.Supplier</p>
@@ -314,4 +336,32 @@
             });
         }
     });
+
+
+    function filterCompletedOrdersByDate() {
+    const fromDate = document.getElementById("completedFromDate").value;
+    const toDate = document.getElementById("completedToDate").value;
+    const orders = document.querySelectorAll(".completed-order-card");
+
+    orders.forEach(order => {
+        const orderDate = order.getAttribute("data-date");
+        let show = true;
+
+        if (fromDate && orderDate < fromDate) {
+            show = false;
+        }
+
+        if (toDate && orderDate > toDate) {
+            show = false;
+        }
+
+        order.style.display = show ? "block" : "none";
+    });
+}
+
+function clearCompletedDateFilter() {
+    document.getElementById("completedFromDate").value = "";
+    document.getElementById("completedToDate").value = "";
+    filterCompletedOrdersByDate();
+}
 </script>
