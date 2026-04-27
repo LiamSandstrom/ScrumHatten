@@ -250,6 +250,10 @@ namespace Repository
 
             return salesMonths;
         }
+        public async Task<IEnumerable<Order>> GetOrdersByUserAsync(string userName)
+        {
+            var filter = Builders<Order>.Filter.Regex(o => o.MakerName,
+               new MongoDB.Bson.BsonRegularExpression("^" + userName + "$", "i"));
 
         public async Task UpdateHatReturnedAsync(string orderId, string hatId, bool isReturned)
         {

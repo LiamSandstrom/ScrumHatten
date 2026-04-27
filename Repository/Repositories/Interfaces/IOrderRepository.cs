@@ -49,5 +49,7 @@ namespace Repository
 
         Task<List<SalesMonth>> GetOrdersByMonth(DateTime startDate, DateTime endDate);
 
+        Task<IEnumerable<Order>> GetOrdersByUserAsync(string userName);
+
     }
 }

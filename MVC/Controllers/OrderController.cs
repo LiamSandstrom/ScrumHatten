@@ -217,13 +217,14 @@ namespace MVC.Controllers
             decimal customs = subtotal * (1 - model.Discount / 100) * (model.Customs / 100);
 
             decimal finalPrice = CalculatePrice(subtotal, model.Discount, model.Customs, model.FastOrder, model.TransportPrice);
+            TimeZoneInfo swedishZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Stockholm");
 
             var order = new Order
             {
                 Hats = hatsInOrder,
                 TimeToMake = model.TimeToMake,
-                DateToFinish = model.DateToFinish,
-                OrderDate = DateTime.UtcNow,
+                DateToFinish = model.DateToFinish.Date.AddHours(12),
+                OrderDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, swedishZone),
                 TransportPrice = model.TransportPrice,
                 FinalPrice = finalPrice,
                 FastOrder = model.FastOrder,
@@ -368,7 +369,7 @@ namespace MVC.Controllers
                 // Säkerställ att datumet inte är DateTime.MinValue
                 if (model.DateToFinish != default)
                 {
-                    order.DateToFinish = model.DateToFinish;
+                    order.DateToFinish = model.DateToFinish.Date.AddHours(12);
                 }
 
                 order.CustomerId = model.SelectedCustomerId;
