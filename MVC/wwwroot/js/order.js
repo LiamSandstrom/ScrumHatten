@@ -56,17 +56,13 @@ async function fetchOrderDetails(id) {
 
         window.lastFetchedOrder = order;
 
-
         document.getElementById('detailOrderIdDisplay').textContent = id.slice(-5);
         document.getElementById('detailOrderId').value = id;
-
 
         if (order.customer) {
             document.getElementById('detailCustomerName').textContent = order.customer.name || "Namn saknas";
             document.getElementById('detailCustomerEmail').innerHTML = `<i class="bi bi-envelope"></i> ${order.customer.email || '-'}`;
             document.getElementById('detailCustomerPhone').innerHTML = `<i class="bi bi-telephone"></i> ${order.customer.phoneNumber || '-'}`;
-
-
             document.getElementById('detailCustomerAdress').textContent = order.customer.adress || "";
             document.getElementById('detailCustomerZip').textContent = order.customer.zipCode || "";
             document.getElementById('detailCustomerCity').textContent = order.customer.city || "";
@@ -82,28 +78,45 @@ async function fetchOrderDetails(id) {
         }
 
         // --- HATTAR ---
-        //Jag vill att om en hatt är returned eller reclaimed så ska det strykas över namnet
-        const strikeOutReturnedHats = (hat) => {
-            if (hat.isReturned || hat.isReclaimed) {
-                return `<s>${hat.name}</s>`;
-            }
-            return hat.name;
-        };
-
         const list = document.getElementById('detailHatsList');
-        list.innerHTML = order.hats?.map(h =>
-            `<li class="list-group-item d-flex justify-content-between">
-                ${strikeOutReturnedHats(h)} <span>${h.quantity || 1} st</span> <span> ${h.sizes || 'Storlek saknas'}</span>
-            </li>`
-        ).join('') || "Inga hattar valda";
+        list.innerHTML = order.hats?.map(h => {
+            let statusBadge = '';
+            let nameHtml = h.name;
+
+            if (h.isReturned) {
+                nameHtml = `<s>${h.name}</s>`;
+                statusBadge = `<span class="badge bg-danger ms-2">Returnerad</span>`;
+            } else if (h.isReclaimed) {
+                nameHtml = `<s>${h.name}</s>`;
+                statusBadge = `<span class="badge bg-warning text-dark ms-2">Reklamation</span>`;
+            }
+
+            return `<li class="list-group-item d-flex justify-content-between align-items-center"
+                        style="cursor:pointer"
+                        data-hat-id="${h.id}"
+                        data-hat-img="${h.imageUrl || ''}">
+                        <span>${nameHtml}${statusBadge}</span>
+                        <span class="d-flex gap-3 align-items-center">
+                            <span class="text-muted small">${h.quantity || 1} st</span>
+                            <span class="text-muted small">${h.sizes || 'Storlek saknas'}</span>
+                        </span>
+                    </li>`;
+        }).join('') || '<li class="list-group-item">Inga hattar valda</li>';
+
+        // Klick på hatt-rad → visa bild
+        list.querySelectorAll('li[data-hat-id]').forEach(row => {
+            row.addEventListener('click', function() {
+                const hatId = this.getAttribute('data-hat-id');
+                const imgUrl = this.getAttribute('data-hat-img');
+                showHatImageModal(hatId, imgUrl);
+            });
+        });
 
         // --- PRIS ---
-
         const transportEl = document.getElementById('detailTransportPrice');
         if (transportEl) {
             transportEl.textContent = `${(order.transportPrice || 0).toLocaleString('sv-SE')} kr`;
         }
-
         document.getElementById('detailTotalPrice').textContent = `${(order.finalPrice || 0).toLocaleString('sv-SE')} kr`;
 
         // --- KNAPP-LOGIK ---
@@ -112,25 +125,17 @@ async function fetchOrderDetails(id) {
         const isTaken = order.makerId && order.makerId !== "00000000-0000-0000-0000-000000000000";
 
         if (isTaken) {
-            // 1. DÖLJ "Ta mig an" istället för att bara göra den grå
             btn.classList.add('d-none');
-
-            // 2. Visa "Släpp"-knappen
             if (btnRelease) {
                 btnRelease.classList.remove('d-none');
                 btnRelease.innerHTML = `<i class="bi bi-arrow-left-circle"></i> Släpp (${order.makerName || 'order'})`;
             }
         } else {
-            // 1. VISA "Ta mig an" igen
             btn.classList.remove('d-none');
             btn.innerHTML = `<i class="bi bi-person-plus"></i> Ta mig an`;
             btn.disabled = false;
-
-            // Se till att den har rätt färg (grön)
             btn.classList.remove('btn-outline-secondary');
             btn.classList.add('btn-success');
-
-            // 2. DÖLJ "Släpp"-knappen
             if (btnRelease) btnRelease.classList.add('d-none');
         }
 
@@ -138,6 +143,49 @@ async function fetchOrderDetails(id) {
         console.error("Fel vid hämtning av orderdetaljer:", err);
     }
 }
+
+function showHatImageModal(hatId, imgUrl) {
+    // Återanvänd eller skapa en enkel bildmodal
+    let modal = document.getElementById('hatImageModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'hatImageModal';
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Hattbild</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="hatImageModalImg" src="" alt="Hattbild"
+                             class="img-fluid rounded"
+                             style="max-height:400px; object-fit:contain;">
+                        <p id="hatImageModalFallback" class="text-muted mt-3 d-none">Ingen bild tillgänglig.</p>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+
+    const img = modal.querySelector('#hatImageModalImg');
+    const fallback = modal.querySelector('#hatImageModalFallback');
+
+    if (imgUrl) {
+        img.src = imgUrl;
+        img.classList.remove('d-none');
+        fallback.classList.add('d-none');
+    } else {
+        img.src = '';
+        img.classList.add('d-none');
+        fallback.classList.remove('d-none');
+    }
+
+    new bootstrap.Modal(modal).show();
+}
+
+
 async function assignOrderToMe(orderId) {
     const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
     const response = await fetch(`/Order/AssignToMe?orderId=${orderId}`, {
