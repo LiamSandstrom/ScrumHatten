@@ -5,10 +5,11 @@
 @section Styles {
     <style>
         .fc-event {
-            background-color: #006039 !important; 
-            border-color: #7dcf7d !important;
-            color: #ffffff !important;
-            padding: 2px 5px;
+           border: none !important;
+           padding: 2px 5px;
+        }
+        .fc-event-time, .fc-event-title {
+         color: inherit !important; 
         }
 
         .fc-button-primary, .fc-customPlusButton-button {
@@ -17,6 +18,10 @@
             border-color: #A37E2C !important;
             text-transform: capitalize;
             opacity: 1 !important;
+        }
+
+        .fc-daygrid-dot-event {
+            background-color: transparent !important;
         }
 
         .fc-daygrid-event-dot {
@@ -49,7 +54,7 @@
             .form-check-input {
             border: 1px solid #006039 !important;
             background-color: #fff;
-        }
+        }}
         .form-check-input {
             border: 1px solid #006039 !important;
             background-color: #ffffff;
@@ -64,17 +69,8 @@
             cursor: pointer;
             user-select: none;
         }
-}
     </style>
 }
-<div class="container-fluid mt-4">
-    <div class="form-check form-switch mb-3" style="padding-left: 3.5em;">
-        <input class="form-check-input" type="checkbox" id="showAllCheckbox" style="transform: scale(1.3); cursor: pointer;">
-        <label class="form-check-label" for="showAllCheckbox" style="margin-left: 10px; font-weight: bold; color: #006039;">
-            Visa allas schema
-        </label>
-    </div>
-</div>
 
 <div id="calendar"></div>
 
@@ -83,43 +79,73 @@
     <script>
         var calendar;
         var currentEditId = null;
+        var showAll = false; 
 
         document.addEventListener('DOMContentLoaded', function () {
-      
-        var calendarEl = document.getElementById('calendar');
-        var isAdmin = @User.IsInRole("Admin").ToString().ToLower();
+            var calendarEl = document.getElementById('calendar');
+            var isAdmin = @User.IsInRole("Admin").ToString().ToLower();
 
-        calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: "sv",
-        headerToolbar: {
-        left: 'prev,next today customPlusButton',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        slotMinTime: "06:00:00",
-        slotMaxTime: "22:00:00",
-        customButtons: {
-        customPlusButton: {
-        text: '+',
-        click: function () {
-        openModalForNew();
-        }
-        }
-        },
-        events: function(fetchInfo, successCallback, failureCallback) {
-        var showAll = document.getElementById('showAllCheckbox').checked;
-    
-         fetch('/Calendar/GetEvents?showAll=' + showAll)
-        .then(response => response.json())
-        .then(data => {
-            successCallback(data);
-        })
-        .catch(error => {
-            console.error('Fel vid hämtning av events:', error);
-            failureCallback(error);
-        });
-        },
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: "sv",
+                headerToolbar: {
+                    left: 'prev,next today customPlusButton toggleAll',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                customButtons: {
+                    customPlusButton: {
+                        text: '+',
+                        click: function () {
+                            openModalForNew();
+                        }
+                    },
+                    toggleAll: {
+                        text: 'Visa allas schema',
+                        click: function () {
+                            showAll = !showAll; 
+                            
+                            var btn = document.querySelector('.fc-toggleAll-button');
+                            if (showAll) {
+                                btn.classList.add('active-toggle');
+                                btn.innerText = 'Visar alla';
+                            } else {
+                                btn.classList.remove('active-toggle');
+                                btn.innerText = 'Visa allas schema';
+                            }
+                            
+                            calendar.refetchEvents(); 
+                        }
+                    }
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    var currentUserName = "@User.Identity.Name"; 
+
+                    fetch('/Calendar/GetEvents?showAll=' + showAll)
+                    .then(response => response.json())
+                    .then(data => {
+                        var processedEvents = data.map(function(ev) {
+                            var eventOwner = (ev.userName || ev.ownerName || "").toLowerCase().trim();
+                            var currentUser = currentUserName.toLowerCase().trim();
+                            var isMine = eventOwner === currentUser; 
+
+                            if (isMine) {
+                                ev.backgroundColor = '#006039'; 
+                                ev.borderColor = '#A37E2C';
+                                ev.textColor = '#ffffff';
+                            } else {
+                                ev.backgroundColor = '#90EE90'; 
+                                ev.borderColor = '#7dcf7d';
+                                ev.textColor = '#000000';
+                            }
+                            return ev;
+                        });
+                        successCallback(processedEvents);
+                    })
+                       .catch(error => {
+                        failureCallback(error);
+                    });
+                },
 
         eventClick: function (info) {
         currentEditId = info.event.id;
@@ -145,11 +171,6 @@
         });
 
         calendar.render();
-
-        document.getElementById('showAllCheckbox').addEventListener('change', function() {
- 
-        calendar.refetchEvents();
-        });
 
         var targetSelect = document.getElementById('eventTarget');
         if (targetSelect && !isAdmin) {
