@@ -154,6 +154,7 @@ namespace MVC.Controllers
                 {
                     Hat customHat = new Hat
                     {
+                        Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
                         CustomHat = true,
                         Name = "Custom",
                         Price = (double)hat.CustomPrice,
@@ -190,6 +191,7 @@ namespace MVC.Controllers
 
                     Hat modifiedHat = new Hat
                     {
+                        Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
                         CustomHat = true,
                         Name = baseHat.Name,
                         Price = baseHat.Price,
