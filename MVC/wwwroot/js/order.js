@@ -239,11 +239,13 @@ function generateOrderPDF() {
 }
 
 document.getElementById('btnReturn')?.addEventListener('click', function(e) {
+    window.btnType = "SubmitReturn"
     e.preventDefault();
     openReturnReclaimModal('Returned');
 });
 document.getElementById('btnReclaim')?.addEventListener('click', function(e) {
     e.preventDefault();
+    window.btnType = "SubmitReclaim"
     openReturnReclaimModal('Reclaimed');
 });
 
@@ -309,8 +311,10 @@ document.getElementById('actionSubmitBtn').addEventListener('click', async funct
     };
     console.log(JSON.stringify(payload));
 
+    const btnType = window.btnType
+
     try {
-        const response = await fetch(`/Return/SubmitReturn`, {
+        const response = await fetch(`/Return/${btnType}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -43,7 +43,7 @@ namespace MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitReclaim(ReturnViewModel model)
+        public async Task<IActionResult> SubmitReclaim([FromBody] ReturnViewModel model)
         {
             if (!ModelState.IsValid)
             {
