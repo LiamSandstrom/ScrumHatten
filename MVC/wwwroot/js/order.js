@@ -54,6 +54,8 @@ async function fetchOrderDetails(id) {
         const response = await fetch(`/Order/Orders/${id}`);
         const order = await response.json();
 
+        window.lastFetchedOrder = order;
+
 
         document.getElementById('detailOrderIdDisplay').textContent = id.slice(-5);
         document.getElementById('detailOrderId').value = id;
@@ -235,3 +237,62 @@ function generateOrderPDF() {
     const url = `/Order/PrintShippingDocument/${orderId}`;
     window.open(url, '_blank');
 }
+
+ document.getElementById('btnReturn')?.addEventListener('click', function (e) {
+    e.preventDefault();
+    openReturnReclaimModal('Returned');
+  });
+  document.getElementById('btnReclaim')?.addEventListener('click', function (e) {
+    e.preventDefault();
+    openReturnReclaimModal('Reclaimed');
+  });
+
+  function openReturnReclaimModal(statusType) {
+  const detailModalEl = document.getElementById('orderDetailModal');
+  const detailInstance = bootstrap.Modal.getInstance(detailModalEl);
+  if (detailInstance) {
+    detailInstance.hide();
+  }
+
+  const title = document.getElementById('actionModalTitle');
+  const statusInput = document.getElementById('currentActionStatus');
+  const checklist = document.getElementById('orderHatsChecklist');
+  const commentArea = document.getElementById('actionComment');
+
+  statusInput.value = statusType;
+  title.innerText = statusType === 'Returned' ? 'Registrera Retur' : 'Registrera Reklamation';
+
+  commentArea.value = '';
+  checklist.innerHTML = '';
+  if (window.lastFetchedOrder && window.lastFetchedOrder.hats) {
+    let globalIndex = 0; // För att ge varje checkbox ett helt unikt ID
+
+    window.lastFetchedOrder.hats.forEach((hat) => {
+      // Hämta antal, eller standardisera till 1 om det saknas
+      const quantity = hat.quantity || 1;
+
+      // Loopa igenom antalet för just denna hatt-typ
+      for (let i = 0; i < quantity; i++) {
+        const item = `
+          <div class="list-group-item d-flex align-items-center py-1">
+              <input class="form-check-input me-2 hat-checkbox" 
+                     type="checkbox" 
+                     value="${hat.name}" 
+                     id="hat_${globalIndex}">
+              <label class="form-check-label stretched-link small" for="hat_${globalIndex}">
+                  ${hat.name} (Hatt ${i + 1} av ${quantity})
+              </label>
+          </div>`;
+        checklist.innerHTML += item;
+        globalIndex++;
+      }
+    });
+  } else {
+    checklist.innerHTML = '<div class="p-2 text-muted small">Inga hattar hittades på ordern.</div>';
+  }
+
+  const actionModal = new bootstrap.Modal(document.getElementById('returnReclaimModal'));
+  actionModal.show();
+}
+
+

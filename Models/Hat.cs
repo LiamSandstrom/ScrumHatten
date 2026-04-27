@@ -22,7 +22,6 @@ namespace Models
         public bool IsReclaimed { get; set; }
         public List<HatMaterial> Materials { get; set; } = new();
 
-
         public List<HatSize> Sizes { get; set; } = new();
     }
 }

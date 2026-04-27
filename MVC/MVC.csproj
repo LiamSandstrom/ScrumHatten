@@ -5,8 +5,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9" />
     <PackageReference Include="MongoDB.Driver" Version="3.7.1" />
     <ProjectReference Include="..\Models\Models.csproj" />
-    <ProjectReference Include="..\Repository\DAL.csproj" />
     <ProjectReference Include="..\Services\BL.csproj" />
+    <ProjectReference Include="..\Repository\Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>

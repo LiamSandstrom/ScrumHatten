@@ -42,6 +42,7 @@ namespace Models
         public decimal CustomsFee { get; set; }
 
         public decimal Discount { get; set; }
+        public string? ReturnReclaimReason { get; set; }
 
     }
 }
