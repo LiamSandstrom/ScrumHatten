@@ -254,6 +254,8 @@ namespace Repository
         {
             var filter = Builders<Order>.Filter.Regex(o => o.MakerName,
                new MongoDB.Bson.BsonRegularExpression("^" + userName + "$", "i"));
+               return await _collection.Find(filter).ToListAsync();
+        }
 
         public async Task UpdateHatReturnedAsync(string orderId, string hatId, bool isReturned)
         {

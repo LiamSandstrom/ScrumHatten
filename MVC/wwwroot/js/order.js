@@ -82,10 +82,18 @@ async function fetchOrderDetails(id) {
         }
 
         // --- HATTAR ---
+        //Jag vill att om en hatt är returned eller reclaimed så ska det strykas över namnet
+        const strikeOutReturnedHats = (hat) => {
+            if (hat.isReturned || hat.isReclaimed) {
+                return `<s>${hat.name}</s>`;
+            }
+            return hat.name;
+        };
+
         const list = document.getElementById('detailHatsList');
         list.innerHTML = order.hats?.map(h =>
             `<li class="list-group-item d-flex justify-content-between">
-                ${h.name} <span>${h.quantity || 1} st</span>
+                ${strikeOutReturnedHats(h)} <span>${h.quantity || 1} st</span> <span> ${h.sizes || 'Storlek saknas'}</span>
             </li>`
         ).join('') || "Inga hattar valda";
 
