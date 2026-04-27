@@ -3,6 +3,7 @@ function saveMaterial() {
         Name: document.getElementById('matName').value,
         Unit: document.getElementById('matUnit').value,
         PricePerUnit: parseFloat(document.getElementById('matPrice').value),
+        LowInventoryWarningPoint: parseInt(document.getElementById('matMinLevel').value, 10) || 0,
         Quantity: parseFloat(document.getElementById('matAmount').value) || 0
     };
 
@@ -112,6 +113,7 @@ function editMaterial(id) {
             document.getElementById('editMatName').value = data.name;
             document.getElementById('editMatUnit').value = data.unit;
             document.getElementById('editMatPrice').value = data.pricePerUnit;
+            document.getElementById('editMatMinLevel').value = data.lowInventoryWarningPoint;
             // Om du har ett fält för antal i edit-modalen:
             if(document.getElementById('editMatQuantity')) {
                 document.getElementById('editMatQuantity').value = data.quantity;
@@ -133,6 +135,7 @@ function updateMaterial() {
         name: document.getElementById('editMatName').value,
         unit: document.getElementById('editMatUnit').value,
         pricePerUnit: parseFloat(document.getElementById('editMatPrice').value),
+        LowInventoryWarningPoint: parseInt(document.getElementById('editMatMinLevel').value) || 0,
         quantity: parseFloat(document.getElementById('editMatQuantity')?.value || 0)
     };
 
