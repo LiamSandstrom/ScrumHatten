@@ -297,6 +297,35 @@ function generateOrderPDF() {
 
 document.getElementById('actionSubmitBtn').addEventListener('click', async function() {
     console.log(window.lastFetchedOrder)
+    const selectedHats = Array.from(document.querySelectorAll('.hat-checkbox:checked')).map(cb => cb.id);
+    const orderId = window.lastFetchedOrder.id;
+    const actionComment = document.getElementById('actionComment').value;
+    const customerId = document.window.lastFetchedOrder.customerId;
+
+    try {
+        const response = await fetch(`/Return/SubmitReturnReclaim`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                OrderId: orderId,
+                CustomerId: customerId,
+                SelectedHats: selectedHats,
+                Comment: actionComment
+            })
+        });
+
+        if (response.ok) {
+            const actionModal = bootstrap.Modal.getInstance(document.getElementById('returnReclaimModal'));
+            actionModal.hide();
+            location.reload();
+        } else {
+            alert("Kunde inte skicka in ändringarna.");
+        }
+    } catch (error) {
+        console.error("Fel vid skickande:", error);
+    }
 });
+
+
 
 

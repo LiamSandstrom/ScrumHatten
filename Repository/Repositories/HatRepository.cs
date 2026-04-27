@@ -137,16 +137,16 @@ namespace Repository.Repositories
             await _hatCollection.ReplaceOneAsync(h => h.Id == hat.Id, hat);
         }
 
-        public async Task UpdateReclaimed(string id, bool isReclaimed)
+        public async Task UpdateReclaimed(List<string> ids, bool isReclaimed)
         {
             var update = Builders<Hat>.Update.Set(h => h.IsReclaimed, isReclaimed);
-            await _hatCollection.UpdateOneAsync(h => h.Id == id, update);
+            await _hatCollection.UpdateManyAsync(h => ids.Contains(h.Id), update);
         }
 
-        public async Task UpdateReturned(string id, bool isReturned)
+        public async Task UpdateReturned(List<string> ids, bool isReturned)
         {
             var update = Builders<Hat>.Update.Set(h => h.IsReturned, isReturned);
-            await _hatCollection.UpdateOneAsync(h => h.Id == id, update);
+            await _hatCollection.UpdateManyAsync(h => ids.Contains(h.Id), update);
         }
 
     }

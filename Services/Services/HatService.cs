@@ -37,10 +37,5 @@ namespace BL.Services
         {
             await _hatRepository.UpdateHat(hat);
         }
-
-        public async Task UpdateReclaimed(string id, bool isReclaimed)
-        {
-            await _hatRepository.UpdateReclaimed(id, isReclaimed);
-        }
     }
 }
