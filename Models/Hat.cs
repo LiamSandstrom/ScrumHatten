@@ -19,8 +19,10 @@ namespace Models
         public bool CustomHat { get; set; }
         public bool IsReturned { get; set; }
         public bool IsReclaimed { get; set; }
+        public bool IsHandled { get; set; } = false;
         public List<HatMaterial> Materials { get; set; } = new();
-
+        [BsonElement("Size")]
+        public string? Size { get; set; }
         public List<HatSize> Sizes { get; set; } = new();
     }
 }
