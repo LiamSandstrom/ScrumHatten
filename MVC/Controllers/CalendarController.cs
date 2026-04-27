@@ -33,7 +33,6 @@ namespace MVC.Controllers
             if (string.IsNullOrEmpty(input.Title))
                 return BadRequest("Title is required");
 
-            //input.Start = input.Start == default ? DateTime.Now : input.Start;
             input.Start = input.Start.ToUniversalTime();
 
             if (input.End != default)
@@ -84,26 +83,14 @@ namespace MVC.Controllers
             return Json(users);
         }
         [HttpGet]
-        public JsonResult GetEvents()
+        public IActionResult GetEvents(bool showAll)
         {
             var currentUserName = User.Identity.Name;
 
-            var events = _calendarRepository.GetEvents(currentUserName);
+            var events = _calendarRepository.GetEvents(currentUserName, showAll);
 
             return Json(events);
         }
-
-        //[HttpDelete]
-        //public IActionResult DeleteEvent(string id)
-        //{
-        //    var result = _calendarRepository.DeleteEvent(id);
-        //    if (result)
-
-        //    {
-        //        return Ok();
-
-        //    }
-        //    return BadRequest();
 
         [HttpDelete("/Calendar/DeleteEvent/{id}")] // Förtydliga routen för JS-anropet
         public IActionResult DeleteEvent(string id)
