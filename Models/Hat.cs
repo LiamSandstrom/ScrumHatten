@@ -18,7 +18,8 @@ namespace Models
         public string ImageUrl { get; set; }
         public string? ImageBase64 { get; set; }
         public bool CustomHat { get; set; }
-
+        public bool IsReturned { get; set; }
+        public bool IsReclaimed { get; set; }
         public List<HatMaterial> Materials { get; set; } = new();
 
 
