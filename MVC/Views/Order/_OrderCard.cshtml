@@ -2,10 +2,11 @@
 
 <div class="card mb-2 shadow-sm order-card border-start border-4 @(Model.Priority == Models.Priority.High ? "border-danger" : "border-info")" 
      data-id="@Model.Id" 
-     style="cursor: pointer;">
+     style="cursor: pointer; background-color: #FFFFFF; border-color: #006039 !important;">
+  
     <div class="card-body p-3">
         <div class="d-flex justify-content-between align-items-start mb-2">
-            <h6 class="fw-bold mb-0">#@Model.Id.ToString().Substring(Math.Max(0, Model.Id.ToString().Length - 5))</h6>
+            <h6 class="fw-bold mb-0" style="color: #000000">#@Model.Id.ToString().Substring(Math.Max(0, Model.Id.ToString().Length - 5))</h6>
             @if(Model.FastOrder) {
                 <span class="badge bg-danger animate-pulse" style="font-size: 0.7rem;">PRIO</span>
             }
