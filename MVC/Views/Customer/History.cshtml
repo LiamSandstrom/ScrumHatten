@@ -22,9 +22,8 @@
 
             <th scope="col">Ordernummer</th>
             <th scope="col">Orderdatum</th>
-          
-            <th scope="col">Totalpris</th>
-            <th scope="col">Kundrabatt</th>
+            <th scope="col">Betalning</th>
+            <th scope="col">Rabatt</th>
             <th scope="col">Status</th>
             
         </tr>
@@ -38,7 +37,7 @@
                 <td>#@order.Id.ToString().Substring(Math.Max(0, Model.Id.ToString().Length - 5))</td>
 
          
-                <td>@order.OrderDate</td>
+                <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
       
                 <td>@order.FinalPrice.ToString("C0", new System.Globalization.CultureInfo("sv-SE"))</td>
                 <td>@order.Discount%</td>
