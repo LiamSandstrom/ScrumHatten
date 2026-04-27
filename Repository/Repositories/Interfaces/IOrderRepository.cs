@@ -7,6 +7,10 @@ namespace Repository
     {
         Task<Order> GetOrderByIdAsync(string id);
 
+        Task UpdateHatReclaimedAsync(string orderId, string hatId, bool isReclaimed);
+
+        Task UpdateHatReturnedAsync(string orderId, string hatId, bool isReturned);
+
         Task<List<Order>> GetAllOrdersAsync();
 
         Task<List<Hat>> GetHatsByOrderIdAsync(string id);

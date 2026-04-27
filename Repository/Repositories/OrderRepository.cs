@@ -187,8 +187,8 @@ namespace Repository
             new BsonDocument("$lookup", new BsonDocument
             {
                 { "from", "Customers" },
-                { "localField", "ConvertedId" }, 
-                { "foreignField", "_id" },        
+                { "localField", "ConvertedId" },
+                { "foreignField", "_id" },
                 { "as", "CustomerDetails" }
             }),
 
@@ -202,8 +202,8 @@ namespace Repository
 
             return await _collection.Aggregate<Customer>(pipeline).ToListAsync();
 
-         }
-    
+        }
+
         public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerid)
         {
             var filter = Builders<Order>.Filter.Eq(o => o.CustomerId, customerid);
@@ -240,7 +240,7 @@ namespace Repository
                     MonthName = tempDate.ToString("MMMM yyyy"),
                     Totalsales = salesAmount,
                     AmountOfOrders = totalOrders,
-           
+
                 };
 
                 salesMonths.Add(salesMonth);
@@ -251,9 +251,34 @@ namespace Repository
             return salesMonths;
         }
 
+        public async Task UpdateHatReturnedAsync(string orderId, string hatId, bool isReturned)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId);
+            var update = Builders<Order>.Update.Set("Hats.$[hat].IsReturned", isReturned);
+            var arrayFilters = new List<ArrayFilterDefinition>
+    {
+        new BsonDocumentArrayFilterDefinition<BsonDocument>(
+            new BsonDocument("hat._id", new BsonDocument("$eq", new ObjectId(hatId))))
+    };
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+            var res = await _collection.UpdateOneAsync(filter, update, options);
+            Console.WriteLine($"UpdateHatReturned: orderId={orderId}, hatId={hatId}, matched={res.MatchedCount}, modified={res.ModifiedCount}");
         }
 
-
+        public async Task UpdateHatReclaimedAsync(string orderId, string hatId, bool isReclaimed)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId);
+            var update = Builders<Order>.Update.Set("Hats.$[hat].IsReclaimed", isReclaimed);
+            var arrayFilters = new List<ArrayFilterDefinition>
+    {
+        new BsonDocumentArrayFilterDefinition<BsonDocument>(
+            new BsonDocument("hat._id", new BsonDocument("$eq", new ObjectId(hatId))))
+    };
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+            var res = await _collection.UpdateOneAsync(filter, update, options);
+            Console.WriteLine($"UpdateHatReclaimed: orderId={orderId}, hatId={hatId}, matched={res.MatchedCount}, modified={res.ModifiedCount}");
+        }
+    }
 }
 
 
