@@ -21,7 +21,6 @@ namespace Repository.Repositories
             {
                 return await _hatCollection
                     .Find(_ => true)
-                    .Project<Hat>(Builders<Hat>.Projection.Exclude(h => h.ImageBase64))
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -35,7 +34,6 @@ namespace Repository.Repositories
         {
             var customHats = await _hatCollection
                 .Find(h => h.CustomHat == true)
-                .Project<Hat>(Builders<Hat>.Projection.Exclude(h => h.ImageBase64))
                 .ToListAsync();
             return customHats;
         }
@@ -44,7 +42,6 @@ namespace Repository.Repositories
         {
             var standardHats = await _hatCollection
                 .Find(h => h.CustomHat != true)
-                .Project<Hat>(Builders<Hat>.Projection.Exclude(h => h.ImageBase64))
                 .ToListAsync();
             return standardHats;
         }

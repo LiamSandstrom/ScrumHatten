@@ -87,16 +87,16 @@ namespace MVC.Controllers
                     .ToList()
                 ?? new List<HatMaterial>();
 
-               var hatSizes =
-                model
-                .Sizes?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Quantity >= 0)
-                .Select(s => new HatSize
-                {
-                      Label = s.Label,
-                    Quantity = s.Quantity,
-                  })
-                    .ToList()
-                    ?? new List<HatSize>();
+            var hatSizes =
+             model
+             .Sizes?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Quantity >= 0)
+             .Select(s => new HatSize
+             {
+                 Label = s.Label,
+                 Quantity = s.Quantity,
+             })
+                 .ToList()
+                 ?? new List<HatSize>();
 
 
             Hat newHat = new Hat
@@ -105,7 +105,6 @@ namespace MVC.Controllers
                 Description = model.Description,
                 Price = model.Price,
                 ImageUrl = imagePath,
-                ImageBase64 = imageBase64,
                 Materials = hatMaterials,
                 Sizes = hatSizes,
             };
@@ -159,7 +158,6 @@ namespace MVC.Controllers
             {
                 string imagePath = ImageUrl;
                 var existingHat = await _hatService.GetHatById(Id);
-                string? imageBase64 = existingHat?.ImageBase64;
 
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
@@ -187,7 +185,6 @@ namespace MVC.Controllers
                         ImageFile.CopyTo(memoryStream);
                         byte[] imageBytes = memoryStream.ToArray();
                         string base64String = Convert.ToBase64String(imageBytes);
-                        imageBase64 = $"data:{ImageFile.ContentType};base64,{base64String}";
                     }
                 }
 
@@ -203,16 +200,16 @@ namespace MVC.Controllers
                     ?? new List<HatMaterial>();
 
 
-                    var hatSizes =
-                    Sizes
-                    ?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Quantity >= 0)
-                    .Select(s => new HatSize
-                    {
+                var hatSizes =
+                Sizes
+                ?.Where(s => !string.IsNullOrWhiteSpace(s.Label) && s.Quantity >= 0)
+                .Select(s => new HatSize
+                {
                     Label = s.Label,
                     Quantity = s.Quantity,
-                     })
-                    .ToList()
-                    ?? new List<HatSize>();
+                })
+                .ToList()
+                ?? new List<HatSize>();
 
                 Hat updatedHat = new Hat
                 {
@@ -221,7 +218,6 @@ namespace MVC.Controllers
                     Description = Description,
                     Price = Price,
                     ImageUrl = imagePath,
-                    ImageBase64 = imageBase64,
                     Materials = hatMaterials,
                     Sizes = hatSizes,
                 };
