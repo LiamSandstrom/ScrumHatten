@@ -278,8 +278,8 @@ function generateOrderPDF() {
               <input class="form-check-input me-2 hat-checkbox" 
                      type="checkbox" 
                      value="${hat.name}" 
-                     id="hat_${globalIndex}">
-              <label class="form-check-label stretched-link small" for="hat_${globalIndex}">
+                     id="${hat.id}">
+              <label class="form-check-label stretched-link small" for="${hat.id}">
                   ${hat.name}
               </label>
           </div>`;
@@ -294,5 +294,9 @@ function generateOrderPDF() {
   const actionModal = new bootstrap.Modal(document.getElementById('returnReclaimModal'));
   actionModal.show();
 }
+
+document.getElementById('actionSubmitBtn').addEventListener('click', async function() {
+    console.log(window.lastFetchedOrder)
+});
 
 
