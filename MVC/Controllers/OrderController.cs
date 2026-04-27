@@ -214,14 +214,9 @@ namespace MVC.Controllers
 
             // Price calc
             decimal subtotal = hatsInOrder.Sum(h => (decimal)h.Price * h.Sizes.Sum(s => s.Quantity));
-            decimal discountFraction = model.Discount / 100;
-            decimal customsFraction = model.Customs / 100;
+            decimal customs = subtotal * (1 - model.Discount / 100) * (model.Customs / 100);
 
-            decimal discounted = subtotal * (1 - discountFraction);
-            decimal vat = discounted * 0.25m;
-            decimal fast = model.FastOrder ? discounted * 0.20m : 0;
-            decimal customs = discounted * customsFraction;
-            decimal finalPrice = discounted + vat + fast + customs + model.TransportPrice;
+            decimal finalPrice = CalculatePrice(subtotal, model.Discount, model.Customs, model.FastOrder, model.TransportPrice);
 
             var order = new Order
             {
@@ -244,6 +239,14 @@ namespace MVC.Controllers
             await orderRepository.CreateOrderAsync(order);
 
             return Json(CreateResponse(true, "Order skapad", notify: true, redirectUrl: "/Order/"));
+        }
+        private decimal CalculatePrice(decimal subtotal, decimal discountPercent, decimal customsPercent, bool fastOrder, decimal transportPrice)
+        {
+            decimal discounted = subtotal * (1 - discountPercent / 100);
+            decimal vat = discounted * 0.25m;
+            decimal fast = fastOrder ? discounted * 0.20m : 0;
+            decimal customs = discounted * (customsPercent / 100);
+            return discounted + vat + fast + customs + transportPrice;
         }
 
         [HttpGet("GetAllMaterials")]
