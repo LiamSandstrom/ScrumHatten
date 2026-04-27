@@ -31,8 +31,9 @@ namespace DAL.Repositories
         {
             if (showAll)
             {
-                return _eventCollection.Find( _ => true).ToList();
+                return _eventCollection.Find(_ => true).ToList();
             }
+
             return _eventCollection
         .Find(e =>
             (e.TargetType == "public") ||
