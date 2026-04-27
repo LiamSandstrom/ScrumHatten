@@ -2,162 +2,154 @@
 @using MVC.ViewModels
 
 @{
-    ViewData["Title"] = "Alla hattar";
+    ViewData["Title"] = "Lagerförda hattar";
+
+    var sizeOrder = new List<string>
+    {
+        "0–6 månader (35–43 cm)",
+        "6–12 månader (43–47 cm)",
+        "1–2 år (48–50 cm)",
+        "2–4 år (50–52 cm)",
+        "5–7 år (52–54 cm)",
+        "8–12 år (54–56 cm)",
+        "S (55–56 cm)",
+        "M (57–58 cm)",
+        "L (59–60 cm)",
+        "XL (61–62 cm)"
+    };
 }
 
 <style>
-    /* =========================================
-       SIDANS YTTRE LAYOUT
-    ========================================= */
+    body {
+        background: #f8fafc;
+    }
+
     .hat-page {
         max-width: 1100px;
         margin: 0 auto;
         padding: 2rem 1rem;
     }
 
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
     .page-title {
         font-size: 1.8rem;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 0;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
     }
 
-    /* =========================================
-       KNAPPAR
-    ========================================= */
+    .btn-main,
     .clean-btn-primary {
-        background-color: #006039;
-        border: 1px solid #006039;
+        background: #006039;
         color: white;
-        border-radius: 10px;
-        padding: 0.55rem 1rem;
+        border: none;
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
         font-weight: 600;
-        font-size: 0.92rem;
-        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.22);
-        transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
     }
 
+    .btn-main:hover,
     .clean-btn-primary:hover {
-            background-color: #004b28;
-            border-color: #004b28;
+        background: #004b2c;
         color: white;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28);
     }
 
-    .clean-btn-outline {
-        background-color: white;
-        border: 1px solid #cbd5e1;
-        color: #334155;
-        border-radius: 8px;
-        padding: 0.4rem 0.8rem;
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
-
-    .clean-btn-outline:hover {
-        background-color: #f8fafc;
-        border-color: #94a3b8;
-        color: #0f172a;
-    }
-
-    .clean-btn-danger {
-        background-color: white;
-        border: 1px solid #e2e8f0;
-        color: #475569;
-        border-radius: 8px;
-        padding: 0.4rem 0.8rem;
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
-
-    .clean-btn-danger:hover {
-        background-color: #fef2f2;
-        border-color: #fca5a5;
-        color: #b91c1c;
-    }
-
-    /* =========================================
-       HATTKORT
-    ========================================= */
     .hat-card {
+        background: white;
         border: 1px solid #e5e7eb;
         border-radius: 14px;
         overflow: hidden;
-        background: white;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.04);
         height: 100%;
     }
 
-    .hat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
-    }
-
     .hat-card img {
-        height: 180px;
-        object-fit: contain;
         width: 100%;
+        height: 160px;
+        object-fit: contain;
+        background: white;
+        padding: 0.8rem;
     }
 
-    .hat-card-body {
-        padding: 0.85rem;
+    .hat-body {
+        padding: 0.9rem;
     }
 
     .hat-name {
         font-size: 1rem;
-        font-weight: 600;
+        font-weight: 700;
         color: #111827;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.4rem;
     }
 
-    .hat-description {
+    .hat-desc {
+        font-size: 0.9rem;
         color: #6b7280;
-        margin-bottom: 0.7rem;
-        min-height: 38px;
-        font-size: 0.9rem;
-        line-height: 1.35;
+        min-height: 32px;
+        margin-bottom: 0.6rem;
     }
 
-    .hat-meta {
-        color: #374151;
-        margin-bottom: 0.2rem;
-        font-size: 0.9rem;
-    }
-
-    /* =========================================
-       MATERIALRUTA I HATTKORT
-    ========================================= */
-    .hat-material-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 0.55rem 0.65rem;
-        margin-top: 0.7rem;
+    .hat-price {
+        font-weight: 600;
+        color: #1f2937;
         margin-bottom: 0.8rem;
     }
 
-    .hat-material-title {
+    .mini-link {
+        background: transparent;
+        border: none;
+        padding: 0;
+        color: #006039;
         font-weight: 600;
+        font-size: 0.88rem;
+        display: block;
+        margin-bottom: 0.35rem;
+        text-align: left;
+    }
+
+    .mini-link:hover {
+        text-decoration: underline;
+        color: #004b2c;
+    }
+
+    .action-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.8rem;
+    }
+
+    .btn-light-clean,
+    .clean-btn-outline,
+    .clean-btn-danger {
+        border: 1px solid #d1d5db;
+        background: white;
         color: #334155;
-        margin-bottom: 0.25rem;
-        font-size: 0.85rem;
+        border-radius: 10px;
+        padding: 0.45rem 0.8rem;
+        font-size: 0.88rem;
+        font-weight: 500;
     }
 
-    .hat-material-list {
-        padding-left: 1rem;
-        margin-bottom: 0;
-        color: #475569;
-        font-size: 0.84rem;
+    .btn-light-clean:hover,
+    .clean-btn-outline:hover {
+        background: #f8fafc;
+        color: #111827;
     }
 
-    /* =========================================
-       ALERTS & MODALS
-    ========================================= */
+    .clean-btn-danger:hover {
+        background: #fef2f2;
+        color: #b91c1c;
+        border-color: #fca5a5;
+    }
+
     .clean-alert {
         border-radius: 12px;
-        border: 1px solid transparent;
     }
 
     .clean-modal .modal-content {
@@ -172,13 +164,10 @@
     }
 
     .clean-modal .modal-title {
-        font-weight: 600;
+        font-weight: 700;
         color: #111827;
     }
 
-    /* =========================================
-       FORMULÄR
-    ========================================= */
     .form-label-clean {
         font-weight: 500;
         color: #374151;
@@ -187,7 +176,7 @@
 
     .section-subtitle {
         font-size: 0.95rem;
-        font-weight: 600;
+        font-weight: 700;
         color: #334155;
         margin-bottom: 0.7rem;
     }
@@ -195,42 +184,40 @@
     .material-row {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 0.7rem 0.3rem;
         margin-bottom: 0.7rem;
     }
 
-    /* =========================================
-       TOMT LÄGE
-    ========================================= */
+    .popup-list {
+        padding-left: 1rem;
+        margin-bottom: 0;
+        color: #475569;
+        font-size: 0.92rem;
+    }
+
     .empty-state {
         text-align: center;
         padding: 2.5rem 1rem;
         border: 1px dashed #cbd5e1;
         border-radius: 16px;
         color: #64748b;
-        background: #f8fafc;
+        background: white;
     }
 </style>
 
 <div class="hat-page">
 
-    <!-- =========================================
-         SIDHUVUD
-    ========================================= -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="page-header">
         <h1 class="page-title">Lagerförda hattar</h1>
 
-        <button class="clean-btn-primary"
+        <button class="btn-main"
                 data-bs-toggle="modal"
                 data-bs-target="#addHatModal">
             Lägg till hatt
         </button>
     </div>
 
-    <!-- =========================================
-         FEEDBACKMEDDELANDEN
-    ========================================= -->
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success clean-alert">
@@ -245,10 +232,7 @@
         </div>
     }
 
-    <!-- =========================================
-         OM DET INTE FINNS NÅGRA HATTAR
-    ========================================= -->
-    @if (Model == null || !Model.Hats.Any())
+    @if (Model == null || Model.Hats == null || !Model.Hats.Any())
     {
         <div class="empty-state">
             <h5 class="mb-2">Det finns inga hattar ännu</h5>
@@ -257,26 +241,23 @@
     }
     else
     {
-        <!-- =========================================
-             LISTA MED ALLA HATTAR
-        ========================================= -->
         <div class="row">
             @foreach (var hat in Model.Hats)
             {
+                var sortedSizes = hat.Sizes != null
+                    ? hat.Sizes.OrderBy(s => sizeOrder.Contains(s.Label) ? sizeOrder.IndexOf(s.Label) : 999).ToList()
+                    : null;
+
                 <div class="col-sm-6 col-lg-4 col-xl-3 mb-4">
                     <div class="hat-card">
                         <img src="@(string.IsNullOrWhiteSpace(hat.ImageUrl) ? "/images/placeholder-hat.png" : hat.ImageUrl)"
                              alt="@hat.Name"
-                             class="img-fluid"
                              onerror="this.src='/images/placeholder-hat.png';" />
 
-                        <div class="hat-card-body">
-
-                            <!-- Hattnamn -->
+                        <div class="hat-body">
                             <div class="hat-name">@hat.Name</div>
 
-                            <!-- Kort beskrivning -->
-                            <div class="hat-description">
+                            <div class="hat-desc">
                                 @{
                                     var beskrivning = string.IsNullOrWhiteSpace(hat.Description) ? "Ingen beskrivning ännu." : hat.Description;
                                     var kortBeskrivning = beskrivning.Length > 55 ? beskrivning.Substring(0, 55) + "..." : beskrivning;
@@ -284,61 +265,30 @@
                                 @kortBeskrivning
                             </div>
 
-                            <!-- Pris och lagerstatus -->
-                            <div class="hat-meta"><strong>Pris:</strong> @hat.Price kr</div>
-                            
+                            <div class="hat-price">@hat.Price kr</div>
 
                             @if (hat.Sizes != null && hat.Sizes.Any())
-{
-    var sizeOrder = new List<string>
-    {
-        "0–6 månader (35–43 cm)",
-        "6–12 månader (43–47 cm)",
-        "1–2 år (48–50 cm)",
-        "2–4 år (50–52 cm)",
-        "5–7 år (52–54 cm)",
-        "8–12 år (54–56 cm)",
-        "S (55–56 cm)",
-        "M (57–58 cm)",
-        "L (59–60 cm)",
-        "XL (61–62 cm)"
-    };
-
-    var sortedSizes = hat.Sizes
-        .OrderBy(s => sizeOrder.IndexOf(s.Label))
-        .ToList();
-
-    <div class="hat-material-box">
-        <div class="hat-material-title">Lager</div>
-        <ul class="hat-material-list">
-            @foreach (var size in sortedSizes)
-            {
-                <li>@size.Quantity st @size.Label</li>
-            }
-        </ul>
-    </div>
-}
-
-                            <!-- Materiallista -->
-                            @if (hat.Materials != null && hat.Materials.Any())
                             {
-                                <div class="hat-material-box">
-                                    <div class="hat-material-title">Material per hatt</div>
-                                    <ul class="hat-material-list">
-                                        @foreach (var hm in hat.Materials)
-                                        {
-                                            var material = Model.Materials.FirstOrDefault(m => m.Id == hm.MaterialId);
-                                            <li>
-                                                @hm.Amount @(material != null ? material.Unit : "") @(material != null ? material.Name : "Okänt material")
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
+                                <button type="button"
+                                        class="mini-link"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#stockModal_@hat.Id">
+                                    Visa lager →
+                                </button>
                             }
 
-                            <!-- Knappar för redigera / ta bort -->
-                            <div class="d-flex gap-2">
-                                <button class="clean-btn-outline"
+                            @if (hat.Materials != null && hat.Materials.Any())
+                            {
+                                <button type="button"
+                                        class="mini-link"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#materialModal_@hat.Id">
+                                    Visa material →
+                                </button>
+                            }
+
+                            <div class="action-row">
+                                <button class="btn-light-clean"
                                         data-bs-toggle="modal"
                                         data-bs-target="#editHatModal_@hat.Id">
                                     Redigera
@@ -346,9 +296,8 @@
 
                                 <form asp-action="DeleteHat" method="post">
                                     <input type="hidden" name="id" value="@hat.Id" />
-
                                     <button type="submit"
-                                            class="clean-btn-danger"
+                                            class="btn-light-clean clean-btn-danger"
                                             onclick="return confirm('Är du säker på att du vill ta bort hatten?')">
                                         Ta bort
                                     </button>
@@ -358,9 +307,75 @@
                     </div>
                 </div>
 
-                <!-- =========================================
-                     MODAL: REDIGERA BEFINTLIG HATT
-                ========================================= -->
+                @if (hat.Sizes != null && hat.Sizes.Any())
+                {
+                    <div class="modal fade clean-modal" id="stockModal_@hat.Id" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Lager för @hat.Name</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <ul class="popup-list">
+                                        @foreach (var size in sortedSizes)
+                                        {
+                                            <li>@size.Quantity st @size.Label</li>
+                                        }
+                                    </ul>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="clean-btn-outline"
+                                            data-bs-dismiss="modal">
+                                        Stäng
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (hat.Materials != null && hat.Materials.Any())
+                {
+                    <div class="modal fade clean-modal" id="materialModal_@hat.Id" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Material för @hat.Name</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <ul class="popup-list">
+                                        @foreach (var hm in hat.Materials)
+                                        {
+                                            var material = Model.Materials.FirstOrDefault(m => m.Id == hm.MaterialId);
+                                            <li>
+                                                @hm.Amount @(material != null ? material.Unit : "") @(material != null ? material.Name : "Okänt material")
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="clean-btn-outline"
+                                            data-bs-dismiss="modal">
+                                        Stäng
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <div class="modal fade clean-modal" id="editHatModal_@hat.Id" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
@@ -372,11 +387,9 @@
                                 </div>
 
                                 <div class="modal-body">
-                                    <!-- Dolda fält -->
                                     <input type="hidden" name="Id" value="@hat.Id" />
                                     <input type="hidden" name="ImageUrl" value="@hat.ImageUrl" />
 
-                                    <!-- Grundinfo -->
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label-clean">Namn</label>
@@ -389,24 +402,20 @@
                                         </div>
                                     </div>
 
-                                    <!-- Beskrivning -->
                                     <div class="mb-3">
                                         <label class="form-label-clean">Beskrivning</label>
                                         <textarea name="Description" class="form-control">@hat.Description</textarea>
                                     </div>
 
-                                    <!-- Bild + lager -->
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label-clean">Byt bild</label>
                                             <input name="ImageFile" type="file" class="form-control" accept="image/*" />
                                         </div>
-
                                     </div>
 
                                     <hr />
 
-                                    <!-- Material -->
                                     <div class="section-subtitle">Material per hatt</div>
 
                                     <div id="editMaterialRows_@hat.Id">
@@ -463,62 +472,65 @@
                                             onclick="addEditMaterialRow('@hat.Id')">
                                         Lägg till material
                                     </button>
+
                                     <hr />
 
-<div class="section-subtitle">Storlekar</div>
+                                    <div class="section-subtitle">Storlekar</div>
 
-<div id="editSizeRows_@hat.Id">
-    @if (hat.Sizes != null && hat.Sizes.Any())
-    {
-        for (int i = 0; i < hat.Sizes.Count; i++)
-        {
-            var size = hat.Sizes[i];
+                                    <div id="editSizeRows_@hat.Id">
+                                        @if (hat.Sizes != null && hat.Sizes.Any())
+                                        {
+                                            for (int i = 0; i < hat.Sizes.Count; i++)
+                                            {
+                                                var size = hat.Sizes[i];
 
-            <div class="row align-items-end material-row">
-                <input type="hidden" name="Sizes.Index" value="@i" />
+                                                <div class="row align-items-end material-row">
+                                                    <input type="hidden" name="Sizes.Index" value="@i" />
 
-                <div class="col-md-6 mb-2 mb-md-0">
-                    <label class="form-label-clean">Storlek</label>
-                    <select name="Sizes[@i].Label" class="form-control">
-                        <option value="">-- Välj storlek --</option>
-                        <option value="0–6 månader (35–43 cm)" selected="@(size.Label == "0–6 månader (35–43 cm)")">0–6 månader (35–43 cm)</option>
-                        <option value="6–12 månader (43–47 cm)" selected="@(size.Label == "6–12 månader (43–47 cm)")">6–12 månader (43–47 cm)</option>
-                        <option value="1–2 år (48–50 cm)" selected="@(size.Label == "1–2 år (48–50 cm)")">1–2 år (48–50 cm)</option>
-                        <option value="2–4 år (50–52 cm)" selected="@(size.Label == "2–4 år (50–52 cm)")">2–4 år (50–52 cm)</option>
-                        <option value="5–7 år (52–54 cm)" selected="@(size.Label == "5–7 år (52–54 cm)")">5–7 år (52–54 cm)</option>
-                        <option value="8–12 år (54–56 cm)" selected="@(size.Label == "8–12 år (54–56 cm)")">8–12 år (54–56 cm)</option>
-                        <option value="S (55–56 cm)" selected="@(size.Label == "S (55–56 cm)")">S (55–56 cm)</option>
-                        <option value="M (57–58 cm)" selected="@(size.Label == "M (57–58 cm)")">M (57–58 cm)</option>
-                        <option value="L (59–60 cm)" selected="@(size.Label == "L (59–60 cm)")">L (59–60 cm)</option>
-                        <option value="XL (61–62 cm)" selected="@(size.Label == "XL (61–62 cm)")">XL (61–62 cm)</option>
-                    </select>
-                </div>
+                                                    <div class="col-md-6 mb-2 mb-md-0">
+                                                        <label class="form-label-clean">Storlek</label>
+                                                        <select name="Sizes[@i].Label" class="form-control">
+                                                            <option value="">-- Välj storlek --</option>
+                                                            @foreach (var label in sizeOrder)
+                                                            {
+                                                                if (size.Label == label)
+                                                                {
+                                                                    <option value="@label" selected>@label</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@label">@label</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
 
-                <div class="col-md-4 mb-2 mb-md-0">
-                    <label class="form-label-clean">Antal i lager</label>
-                    <input name="Sizes[@i].Quantity"
-                           type="number"
-                           min="0"
-                           class="form-control"
-                           value="@size.Quantity" />
-                </div>
+                                                    <div class="col-md-4 mb-2 mb-md-0">
+                                                        <label class="form-label-clean">Antal i lager</label>
+                                                        <input name="Sizes[@i].Quantity"
+                                                               type="number"
+                                                               min="0"
+                                                               class="form-control"
+                                                               value="@size.Quantity" />
+                                                    </div>
 
-                <div class="col-md-2">
-                    <button type="button"
-                            class="clean-btn-danger w-100"
-                            onclick="removeMaterialRow(this)">
-                        Ta bort
-                    </button>
-                </div>
-            </div>
-        }
-    }
-</div>
-<button type="button"
-        class="clean-btn-outline mt-2"
-        onclick="addEditSizeRow('@hat.Id')">
-    Lägg till storlek
-</button>
+                                                    <div class="col-md-2">
+                                                        <button type="button"
+                                                                class="clean-btn-danger w-100"
+                                                                onclick="removeMaterialRow(this)">
+                                                            Ta bort
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+
+                                    <button type="button"
+                                            class="clean-btn-outline mt-2"
+                                            onclick="addEditSizeRow('@hat.Id')">
+                                        Lägg till storlek
+                                    </button>
                                 </div>
 
                                 <div class="modal-footer">
@@ -543,9 +555,6 @@
     }
 </div>
 
-<!-- =========================================
-     MODAL: LÄGG TILL NY HATT
-========================================= -->
 <div class="modal fade clean-modal" id="addHatModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -559,7 +568,6 @@
 
                 <div class="modal-body">
 
-                    <!-- Grundinfo -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label-clean">Namn</label>
@@ -572,25 +580,20 @@
                         </div>
                     </div>
 
-                    <!-- Beskrivning -->
                     <div class="mb-3">
                         <label class="form-label-clean">Beskrivning</label>
                         <textarea name="Description" class="form-control"></textarea>
                     </div>
 
-                    <!-- Bild + lager -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label-clean">Bild</label>
                             <input name="ImageFile" type="file" class="form-control" accept="image/*" />
                         </div>
-
-                        
                     </div>
 
                     <hr />
 
-                    <!-- Material -->
                     <div class="section-subtitle">Material per hatt</div>
 
                     <div id="materialRows"></div>
@@ -600,17 +603,18 @@
                             onclick="addMaterialRow()">
                         Lägg till material
                     </button>
+
                     <hr />
 
-                        <div class="section-subtitle">Storlekar</div>
+                    <div class="section-subtitle">Storlekar</div>
 
-                        <div id="sizeRows"></div>
+                    <div id="sizeRows"></div>
 
-                        <button type="button"
-                        class="clean-btn-outline mt-2"
-                        onclick="addSizeRow()">
+                    <button type="button"
+                            class="clean-btn-outline mt-2"
+                            onclick="addSizeRow()">
                         Lägg till storlek
-                        </button>
+                    </button>
 
                 </div>
 
@@ -635,142 +639,125 @@
 
 @section Scripts {
     <script>
-        /* =========================================
-           GLOBALT INDEX FÖR NYA MATERIALRADER
-        ========================================= */
         let materialIndex = 0;
         let sizeIndex = 0;
 
-        /* =========================================
-           HTML-ALTERNATIV FÖR MATERIAL-DROPDOWN
-        ========================================= */
         const materialOptions = `
             <option value="">-- Välj material --</option>
-            @foreach (var material in Model.Materials)
+            @if (Model != null && Model.Materials != null)
             {
-                <option value="@material.Id" data-unit="@material.Unit">@material.Name</option>
+                foreach (var material in Model.Materials)
+                {
+                    <option value="@material.Id" data-unit="@material.Unit">@material.Name</option>
+                }
             }
         `;
 
-            /* =========================================
-               LÄGG TILL MATERIALRAD I "LÄGG TILL HATT"
-            ========================================= */
-            function addMaterialRow() {
-                const container = document.getElementById("materialRows");
-                const currentIndex = materialIndex;
-
-                const row = document.createElement("div");
-                row.className = "row align-items-end material-row";
-
-                row.innerHTML = `
-                        <input type="hidden" name="Materials.Index" value="${currentIndex}" />
-
-                        <div class="col-md-7 mb-2 mb-md-0">
-                            <label class="form-label-clean">Material</label>
-                            <select name="Materials[${currentIndex}].MaterialId" class="form-control" onchange="updateMaterialUnit(this)">
-                                ${materialOptions}
-                            </select>
-                        </div>
-
-                        <div class="col-md-3 mb-2 mb-md-0">
-                            <label class="form-label-clean">Antal</label>
-                            <input name="Materials[${currentIndex}].Amount"
-                                   type="number"
-                                   min="1"
-                                   class="form-control" />
-                                   <small class="material-unit text-muted"></small>
-                        </div>
-
-                        <div class="col-md-2">
-                            <button type="button"
-                                    class="clean-btn-danger w-100"
-                                    onclick="removeMaterialRow(this)">
-                                Ta bort
-                            </button>
-                        </div>
-                    `;
-
-                container.appendChild(row);
-                materialIndex++;
+        const sizeOptions = `
+            <option value="">-- Välj storlek --</option>
+            @foreach (var label in sizeOrder)
+            {
+                <option value="@label">@label</option>
             }
+        `;
 
-            function addSizeRow() {
-    const container = document.getElementById("sizeRows");
-    const currentIndex = sizeIndex;
+        function addMaterialRow() {
+            const container = document.getElementById("materialRows");
+            const currentIndex = materialIndex;
 
-    const row = document.createElement("div");
-    row.className = "row align-items-end material-row";
+            const row = document.createElement("div");
+            row.className = "row align-items-end material-row";
 
-    row.innerHTML = `
-        <input type="hidden" name="Sizes.Index" value="${currentIndex}" />
+            row.innerHTML = `
+                <input type="hidden" name="Materials.Index" value="${currentIndex}" />
 
-        <div class="col-md-6 mb-2 mb-md-0">
-            <label class="form-label-clean">Storlek</label>
-            <select name="Sizes[${currentIndex}].Label" class="form-control">
-                <option value="">-- Välj storlek --</option>
-                <option value="0–6 månader (35–43 cm)">0–6 månader (35–43 cm)</option>
-                <option value="6–12 månader (43–47 cm)">6–12 månader (43–47 cm)</option>
-                <option value="1–2 år (48–50 cm)">1–2 år (48–50 cm)</option>
-                <option value="2–4 år (50–52 cm)">2–4 år (50–52 cm)</option>
-                <option value="5–7 år (52–54 cm)">5–7 år (52–54 cm)</option>
-                <option value="8–12 år (54–56 cm)">8–12 år (54–56 cm)</option>
-                <option value="S (55–56 cm)">S (55–56 cm)</option>
-                <option value="M (57–58 cm)">M (57–58 cm)</option>
-                <option value="L (59–60 cm)">L (59–60 cm)</option>
-                <option value="XL (61–62 cm)">XL (61–62 cm)</option>
-            </select>
-        </div>
+                <div class="col-md-7 mb-2 mb-md-0">
+                    <label class="form-label-clean">Material</label>
+                    <select name="Materials[${currentIndex}].MaterialId" class="form-control" onchange="updateMaterialUnit(this)">
+                        ${materialOptions}
+                    </select>
+                </div>
 
-        <div class="col-md-4 mb-2 mb-md-0">
-            <label class="form-label-clean">Antal i lager</label>
-            <input name="Sizes[${currentIndex}].Quantity"
-                   type="number"
-                   min="0"
-                   class="form-control" />
-        </div>
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <label class="form-label-clean">Antal</label>
+                    <input name="Materials[${currentIndex}].Amount"
+                           type="number"
+                           min="1"
+                           class="form-control" />
+                    <small class="material-unit text-muted"></small>
+                </div>
 
-        <div class="col-md-2">
-            <button type="button"
-                    class="clean-btn-danger w-100"
-                    onclick="removeMaterialRow(this)">
-                Ta bort
-            </button>
-        </div>
-    `;
+                <div class="col-md-2">
+                    <button type="button"
+                            class="clean-btn-danger w-100"
+                            onclick="removeMaterialRow(this)">
+                        Ta bort
+                    </button>
+                </div>
+            `;
 
-    container.appendChild(row);
-    sizeIndex++;
-}
+            container.appendChild(row);
+            materialIndex++;
+        }
 
-            /* =========================================
-               TA BORT EN MATERIALRAD
-            ========================================= */
-            function removeMaterialRow(button) {
-                const row = button.closest(".material-row");
-                if (row) {
-                    row.remove();
-                }
+        function addSizeRow() {
+            const container = document.getElementById("sizeRows");
+            const currentIndex = sizeIndex;
+
+            const row = document.createElement("div");
+            row.className = "row align-items-end material-row";
+
+            row.innerHTML = `
+                <input type="hidden" name="Sizes.Index" value="${currentIndex}" />
+
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <label class="form-label-clean">Storlek</label>
+                    <select name="Sizes[${currentIndex}].Label" class="form-control">
+                        ${sizeOptions}
+                    </select>
+                </div>
+
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <label class="form-label-clean">Antal i lager</label>
+                    <input name="Sizes[${currentIndex}].Quantity"
+                           type="number"
+                           min="0"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                            class="clean-btn-danger w-100"
+                            onclick="removeMaterialRow(this)">
+                        Ta bort
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(row);
+            sizeIndex++;
+        }
+
+        function removeMaterialRow(button) {
+            const row = button.closest(".material-row");
+            if (row) {
+                row.remove();
             }
+        }
 
-            function updateMaterialUnit(selectElement) {
-                const selectedOption = selectElement.options[selectElement.selectedIndex];
-                const unit = selectedOption.getAttribute("data-unit") || "";
-                const row = selectElement.closest(".material-row");
-                const unitElement = row.querySelector(".material-unit");
+        function updateMaterialUnit(selectElement) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const unit = selectedOption.getAttribute("data-unit") || "";
+            const row = selectElement.closest(".material-row");
+            const unitElement = row.querySelector(".material-unit");
 
-                if (unitElement) {
-                    unitElement.textContent = unit ? `Enhet: ${unit}` : "";
-                }
+            if (unitElement) {
+                unitElement.textContent = unit ? `Enhet: ${unit}` : "";
             }
+        }
 
-            /* =========================================
-               HÅLLA REDA PÅ INDEX FÖR REDIGERINGSMODALER
-        ========================================= */
         const editMaterialIndexes = {};
 
-        /* =========================================
-           LÄGG TILL MATERIALRAD I "REDIGERA HATT"
-        ========================================= */
         function addEditMaterialRow(hatId) {
             const container = document.getElementById("editMaterialRows_" + hatId);
 
@@ -801,7 +788,7 @@
                            type="number"
                            min="1"
                            class="form-control" />
-                           <small class="material-unit text-muted"></small>
+                    <small class="material-unit text-muted"></small>
                 </div>
 
                 <div class="col-md-2">
@@ -819,81 +806,65 @@
 
         const editSizeIndexes = {};
 
-function addEditSizeRow(hatId) {
-    const container = document.getElementById("editSizeRows_" + hatId);
+        function addEditSizeRow(hatId) {
+            const container = document.getElementById("editSizeRows_" + hatId);
 
-    if (!container) return;
+            if (!container) return;
 
-    if (editSizeIndexes[hatId] === undefined) {
-        editSizeIndexes[hatId] = container.querySelectorAll(".material-row").length;
-    }
+            if (editSizeIndexes[hatId] === undefined) {
+                editSizeIndexes[hatId] = container.querySelectorAll(".material-row").length;
+            }
 
-    const currentIndex = editSizeIndexes[hatId];
+            const currentIndex = editSizeIndexes[hatId];
 
-    const row = document.createElement("div");
-    row.className = "row align-items-end material-row";
+            const row = document.createElement("div");
+            row.className = "row align-items-end material-row";
 
-    row.innerHTML = `
-        <input type="hidden" name="Sizes.Index" value="${currentIndex}" />
+            row.innerHTML = `
+                <input type="hidden" name="Sizes.Index" value="${currentIndex}" />
 
-        <div class="col-md-6 mb-2 mb-md-0">
-            <label class="form-label-clean">Storlek</label>
-            <select name="Sizes[${currentIndex}].Label" class="form-control">
-                <option value="">-- Välj storlek --</option>
-                <option value="0–6 månader (35–43 cm)">0–6 månader (35–43 cm)</option>
-                <option value="6–12 månader (43–47 cm)">6–12 månader (43–47 cm)</option>
-                <option value="1–2 år (48–50 cm)">1–2 år (48–50 cm)</option>
-                <option value="2–4 år (50–52 cm)">2–4 år (50–52 cm)</option>
-                <option value="5–7 år (52–54 cm)">5–7 år (52–54 cm)</option>
-                <option value="8–12 år (54–56 cm)">8–12 år (54–56 cm)</option>
-                <option value="S (55–56 cm)">S (55–56 cm)</option>
-                <option value="M (57–58 cm)">M (57–58 cm)</option>
-                <option value="L (59–60 cm)">L (59–60 cm)</option>
-                <option value="XL (61–62 cm)">XL (61–62 cm)</option>
-            </select>
-        </div>
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <label class="form-label-clean">Storlek</label>
+                    <select name="Sizes[${currentIndex}].Label" class="form-control">
+                        ${sizeOptions}
+                    </select>
+                </div>
 
-        <div class="col-md-4 mb-2 mb-md-0">
-            <label class="form-label-clean">Antal i lager</label>
-            <input name="Sizes[${currentIndex}].Quantity"
-                   type="number"
-                   min="0"
-                   class="form-control" />
-        </div>
+                <div class="col-md-4 mb-2 mb-md-0">
+                    <label class="form-label-clean">Antal i lager</label>
+                    <input name="Sizes[${currentIndex}].Quantity"
+                           type="number"
+                           min="0"
+                           class="form-control" />
+                </div>
 
-        <div class="col-md-2">
-            <button type="button"
-                    class="clean-btn-danger w-100"
-                    onclick="removeMaterialRow(this)">
-                Ta bort
-            </button>
-        </div>
-    `;
+                <div class="col-md-2">
+                    <button type="button"
+                            class="clean-btn-danger w-100"
+                            onclick="removeMaterialRow(this)">
+                        Ta bort
+                    </button>
+                </div>
+            `;
 
-    container.appendChild(row);
-    editSizeIndexes[hatId]++;
-}
+            container.appendChild(row);
+            editSizeIndexes[hatId]++;
+        }
 
-        /* =========================================
-           LÄGG TILL EN TOM MATERIALRAD NÄR SIDAN LADDAS
-        ========================================= */
         document.addEventListener("DOMContentLoaded", function () {
-        addMaterialRow();
-        addSizeRow();
+            addMaterialRow();
+            addSizeRow();
 
-        document.querySelectorAll('select[name$=".MaterialId"], select[name*="Materials["]').forEach(select => {
-        updateMaterialUnit(select);
+            document.querySelectorAll('select[name$=".MaterialId"], select[name*="Materials["]').forEach(select => {
+                updateMaterialUnit(select);
             });
         });
 
-        /* =========================================
-           ÅTERSTÄLL "LÄGG TILL HATT"-MODALEN NÄR DEN STÄNGS
-        ========================================= */
         const addHatModal = document.getElementById("addHatModal");
         if (addHatModal) {
             addHatModal.addEventListener("hidden.bs.modal", function () {
-                const container = document.getElementById("materialRows");
-                container.innerHTML = "";
+                const materialContainer = document.getElementById("materialRows");
+                materialContainer.innerHTML = "";
                 materialIndex = 0;
                 addMaterialRow();
 

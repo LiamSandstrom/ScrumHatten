@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace MVC.ViewModels
 {
@@ -44,6 +45,7 @@ namespace MVC.ViewModels
 
         [Required, DataType(DataType.Date)]
         [CustomValidation(typeof(OrderViewModel), nameof(ValidateDate))]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime DateToFinish { get; set; } = DateTime.Today;
 
         [Range(0, double.MaxValue)]

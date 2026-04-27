@@ -1,26 +1,28 @@
-﻿
-@model MVC.ViewModels.CustomerViewModels.HistoryCustomerViewModel
+﻿@model MVC.ViewModels.CustomerViewModels.HistoryCustomerViewModel
 @{
 }
 
+<link rel="stylesheet"
+	  href="~/css/historyCustomer.css" />
 
 <div class ="header-customer">
 
     <h2>@Model.Name</h2>
 
-    <p>Kundhistorik</p>
+  
 </div>
 
 
 
 
-<table class="table">
+<table class="table table-hover">
    
     <thead>
         <tr>
+
             <th scope="col">Ordernummer</th>
             <th scope="col">Orderdatum</th>
-            <th scope="col">Totalpris</th>
+            <th scope="col">Betalning</th>
             <th scope="col">Rabatt</th>
             <th scope="col">Status</th>
             
@@ -32,11 +34,32 @@
         @foreach (var order in Model.allOrders)
         {
             <tr>
-                <td>@order.Id</td>
-                <td>@order.OrderDate</td>
+                <td>#@order.Id.ToString().Substring(Math.Max(0, Model.Id.ToString().Length - 5))</td>
+
+         
+                <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
+      
                 <td>@order.FinalPrice.ToString("C0", new System.Globalization.CultureInfo("sv-SE"))</td>
-                <td>@order.Discount.ToString("P0")</td>
-                <td>@order.Status</td>
+                <td>@order.Discount%</td>
+                <td>
+                    
+                        
+                           @{
+        var status = order.Status.ToString() switch
+        {
+            "Pending"    => "Väntar",
+            "InProgress" => "Pågående",
+            "Completed"  => "Klar",
+            "Delivered"  => "Levererad",
+            _            => order.Status.ToString()
+        };
+    }
+    @status
+                    
+                </td>
+
+                 
+              
               
             </tr>
 
@@ -45,6 +68,25 @@
 
     </tbody>
 </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

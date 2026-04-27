@@ -8,7 +8,7 @@ namespace DAL.Repositories.Interfaces
     public interface ICalendarRepository
     {
         void AddEvent(CalendarEvent calendarEvent);
-        List<CalendarEvent> GetEvents(string userId);
+        List<CalendarEvent> GetEvents(string userId, bool showAll);
 
         bool DeleteEvent(string id);
         void UpdateEvent(CalendarEvent calendarEvent);

@@ -284,7 +284,8 @@ namespace MVC.Controllers
                 Id = customer.Id,
                 Name = customer.Name,
                 Discount = customer.ToString(),
-                allOrders = orders
+                allOrders = orders.OrderByDescending(o => o.OrderDate).ToList()
+
 
 
             };
