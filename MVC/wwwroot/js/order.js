@@ -300,10 +300,10 @@ document.getElementById('actionSubmitBtn').addEventListener('click', async funct
     const selectedHats = Array.from(document.querySelectorAll('.hat-checkbox:checked')).map(cb => cb.id);
     const orderId = window.lastFetchedOrder.id;
     const actionComment = document.getElementById('actionComment').value;
-    const customerId = document.window.lastFetchedOrder.customerId;
+    const customerId = window.lastFetchedOrder.customerId;
 
     try {
-        const response = await fetch(`/Return/SubmitReturnReclaim`, {
+        const response = await fetch(`/Return/SubmitReturn`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

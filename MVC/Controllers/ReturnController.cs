@@ -31,8 +31,11 @@ namespace MVC.Controllers
                 return BadRequest(ModelState);
             }
 
-
-             await _hatRepository.UpdateReturned(model.HatId, true);
+            foreach (var hatId in model.HatIds)
+            {
+                Console.WriteLine($"Updating hat with ID: {hatId} to returned");
+                await _hatRepository.UpdateReturned(hatId, true);
+            }
              return Ok("Retur skickad");
         }
 
@@ -43,7 +46,10 @@ namespace MVC.Controllers
             {
                 return BadRequest(ModelState);
             }
-            await _hatRepository.UpdateReclaimed(model.HatId, true);
+            foreach (var hatId in model.HatIds)
+            {
+                await _hatRepository.UpdateReclaimed(hatId, true);
+            }
 
             return Ok("Reklamation skickad");
         }
