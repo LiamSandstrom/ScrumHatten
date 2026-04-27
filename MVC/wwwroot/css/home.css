@@ -1,15 +1,15 @@
 ﻿
 .widgetFlexBox {
-    display: flex;
-    flex-direction: row;
-    margin: 1rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 50px;
+    margin: 2rem;
 }
 
 .statisticsContainer {
-/*    border: 1px solid;
-    border-color: rgba(0, 0, 0, 0.17);
-    border-radius: 10px;*/
-min-width: 450px;
+    width: 500px;   
+    
 }
 
 .cardHeaderContainer {
@@ -18,9 +18,18 @@ min-width: 450px;
 }
 
 .calenderWidget {
-    min-width: 300px;   
+    width: 300px; 
 }
 
 .inventoryWidget {
-    min-width: 300px;
+    width: 300px;
+}
+
+.messageContainer {
+    grid-column: 1 / span 2;
+}
+
+.widgetFlexBox > div {
+    /*
+    width: 500px;*/
 }

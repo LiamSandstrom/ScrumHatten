@@ -201,11 +201,27 @@
             </div>
         </div>
     </div>
+    <div class="messageContainer card">
+        <div class="card-header" style="background-color: #006039; color : #A37E2C ">
+            <div class="cardHeaderContainer">
+                <h5 class="mb-0">Olästa meddelanden</h5>
+                <a asp-controller="Message" asp-action="Index">
+                    <div>
+                        <h5 class="mb-0">Se mer</h5>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+        <div class="card-body">
+            <ul id="messagesList" class="list-group list-group-flush">
+                <li class="list-group-item text-muted">Inga olästa meddelanden</li>
+            </ul>
+
+        </div>
+    </div>
 
 </div>
-
-
-
 
 
 
