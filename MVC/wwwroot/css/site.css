@@ -89,7 +89,7 @@ body {
 }
 
 .bg-dark {
-    background-color: #7d563b !important;
+    background-color: #006039 !important;
     padding: 10px 0;
     position: sticky;
     top: 0;
@@ -97,7 +97,7 @@ body {
 }
 
 .nav-link {
-    color: white !important;
+    color: #A37E2C !important;
     font-weight: 600 !important;
 }
 

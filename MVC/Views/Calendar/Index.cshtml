@@ -1,195 +1,240 @@
-﻿
-@{
-	ViewData["Title"] = "Calender";
+﻿@{
+    ViewData["Title"] = "Calender";
+}
+
+@section Styles {
+    <style>
+        .fc-event {
+            background-color: #006039 !important; 
+            border-color: #7dcf7d !important;
+            color: #ffffff !important;
+            padding: 2px 5px;
+        }
+
+        .fc-button-primary, .fc-customPlusButton-button {
+            background-color: #006039 !important; 
+            color: #A37E2C !important; 
+            border-color: #A37E2C !important;
+            text-transform: capitalize;
+            opacity: 1 !important;
+        }
+
+        .fc-daygrid-event-dot {
+            border-color: #A37E2C !important;}
+
+            .fc-button-primary:hover, .fc-customPlusButton-button:hover {
+                background-color: #004b28 !important;
+                color: #C1A05C !important;
+            }
+        .fc-button-active {
+            background-color: #ffffff !important;
+            color: #006039 !important;
+            border-color: #006039 !important;
+        }
+
+        .fc-customPlusButton-button {
+            font-weight: bold;
+            font-size: 1.2em !important;
+        }
+
+        #calendar {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        #btnDelete:hover {
+            background-color: #600000 !important;
+            color: #eeeeee !important;
+}
+    </style>
 }
 
 <div id="calendar"></div>
 
 @section Scripts {
-	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-	<script>
-		var calendar;
-		var currentEditId = null;
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script>
+        var calendar;
+        var currentEditId = null;
 
-			document.addEventListener('DOMContentLoaded', function () {
-		var calendarEl = document.getElementById('calendar');
-		var isAdmin = @User.IsInRole("Admin").ToString().ToLower();
+        document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var isAdmin = @User.IsInRole("Admin").ToString().ToLower();
 
-			calendar = new FullCalendar.Calendar(calendarEl, {
-				initialView: 'dayGridMonth',
-				locale: "sv",
-				headerToolbar: {
-				left: 'prev,next today customPlusButton',
-				center: 'title',
-				right: 'dayGridMonth,timeGridWeek,timeGridDay'
-		},
-			slotMinTime: "06:00:00",
-			slotMaxTime: "22:00:00",
-			customButtons: {
-			customPlusButton: {
-			text: '+',
-			click: function () {
-			openModalForNew();
-			}
-		}
-		},
-		events: '/Calendar/GetEvents',
+        calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: "sv",
+        headerToolbar: {
+        left: 'prev,next today customPlusButton',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        slotMinTime: "06:00:00",
+        slotMaxTime: "22:00:00",
+        customButtons: {
+        customPlusButton: {
+        text: '+',
+        click: function () {
+        openModalForNew();
+        }
+        }
+        },
+        events: '/Calendar/GetEvents',
 
-			eventClick: function(info) {
-			currentEditId = info.event.id;
-				document.getElementById('eventTitle').value = info.event.title;
-			if (info.event.start) {
-				document.getElementById('eventDate').value = toLocalISOString(info.event.start);
-			}
-			if (info.event.end) {
-		document.getElementById('eventEndDate').value = toLocalISOString(info.event.end);
-			}
-		else if(info.event.start) {
-			var endDate = new Date(info.event.start.getTime() + 60 * 60000);
-			document.getElementById('eventEndDate').value = toLocalISOString(endDate);
-		}
-			document.getElementById('btnDelete').style.display = 'block';
-			document.getElementById('eventModalLabel').innerText = 'Redigera händelse';
-				$('#eventModal').modal('show');
-			},
+        eventClick: function (info) {
+        currentEditId = info.event.id;
+        document.getElementById('eventTitle').value = info.event.title;
+        if (info.event.start) {
+        document.getElementById('eventDate').value = toLocalISOString(info.event.start);
+        }
+        if (info.event.end) {
+        document.getElementById('eventEndDate').value = toLocalISOString(info.event.end);
+        }
+        else if (info.event.start) {
+        var endDate = new Date(info.event.start.getTime() + 60 * 60000);
+        document.getElementById('eventEndDate').value = toLocalISOString(endDate);
+        }
+        document.getElementById('btnDelete').style.display = 'block';
+        document.getElementById('eventModalLabel').innerText = 'Redigera händelse';
+        $('#eventModal').modal('show');
+        },
 
-				dateClick: function (info) {
-				openModalForNew(info.dateStr + "T09:00");
-			}
-		});
+        dateClick: function (info) {
+        openModalForNew(info.dateStr + "T09:00");
+        }
+        });
 
-		calendar.render();
+        calendar.render();
 
-			var targetSelect = document.getElementById('eventTarget');
-				if (targetSelect && !isAdmin) {
-					var otherOption = targetSelect.querySelector('option[value="other"]');
-				if (otherOption) otherOption.remove();
-		}
+        var targetSelect = document.getElementById('eventTarget');
+        if (targetSelect && !isAdmin) {
+        var otherOption = targetSelect.querySelector('option[value="other"]');
+        if (otherOption) otherOption.remove();
+        }
 
-		// Ladda användarlistan när modalen öppnas
-		$('#eventModal').on('show.bs.modal', function () {
-			fetch('/Calendar/GetUsers')
-			.then(res => res.json())
-			.then(users => {
-				var container = document.getElementById('userList');
-			if (!container) return;
-				container.innerHTML = users.map(u => `
-			<div>
-				<input type="checkbox" class="user-checkbox" value="${u.email}" />
-				${u.name} (${u.email})
-			</div>
-			`).join('');
-				});
-			});
-		});
+        $('#eventModal').on('show.bs.modal', function () {
+        fetch('/Calendar/GetUsers')
+        .then(res => res.json())
+        .then(users => {
+        var container = document.getElementById('userList');
+        if (!container) return;
+        container.innerHTML = users.map(u => `
+        <div>
+        <input type="checkbox" class="user-checkbox" value="${u.email}" />
+        ${u.name} (${u.email})
+        </div>
+        `).join('');
+        });
+        });
+        });
 
-		function openModalForNew(dateStr = "") {
-			currentEditId = null;
-			document.getElementById('eventTitle').value = "";
-				if(dateStr) document.getElementById('eventDate').value = dateStr;
-		document.getElementById('btnDelete').style.display = 'none';
-		document.getElementById('eventModalLabel').innerText = 'Lägg till händelse';
-				$('#eventModal').modal('show');
-		}
+        function openModalForNew(dateStr = "") {
+        currentEditId = null;
+        document.getElementById('eventTitle').value = "";
+        if (dateStr) document.getElementById('eventDate').value = dateStr;
+        document.getElementById('btnDelete').style.display = 'none';
+        document.getElementById('eventModalLabel').innerText = 'Lägg till händelse';
+        $('#eventModal').modal('show');
+        }
 
-		function saveEvent() {
-				var selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked'))
-				.map(cb => cb.value);
+        function saveEvent() {
+        var selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked'))
+        .map(cb => cb.value);
 
-				var dateValue = document.getElementById('eventDate').value;
-				var endDateValue = document.getElementById('eventEndDate').value;
-			if (!dateValue) {
-				alert('Vänligen ange ett datum och tid.');
-			return;
-		}
+        var dateValue = document.getElementById('eventDate').value;
+        var endDateValue = document.getElementById('eventEndDate').value;
+        if (!dateValue) {
+        alert('Vänligen ange ett datum och tid.');
+        return;
+        }
 
-		var eventData = {
-			id: currentEditId, 
-			title: document.getElementById('eventTitle').value,
-			start: new Date(dateValue).toISOString(),
-			end: new Date(endDateValue).toISOString(),
-			targetType: document.getElementById('eventTarget').value,
-			targetUserNames: selectedUsers,
-			color: "#F6B8B8"
-		};
+        var eventData = {
+        id: currentEditId,
+        title: document.getElementById('eventTitle').value,
+        start: new Date(dateValue).toISOString(),
+        end: new Date(endDateValue).toISOString(),
+        targetType: document.getElementById('eventTarget').value,
+        targetUserNames: selectedUsers,
+        color: "#006039S" 
+        };
 
-			fetch('/Calendar/SaveEvent', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(eventData)
-		})
-				.then(response => {
-				if (response.ok) {
-					$('#eventModal').modal('hide');
-				calendar.refetchEvents();
-				}
-			});
-		}
+        fetch('/Calendar/SaveEvent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(eventData)
+        })
+        .then(response => {
+        if (response.ok) {
+        $('#eventModal').modal('hide');
+        calendar.refetchEvents();
+        }
+        });
+        }
 
-		function deleteEvent() {
-			if (!currentEditId) return;
-			if (confirm("Är du säker på att du vill ta bort denna händelse?")) {
-				fetch('/Calendar/DeleteEvent/' + currentEditId, {
-					method: 'DELETE'
-		}).then(res => {
-			if (res.ok) {
-				$('#eventModal').modal('hide');
-				calendar.refetchEvents();
+        function deleteEvent() {
+        if (!currentEditId) return;
+        if (confirm("Är du säker på att du vill ta bort denna händelse?")) {
+        fetch('/Calendar/DeleteEvent/' + currentEditId, {
+        method: 'DELETE'
+        }).then(res => {
+        if (res.ok) {
+        $('#eventModal').modal('hide');
+        calendar.refetchEvents();
+        } else {
+        alert("Kunde inte ta bort händelse.");
+        }
+        });
+        }
+        }
 
-				} else {
-					alert ("Kunde inte ta bort händelse.");
-				}
-			});
-			}
-
-			
-		}
-		function toLocalISOString(date) {
-		var d = new Date(date);
-		d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-		return d.toISOString().substring(0, 16);
-		}
-	</script>
- <div class="modal fade" id="eventModal" tabindex="-1">
-		<div class="modal-dialog">
-			<div class ="modal-content">
-				<div class= "modal-header">
-					<h5 class="modal-title" id="eventModalLabel">Lägg till händelse</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-				<div class="mb-3">
-					<label>Title</label>
-						<input type="text" id="eventTitle" class="form-control" />
-				</div>
-					<div class="mb-3">
-						<label>Starttid</label>
-						<input type="datetime-local" id="eventDate" class="form-control" />
-					</div>
-
-					
-					<div class="mb-3">
-						<label>Sluttid</label>
-						<input type="datetime-local" id="eventEndDate" class="form-control" />
-					</div>
-					<div class="mb-3">
-						<label>Vem ska se detta?</label>
-						<select id="eventTarget" class="form-control">
-							<option value="public">Alla</option>
-							<option value="private">Bara jag</option>
-							<option value="other">Specifik anställd</option>
-						</select>
-					</div>
-					<div id="userList" class="border p-2 rounded"></div>
-			</div>
-			<div class="modal-footer">
-					<button type="button" id="btnDelete" class="btn btn-danger" style="display:none;" onClick="deleteEvent()">Ta bort</button>
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-					<button type="button" class="btn btn-primary" onClick="saveEvent()">Spara</button>
-		</div>
-	</div>
-	</div>
-	</div>
+        function toLocalISOString(date) {
+        var d = new Date(date);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        return d.toISOString().substring(0, 16);
+        }
+    </script>
 }
 
-
+<div class="modal fade" id="eventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Lägg till händelse</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label>Titel</label>
+                    <input type="text" id="eventTitle" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label>Starttid</label>
+                    <input type="datetime-local" id="eventDate" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label>Sluttid</label>
+                    <input type="datetime-local" id="eventEndDate" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label>Vem ska se detta?</label>
+                    <select id="eventTarget" class="form-control">
+                        <option value="public">Alla</option>
+                        <option value="private">Bara jag</option>
+                        <option value="other">Specifik anställd</option>
+                    </select>
+                </div>
+                <div id="userList" class="border p-2 rounded"></div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" id="btnDelete" class="btn" 
+            style="display:none; background-color: #800000; color: white; border: none;" 
+            onClick="deleteEvent()">Ta bort</button>
+    
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+    
+             <button type="button" class="btn btn-primary" style="background-color: #006039; border-color: #A37E2C; color: #A37E2C;" 
+             onClick="saveEvent()">Spara</button>
+            </div>
+        </div>
+    </div>
+</div>
