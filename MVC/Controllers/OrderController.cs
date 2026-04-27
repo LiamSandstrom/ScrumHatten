@@ -223,7 +223,7 @@ namespace MVC.Controllers
             {
                 Hats = hatsInOrder,
                 TimeToMake = model.TimeToMake,
-                DateToFinish = model.DateToFinish,
+                DateToFinish = model.DateToFinish.Date.AddHours(12),
                 OrderDate = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, swedishZone),
                 TransportPrice = model.TransportPrice,
                 FinalPrice = finalPrice,
@@ -369,7 +369,7 @@ namespace MVC.Controllers
                 // Säkerställ att datumet inte är DateTime.MinValue
                 if (model.DateToFinish != default)
                 {
-                    order.DateToFinish = model.DateToFinish;
+                    order.DateToFinish = model.DateToFinish.Date.AddHours(12);
                 }
 
                 order.CustomerId = model.SelectedCustomerId;
