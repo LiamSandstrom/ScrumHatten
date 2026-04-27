@@ -27,14 +27,16 @@ namespace DAL.Repositories
         {
             _eventCollection.InsertOne(calendarEvent);
         }
-        public List<CalendarEvent> GetEvents(string userName)
+        public List<CalendarEvent> GetEvents(string userName, bool showAll)
         {
-
+            if (showAll)
+            {
+                return _eventCollection.Find( _ => true).ToList();
+            }
             return _eventCollection
         .Find(e =>
             (e.TargetType == "public") ||
             (e.TargetUserNames != null && e.TargetUserNames.Contains(userName))
-        //(e.OwnerName == userName)
         )
         .ToList();
         }
@@ -42,7 +44,6 @@ namespace DAL.Repositories
 
         public bool DeleteEvent(string id)
         {
-            // Vi skapar ett filter som MongoDB förstår oavsett om Id är sträng eller ObjectId
             var filter = Builders<CalendarEvent>.Filter.Eq("_id", ObjectId.Parse(id));
             var result = _eventCollection.DeleteOne(filter);
             return result.IsAcknowledged && result.DeletedCount > 0;
