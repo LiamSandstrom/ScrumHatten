@@ -92,6 +92,7 @@ namespace MVC.Controllers
                     description = h.Description,
                     imageUrl = h.ImageUrl,
                     quantity = h.Quantity,
+                    sizes = h.Sizes,
                     materials = h.Materials
                 }));
             }
