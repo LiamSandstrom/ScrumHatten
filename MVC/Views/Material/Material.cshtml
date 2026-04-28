@@ -12,19 +12,21 @@
         <h1 class="fw-bold material-title m-0">Materiallager</h1>
 
         <div>
+
             <button type="button"
-                    class="btn btn-outline-primary rounded-pill px-4 me-2"
+                    class="btn btn-custom-outline rounded-pill px-4 me-2"
                     data-bs-toggle="modal"
                     data-bs-target="#restockMaterialModal">
                 <i class="bi bi-plus-circle me-1"></i> Fyll på material
             </button>
 
             <button type="button"
-                    class="btn btn-primary rounded-pill px-4 shadow-sm"
+                    class="btn btn-custom-filled rounded-pill px-4 shadow-sm"
                     data-bs-toggle="modal"
                     data-bs-target="#addMaterialModal">
                 <i class="bi bi-magic me-1"></i> Lägg till nytt
             </button>
+
         </div>
     </div>
 
@@ -59,7 +61,7 @@
 
                     @* Pris längst ner på kortet *@
                     <div class="card-footer bg-transparent border-top-0 text-center">
-                        <small class="text-primary">@item.PricePerUnit kr/@item.Unit</small>
+                        <small style="color: #006039; font-weight: bold;">@item.PricePerUnit kr/@item.Unit</small>
                     </div>
                 </div>
             </div>
@@ -268,6 +270,35 @@
    CSS-FIL
    Här ligger stilar för materialsidan
    ========================= *@
+
+
 @section Styles {
     <link rel="stylesheet" href="~/css/material.css" asp-append-version="true" />
+    <style>
+        /* CSS för att fixa hover-effekten på "Fyll på"-knappen */
+        .btn-custom-outline {
+        color: #006039 !important;
+        border-color: #006039 !important;
+        background-color: transparent !important;
+        }
+
+        .btn-custom-outline:hover {
+        background-color: #006039 !important;
+        color: white !important;
+        border-color: #006039 !important;
+        }
+
+        /* CSS för "Lägg till nytt"-knappen */
+        .btn-custom-filled {
+        background-color: #006039 !important;
+        border-color: #006039 !important;
+        color: white !important;
+        }
+
+        .btn-custom-filled:hover {
+        background-color: #004d2e !important; /* En något mörkare grön vid hover */
+        border-color: #004d2e !important;
+        color: white !important;
+        }
+    </style>
 }
