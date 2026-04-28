@@ -39,7 +39,6 @@ public async Task<IActionResult> SubmitReturn([FromBody] ReturnViewModel model)
 
     try 
     {
-        // NY RAD: Spara ner beskrivningen på ordern i databasen
         await _orderRepository.UpdateReturnReasonAsync(model.OrderId, model.Description);
 
         foreach (var combinedId in model.HatIds)
@@ -62,13 +61,11 @@ public async Task<IActionResult> SubmitReturn([FromBody] ReturnViewModel model)
 
             try
             {
-                // 1. Spara beskrivningen på ordern
                 if (!string.IsNullOrEmpty(model.Description))
                 {
                     await _orderRepository.UpdateReturnReasonAsync(model.OrderId, model.Description);
                 }
 
-                // 2. Flagga hattarna som reklamerade
                 foreach (var combinedId in model.HatIds)
                 {
                     var cleanHatId = combinedId.Split('_')[0];
