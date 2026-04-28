@@ -7,6 +7,10 @@ namespace Repository
     {
         Task<Order> GetOrderByIdAsync(string id);
 
+        Task UpdateHatReclaimedAsync(string orderId, string hatId, bool isReclaimed);
+
+        Task UpdateHatReturnedAsync(string orderId, string hatId, bool isReturned);
+
         Task<List<Order>> GetAllOrdersAsync();
 
         Task<List<Hat>> GetHatsByOrderIdAsync(string id);
@@ -46,6 +50,9 @@ namespace Repository
         Task<List<SalesMonth>> GetOrdersByMonth(DateTime startDate, DateTime endDate);
 
         Task<IEnumerable<Order>> GetOrdersByUserAsync(string userName);
-
+        Task<List<ReturnItemDto>> GetAllReturnedHatsAsync();
+        Task<List<ReturnItemDto>> GetAllReclaimedHatsAsync();
+        Task MarkAsHandledAsync(string orderId, string hatId);
+        Task UpdateReturnReasonAsync(string orderId, string reason);
     }
 }

@@ -9,6 +9,7 @@ namespace Models
         public string ImageUrl { get; set; }
         public bool CustomHat { get; set; }
         public int Quantity { get; set; }
+        public List<HatSize> Sizes { get; set; } = new();
         public List<HatMaterialDetail> Materials { get; set; } = new();
     }
 

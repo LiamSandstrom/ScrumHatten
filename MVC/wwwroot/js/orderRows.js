@@ -86,6 +86,7 @@ export const addCustomRow = () => {
 
 const populateHatDropdown = (rowDiv) => {
     const hatSelect = rowDiv.querySelector(".hat-dropdown");
+    const sizeSelect = rowDiv.querySelector(".row-size");
     for (const [id, hat] of allHats) {
         const opt = document.createElement("option");
         opt.value = id;
@@ -93,8 +94,69 @@ const populateHatDropdown = (rowDiv) => {
         hatSelect.appendChild(opt);
     }
     hatSelect.addEventListener("change", () => {
-        renderPreview(rowDiv, allHats.get(hatSelect.value));
+        const hat = allHats.get(hatSelect.value);
+        if (hat) renderPreview(rowDiv, hat);
     });
+    if (sizeSelect) {
+        sizeSelect.addEventListener("change", () => {
+            const hat = allHats.get(hatSelect.value);
+            if (hat) renderPreview(rowDiv, hat);
+        });
+    }
+};
+
+const normalizeSizeLabel = (value) =>
+    value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/–/g, "-")
+        .replace(/\s+/g, " ")
+        .replace(/\s*-\s*/g, "-")
+        .replace(/år/, "y")
+        .replace(/månader/, "m");
+
+const sizePatterns = {
+    "0-6m": /0\s*[-–]\s*6.*månad/i,
+    "6-12m": /6\s*[-–]\s*12.*månad/i,
+    "1-2y": /1\s*[-–]\s*2.*år/i,
+    "2-4y": /2\s*[-–]\s*4.*år/i,
+    "5-7y": /5\s*[-–]\s*7.*år/i,
+    "8-12y": /8\s*[-–]\s*12.*år/i,
+    "S": /\bS\b/i,
+    "M": /\bM\b/i,
+    "L": /\bL\b/i,
+    "XL": /\bXL\b/i,
+};
+
+const getSizeStock = (hat, selectedSize) => {
+    if (!selectedSize) return null;
+
+    const sizes = Array.isArray(hat.sizes)
+        ? hat.sizes
+        : Array.isArray(hat.Sizes)
+            ? hat.Sizes
+            : [];
+
+    const pattern = sizePatterns[selectedSize];
+
+    if (pattern) {
+        const sizeObj = sizes.find(s => {
+            const rawLabel = s.label ?? s.Label ?? "";
+            return pattern.test(rawLabel);
+        });
+        return sizeObj?.quantity ?? sizeObj?.Quantity ?? null;
+    }
+
+    // Fallback to exact match if no pattern
+    const normalizedSelected = normalizeSizeLabel(selectedSize);
+    const sizeObj = sizes.find(s => {
+        const rawLabel = s.label ?? s.Label ?? "";
+        const normalizedLabel = normalizeSizeLabel(rawLabel);
+        return normalizedLabel === normalizedSelected;
+    });
+
+    return sizeObj?.quantity ?? sizeObj?.Quantity ?? null;
 };
 
 export const renderPreview = (row, hat) => {
@@ -115,9 +177,21 @@ export const renderPreview = (row, hat) => {
     row.querySelector(".hat-price").textContent = `Pris: ${hat.price ?? "-"}`;
 
     const qtyInput = row.querySelector(".quantity-input");
-    const stock = hat.quantity ?? 0;
+    const sizeSelect = row.querySelector(".row-size");
+    const selectedSize = sizeSelect?.value;
+
+    const defaultStock = hat.quantity ?? 0;
+    const sizeStock = getSizeStock(hat, selectedSize);
+    const stock = selectedSize
+        ? (sizeStock !== null ? sizeStock : 0)
+        : defaultStock;
+
+    console.log(`Hat: ${hat.name}, SelectedSize: ${selectedSize}, SizeStock: ${sizeStock}, Stock: ${stock}, DefaultStock: ${defaultStock}`);
+
     const el = row.querySelector(".hat-quantity");
-    el.textContent = `I lager: ${stock}`;
+    el.textContent = selectedSize
+        ? `I lager (${selectedSize}): ${stock}`
+        : `I lager: ${stock}`;
 
     const overStock = parseInt(qtyInput.value || "0") > stock;
     el.classList.toggle("text-danger", overStock);
