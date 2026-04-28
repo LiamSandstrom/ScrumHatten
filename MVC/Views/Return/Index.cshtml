@@ -17,7 +17,6 @@
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-greencolor text-dark d-flex justify-content-between align-items-center">
             <h3 class="h5 mb-0"><i class="bi bi-box-seam"></i> Aktiva Returer</h3>
-            <span class="badge rounded-pill bg-dark">@Model.ReturnedItems.Count</span>
         </div>
         <div class="card-body">
             @if (Model.ReturnedItems.Any())
@@ -69,7 +68,7 @@
             {
                 <div class="text-center py-4 text-muted">
                     <i class="bi bi-check-circle-fill display-4 d-block mb-2 text-success"></i>
-                    <p>Inga väntande returer just nu.</p>
+                    <p>Inga väntande returer.</p>
                 </div>
             }
         </div>
@@ -78,7 +77,6 @@
     <div class="card shadow-sm">
     <div class="card-header bg-greencolor text-white d-flex justify-content-between align-items-center">
         <h3 class="h5 mb-0"><i class="bi bi-exclamation-triangle"></i> Aktiva Reklamationer</h3>
-        <span class="badge rounded-pill bg-light text-danger">@Model.ReclaimedItems.Count</span>
     </div>
     <div class="card-body">
         @if (Model.ReclaimedItems.Any())
@@ -131,7 +129,7 @@
             else
             {
                 <div class="text-center py-4 text-muted">
-                    <i class="bi bi-emoji-smile display-4 d-block mb-2 text-info"></i>
+                    <i class="bi bi-check-circle-fill display-4 d-block mb-2 text-success"></i>
                     <p>Inga väntande reklamationer.</p>
                 </div>
             }
