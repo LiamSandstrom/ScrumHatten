@@ -1,14 +1,20 @@
 ﻿
 .widgetFlexBox {
     display: grid;
-    /* Här sker magin: */
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    gap: 30px;
     margin: 2rem;
+    justify-content: center;
 }
 
+    .widgetFlexBox > div {
+        margin: 2rem;
+        width: 100%;
+        min-width: 100px; /* Viktigt! Tillåter kortet att krympa under sin naturliga bredd */
+        overflow: hidden; /* Kapar allt som sticker ut */
+    }
+
 .statisticsContainer {
-    width: 500px;   
     max-height: 500px !important;
 
     
@@ -20,12 +26,11 @@
 }
 
 .calenderWidget {
-    min-width: 300px; 
     max-height: 500px !important;
 }
 
 .inventoryWidget {
-    width: 300px;
+
 }
 
 .messageContainer {
@@ -35,26 +40,4 @@
 }
 
 
-@media (max-width: 1000px) {
 
-    .widgetFlexBox {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        gap: 50px;
-        margin: 2rem;
-    }
-
-
-}
-
-@media (max-width: 800px) {
-
-    .widgetFlexBox {
-        display: grid;
-        grid-template-columns: auto;
-        grid-template-rows: repeat(4, 100%);
-        gap: 50px;
-        margin: 2rem;
-    }
-}
