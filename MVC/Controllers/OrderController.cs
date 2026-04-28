@@ -112,7 +112,6 @@ namespace MVC.Controllers
             var order = await orderRepository.GetOrderByIdAsync(id);
             if (order == null) return NotFound("Ordern hittades inte!");
 
-            // Hämta kunden för att få adress, e-post etc.
             var customer = !string.IsNullOrEmpty(order.CustomerId)
                 ? await customerRepository.GetCustomerByIdAsync(order.CustomerId) : null;
 
@@ -123,7 +122,6 @@ namespace MVC.Controllers
                 makerName = user?.Name ?? "Okänd";
             }
 
-            // VIKTIGT: Returnera ALLA fält som båda modalerna behöver
             return Ok(new
             {
                 id = order.Id,
@@ -136,7 +134,7 @@ namespace MVC.Controllers
                 makerId = order.MakerId,
                 makerName = makerName,
                 customerId = order.CustomerId,
-                customer = customer, // Hela objektet för adressuppgifter
+                customer = customer,
                 status = order.Status.ToString()
             });
         }
@@ -293,12 +291,9 @@ namespace MVC.Controllers
         {
             try
             {
-                // 1. Konvertera strängen (t.ex. "pending") till din Enum Status
-                // 'true' gör att den struntar i om det är stora eller små bokstäver
                 if (Enum.TryParse<Status>(status, true, out var parsedStatus))
                 {
                     await orderRepository.SetStatusAsync(id, parsedStatus);
-                    // await _orderRepository.UpdateStatusAsync(id, parsedStatus);
 
                     return Ok(new { message = "Status uppdaterad!" });
                 }
@@ -347,17 +342,13 @@ namespace MVC.Controllers
         {
             try
             {
-
-
                 var order = await orderRepository.GetOrderByIdAsync(orderId);
                 if (order == null) return NotFound();
 
-                // 2. Nolla BÅDE ID och Namn
                 order.MakerId = Guid.Empty;
-                order.MakerName = null; // Detta rensar namnet på kortet!
+                order.MakerName = null;
                 order.Status = Status.Pending;
 
-                // 3. Spara hela ordern (Använd din Update-metod)
                 await orderRepository.UpdateOrderAsync(orderId, order);
 
                 return Ok();
@@ -376,13 +367,9 @@ namespace MVC.Controllers
                 var order = await orderRepository.GetOrderByIdAsync(id);
                 if (order == null) return NotFound();
 
-                // Uppdatera värden - om model-värdet är 0 eller null, kan du välja 
-                // att behålla gamla eller skriva över. Här skriver vi över eftersom
-                // vi litar på att modalen var förifylld.
                 order.TransportPrice = model.TransportPrice;
                 order.TimeToMake = model.TimeToMake;
 
-                // Säkerställ att datumet inte är DateTime.MinValue
                 if (model.DateToFinish != default)
                 {
                     order.DateToFinish = model.DateToFinish.Date.AddHours(12);
@@ -391,7 +378,6 @@ namespace MVC.Controllers
                 order.CustomerId = model.SelectedCustomerId;
                 order.FastOrder = model.FastOrder;
 
-                // Hantera MakerId och MakerName defensivt
                 if (!string.IsNullOrEmpty(model.SelectedUserId) && Guid.TryParse(model.SelectedUserId, out Guid makerGuid))
                 {
                     order.MakerId = makerGuid;
@@ -404,8 +390,6 @@ namespace MVC.Controllers
                     order.MakerName = null;
                 }
 
-                // KRASCH-SKYDD: Beräkna priset säkert
-                // Vi kollar om Hats är null innan vi kör .Sum()
                 decimal hatSubtotal = 0;
                 if (order.Hats != null && order.Hats.Any())
                 {
@@ -422,7 +406,6 @@ namespace MVC.Controllers
             }
             catch (Exception ex)
             {
-                // Logga felet så du ser exakt vad som hände i Visual Studio
                 System.Diagnostics.Debug.WriteLine($"Update Error: {ex.Message}");
                 return StatusCode(500, "Internt serverfel vid sparande.");
             }

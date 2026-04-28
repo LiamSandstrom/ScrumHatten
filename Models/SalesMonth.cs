@@ -5,9 +5,6 @@ using Models;
 
 namespace Models
 {
-    /// <summary>
-    /// Denna modell används för att hantera omsättningsinformation på statistiksidan.
-    /// </summary>
     public class SalesMonth
     {
         public string MonthName { get; set; }
