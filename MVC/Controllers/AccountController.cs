@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -176,6 +177,17 @@ namespace MVC.Controllers
         public IActionResult AdminOnly()
         {
             return Json(ModelStateErrorResponse("Endast Admin"));
+        }
+
+        [HttpGet]
+        public IActionResult GeneratePassword()
+        {
+            return Json(new { password = GenerateRandomPassword() });
+        }
+        private static string GenerateRandomPassword(int length = 12)
+        {
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%";
+            return new string(RandomNumberGenerator.GetItems<char>(chars.ToCharArray(), length));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿@model MVC.Models.Account.RegisterViewModel;
 <link rel="stylesheet" href="~/css/login.css" />
 @section Scripts {
+    <script src="~/js/passwordGen.js"></script>
     <script>
         handleFormSubmit("registerForm")
     </script>
@@ -38,15 +39,21 @@
         </div>
 
         <div class="form-floating mb-2">
-            <input asp-for="Password" type="password" class="form-control" placeholder="Lösenord" />
+            <input asp-for="Password" id="Password" type="password" class="form-control" placeholder="Lösenord" />
             <label asp-for="Password">Lösenord</label>
             <p id="error-Password" class="error-text"></p>
         </div>
 
         <div class="form-floating mb-3">
-            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Bekräfta lösenord" />
+            <input asp-for="ConfirmPassword" id="Password2" type="password" class="form-control" placeholder="Bekräfta lösenord" />
             <label asp-for="ConfirmPassword">Bekräfta lösenord</label>
             <p id="error-ConfirmPassword" class="error-text"></p>
+        </div>
+        <div class="form-floating mb-3">
+            <input id="PasswordGen" type="text" class="form-control" placeholder="Lösenord Skapare" />
+            <label asp-for="ConfirmPassword">Skapat lösenord</label>
+            <button id="passwordButton" class="mt-1 btn btn-secondary" type="button">Skapa Lösenord</button>
+            <button id="useButton" class="mt-1 btn btn-secondary" type="button">Fyll i lösenord</button>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 py-2">Registrera användare</button>
