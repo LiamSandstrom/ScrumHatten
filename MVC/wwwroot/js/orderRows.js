@@ -31,17 +31,24 @@ export const setRowNames = (rowItem, i) => {
 
 export const setMaterialRowNames = (materialList, rowIdx) => {
     if (!materialList) return;
+    // Hitta alla material-rader
     const rows = materialList.querySelectorAll(".material-row");
     let mIdx = 0;
+    
     for (const row of rows) {
-        const sel = row.querySelector(".form-control");
+        // ÄNDRING: Vi letar nu efter .materials-select istället för .form-control
+        const sel = row.querySelector(".materials-select"); 
         const qty = row.querySelector(".material-quantity");
-        if (sel) sel.name = `Rows[${rowIdx}].Materials[${mIdx}].MaterialId`;
-        if (qty) qty.name = `Rows[${rowIdx}].Materials[${mIdx}].Amount`;
+        
+        if (sel) {
+            sel.name = `Rows[${rowIdx}].Materials[${mIdx}].MaterialId`;
+        }
+        if (qty) {
+            qty.name = `Rows[${rowIdx}].Materials[${mIdx}].Amount`;
+        }
         mIdx++;
     }
 };
-
 export const addRow = () => {
     const hatDiv = document.getElementById("rows");
     if (!hatDiv) return;

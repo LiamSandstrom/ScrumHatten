@@ -19,3 +19,11 @@ export const loadData = async () => {
         allMaterials.set(m.id, { name: m.name, unit: m.unit });
     }
 };
+
+export const getMaterialOptionsHtml = () => {
+    let options = '<option value="">Välj material...</option>';
+    allMaterials.forEach((value, key) => {
+        options += `<option value="${key}">${value.name} (${value.unit})</option>`;
+    });
+    return options;
+};
