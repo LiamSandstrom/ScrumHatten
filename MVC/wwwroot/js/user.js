@@ -11,8 +11,6 @@ el.addEventListener("input", async (e) => {
         const response = await fetch(`/User/Search?searchTerm=${searchTerm}`);
         const data = await response.json();
         
-        console.log(data);
-
         const tbody = document.querySelector("#personTable tbody");
 
         tbody.innerHTML = data.map((item, index) => `

@@ -4,6 +4,7 @@ using Models;
 using Repository;
 using System.Security.Claims;
 using DAL.Repositories.Interfaces;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MVC.Controllers
 {
@@ -108,6 +109,16 @@ public async Task<IActionResult> Index(string? id, string? groupId)
             
             return RedirectToAction("Index", new { id = receiverId });
         }
+
+
+public async Task<IActionResult> UnreadMessages()
+{
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            List<Message> messages = await _messageRepo.GetUnreadMessagesAsync(userId);
+
+            return Json(messages);
+
+}
 
         [HttpPost]
 public async Task<IActionResult> CreateGroup(string groupName, List<string> selectedUsers)

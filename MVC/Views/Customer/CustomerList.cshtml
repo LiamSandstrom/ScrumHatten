@@ -10,7 +10,7 @@
     <div class="customerListHeader mt-5">
         <h1 class="userListHeaderTitle">Kunder</h1>
         <input class="form-control" id="searchField" placeholder="Sök efter kund..."/>
-        <button class="btn btn-primary filterButton" type="button" data-bs-toggle="modal" id ="openFilterModelButton"data-bs-target="#filterModal"><i class="bi bi-funnel"></i>Filtrera</button>
+        <button class="btn btn-primary filterButton" type="button" style="background-color: #006039; color: white; border: none;" data-bs-toggle="modal" id="openFilterModelButton" data-bs-target="#filterModal"><i class="bi bi-funnel"></i>Filtrera</button>
     </div>
 
     <!--Filter modal-->
@@ -18,7 +18,7 @@
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                    <div class="modal-header" style="background-color: #006039; color: white;">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Filtrera kunder</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -42,7 +42,7 @@
                    
                     
                         <a href="/Customer/CustomerList" class="btn btn-warning invisible" id="clearButton">Rensa</a>
-                    <button type="submit" class="btn btn-primary">Filtrera</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #006039; color: white; border: none;">Filtrera</button>
                  
                 </div>
             </div>

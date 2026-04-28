@@ -2,7 +2,7 @@
     fetch('/Home/LowInventoryAlerts')
         .then(res => res.json())
         .then(payload => {
-            console.log('Fetched payload:', payload); // Inspektera här i konsolen/debuggern
+            console.log('Fetched payload:', payload); 
 
             // Stöd för både direkt array eller inbäddad array i t.ex. payload.data
             const materials = Array.isArray(payload) ? payload : (payload.data ?? payload.materials ?? []);
@@ -14,14 +14,14 @@
             }
 
             list.innerHTML = materials.map(e => {
-                // Välj rätt fältnamn (stöd för olika casing/namn)
-                const qty = e.Quantity ?? e.quantity ?? e.Amount ?? e.amount ?? '0';
-                const name = e.Name ?? e.name ?? e.MaterialName ?? e.materialName ?? 'Okänt';
+                const qty = e.Quantity ?? e.quantity ?? '0';
+                const name = e.Name ?? e.name ?? 'Okänt';
+                const unit = e.Unit ?? e.unit ?? 'Okänt';
 
                 return `
                 <li class="list-group-item d-flex align-items-center">
-                <span class="text-dark">${name} </span>
-                 <span class="badge me-2" style="background-color: #DE1313; color: white;"> ${qty}</span>
+                <span class="text-dark me-2">${name} </span>
+                 <span class="me-2"> ${qty}${unit} <i class="bi bi-exclamation-triangle"></i></span> 
   
                  </li>
                 `;
@@ -31,3 +31,33 @@
             console.error('Fetch error:', err);
         });
 });
+
+
+async function messageWidget() {
+
+    const response = await fetch("message/unreadmessages");
+    const data = await response.json();
+
+    const table = document.getElementById("messagesList");
+
+    table.innerHTML = data.map((item, index) => {
+
+        const maxLength = 50; 
+
+        const trimmedContent = item.content.length > maxLength
+            ? item.content.substring(0, maxLength) + "..."
+            : item.content;
+
+        return `
+    <li class="list-group-item d-flex align-items-center">
+    <span class="text-dark me-2">${item.senderName}</span>
+    <span class="text-dark me-2">${trimmedContent}</span>
+
+
+    `}).join("");
+
+    
+
+} 
+
+document.addEventListener("DOMContentLoaded", messageWidget);
