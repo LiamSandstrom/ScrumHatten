@@ -9,6 +9,8 @@
 
 .statisticsContainer {
     width: 500px;   
+    max-height: 500px !important;
+
     
 }
 
@@ -18,7 +20,8 @@
 }
 
 .calenderWidget {
-    width: 300px; 
+    min-width: 300px; 
+    max-height: 500px !important;
 }
 
 .inventoryWidget {
@@ -27,9 +30,31 @@
 
 .messageContainer {
     grid-column: 1 / span 2;
+    max-height: 400px;
+    max-width: 80%;
 }
 
-.widgetFlexBox > div {
-    /*
-    width: 500px;*/
+
+@media (max-width: 1200px) {
+
+    .widgetFlexBox {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 50px;
+        margin: 2rem;
+    }
+
+
+}
+
+@media (max-width: 800px) {
+
+    .widgetFlexBox {
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: repeat(4, 100%);
+        gap: 50px;
+        margin: 2rem;
+    }
 }
