@@ -16,6 +16,6 @@ export const loadData = async () => {
     }
 
     for (const m of mats) {
-        allMaterials.set(m.id, m.name);
+        allMaterials.set(m.id, { name: m.name, unit: m.unit });
     }
 };
