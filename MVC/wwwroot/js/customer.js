@@ -17,20 +17,26 @@ el.addEventListener("input", async (e) => {
 
         tbody.innerHTML = data.map((item, index) => `
             <tr>
-                <td>${index + 1}</td>
-                <td>${item.name}</td>
+                <th>${index + 1}</th>
+                <td>
+                <a href="Customer/Edit?id=${item.id}">${item.name} <i class="bi bi-pencil-square"></i>
+                </a>
+                </td>
                 <td>${item.email}</td>
                 <td>${item.phoneNumber}</td>
                 <td>${item.adress}</td>
                 <td>${item.zipCode}</td>
                 <td>${item.city}</td>
                 <td>${item.country}</td>
+                <td>${item.discount}</td>
                 <td>
                 <a href="mailto:${item.email}" class="btn btn-sm btn-outline-secondary" title="Skicka mail">
                 <i class="bi bi-envelope-fill"></i>
                 </a>
                 </td>
-                <td><a href="/Customer/Edit?id=${item.id}">Redigera</a></td>
+                <td>
+                <a href="/Customer?id=${item.id}"><i class="bi bi-clock-history"></i></a>
+                </td>
             </tr>
         `).join('');
     }

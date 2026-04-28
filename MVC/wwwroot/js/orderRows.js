@@ -228,12 +228,20 @@ const addMaterialRow = (materialList) => {
         reIndexRows();
     });
 
-    for (const [id, name] of allMaterials) {
+    for (const [id, mat] of allMaterials) {
         const option = document.createElement("option");
         option.value = id;
-        option.textContent = name;
+        option.textContent = mat.name;
         select.appendChild(option);
     }
+
+    const unitSpan = row.querySelector(".input-group-text");
+    const updateUnit = () => {
+        const mat = allMaterials.get(select.value);
+        if (unitSpan) unitSpan.textContent = mat?.unit ?? "";
+    };
+    updateUnit();
+    select.addEventListener("change", updateUnit);
 
     reIndexRows();
 };
