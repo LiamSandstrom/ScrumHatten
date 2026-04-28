@@ -187,8 +187,8 @@ namespace Repository
             new BsonDocument("$lookup", new BsonDocument
             {
                 { "from", "Customers" },
-                { "localField", "ConvertedId" }, 
-                { "foreignField", "_id" },        
+                { "localField", "ConvertedId" },
+                { "foreignField", "_id" },
                 { "as", "CustomerDetails" }
             }),
 
@@ -202,8 +202,8 @@ namespace Repository
 
             return await _collection.Aggregate<Customer>(pipeline).ToListAsync();
 
-         }
-    
+        }
+
         public async Task<List<Order>> GetOrdersByCustomerIdAsync(string customerid)
         {
             var filter = Builders<Order>.Filter.Eq(o => o.CustomerId, customerid);
@@ -240,7 +240,7 @@ namespace Repository
                     MonthName = tempDate.ToString("MMMM yyyy"),
                     Totalsales = salesAmount,
                     AmountOfOrders = totalOrders,
-           
+
                 };
 
                 salesMonths.Add(salesMonth);
@@ -254,13 +254,100 @@ namespace Repository
         {
             var filter = Builders<Order>.Filter.Regex(o => o.MakerName,
                new MongoDB.Bson.BsonRegularExpression("^" + userName + "$", "i"));
-
-            return await _collection.Find(filter).ToListAsync();
+               return await _collection.Find(filter).ToListAsync();
         }
 
+        public async Task UpdateHatReturnedAsync(string orderId, string hatId, bool isReturned)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId);
+            var update = Builders<Order>.Update.Set("Hats.$[hat].IsReturned", isReturned);
+            var arrayFilters = new List<ArrayFilterDefinition>
+    {
+        new BsonDocumentArrayFilterDefinition<BsonDocument>(
+            new BsonDocument("hat._id", new BsonDocument("$eq", new ObjectId(hatId))))
+    };
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+            var res = await _collection.UpdateOneAsync(filter, update, options);
+            Console.WriteLine($"UpdateHatReturned: orderId={orderId}, hatId={hatId}, matched={res.MatchedCount}, modified={res.ModifiedCount}");
+        }
+
+        public async Task UpdateHatReclaimedAsync(string orderId, string hatId, bool isReclaimed)
+        {
+            var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId);
+            var update = Builders<Order>.Update.Set("Hats.$[hat].IsReclaimed", isReclaimed);
+            var arrayFilters = new List<ArrayFilterDefinition>
+    {
+        new BsonDocumentArrayFilterDefinition<BsonDocument>(
+            new BsonDocument("hat._id", new BsonDocument("$eq", new ObjectId(hatId))))
+    };
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+            var res = await _collection.UpdateOneAsync(filter, update, options);
+            Console.WriteLine($"UpdateHatReclaimed: orderId={orderId}, hatId={hatId}, matched={res.MatchedCount}, modified={res.ModifiedCount}");
+        }
+
+public async Task<List<ReturnItemDto>> GetAllReturnedHatsAsync()
+{
+    // Vi ändrar filtret så det tillåter både false och null (viktigt för nya dokument!)
+    var filter = Builders<Order>.Filter.ElemMatch(o => o.Hats, h => 
+        h.IsReturned && 
+        (h.IsHandled == false || h.IsHandled == null)); 
+
+    var orders = await _collection.Find(filter).ToListAsync();
+
+    return orders.SelectMany(o => o.Hats
+        .Where(h => h.IsReturned && (h.IsHandled == false || h.IsHandled == null))
+        .Select(h => new ReturnItemDto 
+        { 
+            OrderId = o.Id, 
+            OrderDate = o.OrderDate, 
+            Hat = h,
+            Reason = o.ReturnReclaimReason 
+        })).ToList();
+}
+
+
+public async Task<List<ReturnItemDto>> GetAllReclaimedHatsAsync()
+{
+    // Vi ändrar filtret så det tillåter både false och null (viktigt för nya dokument!)
+    var filter = Builders<Order>.Filter.ElemMatch(o => o.Hats, h => 
+        h.IsReclaimed && 
+        (h.IsHandled == false || h.IsHandled == null)); 
+
+    var orders = await _collection.Find(filter).ToListAsync();
+
+    return orders.SelectMany(o => o.Hats
+        .Where(h => h.IsReclaimed && (h.IsHandled == false || h.IsHandled == null))
+        .Select(h => new ReturnItemDto 
+        { 
+            OrderId = o.Id, 
+            OrderDate = o.OrderDate, 
+            Hat = h,
+            Reason = o.ReturnReclaimReason 
+        })).ToList();
+}
+
+// Gör samma ändring i GetAllReclaimedHatsAsync (byt h.IsReturned mot h.IsReclaimed)
+
+public async Task MarkAsHandledAsync(string orderId, string hatId)
+{
+    var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId);
+    var update = Builders<Order>.Update.Set("Hats.$[hat].IsHandled", true);
+    var arrayFilters = new List<ArrayFilterDefinition>
+    {
+        new BsonDocumentArrayFilterDefinition<BsonDocument>(
+            new BsonDocument("hat._id", new BsonDocument("$eq", new ObjectId(hatId))))
+    };
+    var options = new UpdateOptions { ArrayFilters = arrayFilters };
+    await _collection.UpdateOneAsync(filter, update, options);
+}
+public async Task UpdateReturnReasonAsync(string orderId, string reason)
+{
+    var filter = Builders<Order>.Filter.Eq(o => o.Id, orderId);
+    var update = Builders<Order>.Update.Set("ReturnReclaimReason", reason);
+    
+    await _collection.UpdateOneAsync(filter, update);
+}
     }
-
-
 }
 
 

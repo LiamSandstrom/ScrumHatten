@@ -23,86 +23,114 @@ namespace MVC.Controllers
 
         {
 
-
-            List<Customer> customerList = new List<Customer>();
-            customerList = await _customerRepository.GetAllCustomersAsync();
-
-            List<String> cities = await _customerRepository.GetAllCitiesAsync();
-            List<String> countries = await _customerRepository.GetAllCountriesAsync();
-
-
-
-            CustomerListViewModel vm = new CustomerListViewModel()
+            try
             {
-                allCustomers = customerList,
-                allCities = cities,
-                allCountries = countries
-            };
+                List<Customer> customerList = new List<Customer>();
+                customerList = await _customerRepository.GetAllCustomersAsync();
 
-            return View(vm);
+                List<String> cities = await _customerRepository.GetAllCitiesAsync();
+                List<String> countries = await _customerRepository.GetAllCountriesAsync();
+
+
+
+                CustomerListViewModel vm = new CustomerListViewModel()
+                {
+                    allCustomers = customerList,
+                    allCities = cities,
+                    allCountries = countries
+                };
+
+                return View(vm);
+
+            }
+
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, "ett fel inträffade vid sörsök att hämta kundlistan");
+            }
+
+
+
+
         }
 
         [HttpGet("FilteredCustomerList")]
         public async Task<IActionResult> FilteredCustomerList(string selectedCity, string selectedCountry)
         {
 
-            List<String> cities = await _customerRepository.GetAllCitiesAsync();
-            List<String> countries = await _customerRepository.GetAllCountriesAsync();
 
-            if (selectedCity == null & selectedCountry == null)
+            try
             {
-                return RedirectToAction(nameof(CustomerList));
-            }
-            else if (selectedCity == null && selectedCountry != null)
-            {
-                List<Customer> filteredList = await _customerRepository.GetCustomerByCountry(selectedCountry);
-                CustomerListViewModel newVm = new CustomerListViewModel
+                List<String> cities = await _customerRepository.GetAllCitiesAsync();
+                List<String> countries = await _customerRepository.GetAllCountriesAsync();
+
+                if (selectedCity == null & selectedCountry == null)
                 {
-                    allCustomers = filteredList,
-                    allCities = cities,
-                    allCountries = countries
-
-                };
-
-                return View(nameof(CustomerList), newVm);
-
-            }
-            else if (selectedCountry == null && selectedCity != null)
-            {
-                List<Customer> filteredList = await _customerRepository.GetCustomerByCity(selectedCity);
-                CustomerListViewModel newVm = new CustomerListViewModel
+                    return RedirectToAction(nameof(CustomerList));
+                }
+                else if (selectedCity == null && selectedCountry != null)
                 {
-                    allCustomers = filteredList,
-                    allCities = cities,
-                    allCountries = countries
-                };
+                    List<Customer> filteredList = await _customerRepository.GetCustomerByCountry(selectedCountry);
+                    CustomerListViewModel newVm = new CustomerListViewModel
+                    {
+                        allCustomers = filteredList,
+                        allCities = cities,
+                        allCountries = countries
 
-                return View(nameof(CustomerList), newVm);
-            }
-            else
-            {
-                List<Customer> filteredListCity = await _customerRepository.GetCustomerByCity(selectedCity);
-                List<Customer> filteredListCountry = await _customerRepository.GetCustomerByCountry(selectedCountry);
-                List<Customer> combinedList = filteredListCity.Join(
-                                                filteredListCountry,
-                                                c1 => new { c1.City, c1.Country },
-                                                c2 => new { c2.City, c2.Country },
-                                                (c1, c2) => c1)
-                                                .ToList();
+                    };
 
-                CustomerListViewModel newVm = new CustomerListViewModel
+                    return View(nameof(CustomerList), newVm);
+
+                }
+                else if (selectedCountry == null && selectedCity != null)
                 {
-                    allCustomers = combinedList,
-                    allCities = cities,
-                    allCountries = countries
-                };
-                return View(nameof(CustomerList), newVm);
+                    List<Customer> filteredList = await _customerRepository.GetCustomerByCity(selectedCity);
+                    CustomerListViewModel newVm = new CustomerListViewModel
+                    {
+                        allCustomers = filteredList,
+                        allCities = cities,
+                        allCountries = countries
+                    };
 
+                    return View(nameof(CustomerList), newVm);
+                }
+                else
+                {
+                    List<Customer> filteredListCity = await _customerRepository.GetCustomerByCity(selectedCity);
+                    List<Customer> filteredListCountry = await _customerRepository.GetCustomerByCountry(selectedCountry);
+                    List<Customer> combinedList = filteredListCity.Join(
+                                                    filteredListCountry,
+                                                    c1 => new { c1.City, c1.Country },
+                                                    c2 => new { c2.City, c2.Country },
+                                                    (c1, c2) => c1)
+                                                    .ToList();
 
+                    CustomerListViewModel newVm = new CustomerListViewModel
+                    {
+                        allCustomers = combinedList,
+                        allCities = cities,
+                        allCountries = countries
+                    };
+                    return View(nameof(CustomerList), newVm);
 
+                }
 
             }
+
+            catch (Exception ex)
+
+
+            {
+                return StatusCode(500, "ett fel inträffade vid filtrering av kund");
+            }
+
         }
+
+
+
+
+
 
         [HttpGet(nameof(Search))]
         public async Task<IActionResult> Search([FromQuery] string searchTerm)
@@ -133,61 +161,99 @@ namespace MVC.Controllers
         [HttpGet("Edit")]
         public async Task<IActionResult> Edit(string id)
         {
-            Customer customer = await _customerRepository.GetCustomerByIdAsync(id);
 
-            EditCustomerViewModel vm = new EditCustomerViewModel
+
+            try
             {
-                CustomerId = customer.Id,
-                Name = customer.Name,
-                Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber,
-                Adress = customer.Adress,
-                ZipCode = customer.ZipCode,
-                City = customer.City,
-                Country = customer.Country,
-                Discount = customer.Discount,
-            };
 
-            return View(vm);
+                Customer customer = await _customerRepository.GetCustomerByIdAsync(id);
+
+                EditCustomerViewModel vm = new EditCustomerViewModel
+                {
+                    CustomerId = customer.Id,
+                    Name = customer.Name,
+                    Email = customer.Email,
+                    PhoneNumber = customer.PhoneNumber,
+                    Adress = customer.Adress,
+                    ZipCode = customer.ZipCode,
+                    City = customer.City,
+                    Country = customer.Country,
+                    Discount = customer.Discount,
+                };
+
+                return View(vm);
+
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, "ett fel inträffand vid försök att redigera kund");
+            }
+
         }
 
         [HttpPost("Edit")]
         public async Task<IActionResult> Edit(EditCustomerViewModel vm)
         {
-            Customer customer = new Customer
+            try
             {
-                Id = vm.CustomerId,
-                Name = vm.Name,
-                Email = vm.Email,
-                PhoneNumber = vm.PhoneNumber,
-                Adress = vm.Adress,
-                ZipCode = vm.ZipCode,
-                City = vm.City,
-                Country = vm.Country,
-                Discount = vm.Discount,
-            };
+                Customer customer = new Customer
+                {
+                    Id = vm.CustomerId,
+                    Name = vm.Name,
+                    Email = vm.Email,
+                    PhoneNumber = vm.PhoneNumber,
+                    Adress = vm.Adress,
+                    ZipCode = vm.ZipCode,
+                    City = vm.City,
+                    Country = vm.Country,
+                    Discount = vm.Discount,
+                };
 
-            await Update(customer);
+                await Update(customer);
 
-            return RedirectToAction(nameof(CustomerList));
+                return RedirectToAction(nameof(CustomerList));
+
+
+            }
+
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, "ett fel  inträffade vid redigering av kund");
+            }
+
+
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerById(string id)
         {
-            if (string.IsNullOrEmpty(id) || id.Length != 24)
+
+            try
             {
-                return BadRequest("Ogiltigt id för kund.");
+                if (string.IsNullOrEmpty(id) || id.Length != 24)
+                {
+                    return BadRequest("Ogiltigt id för kund.");
+                }
+
+                var customer = await _customerRepository.GetCustomerByIdAsync(id);
+
+                if (customer == null)
+                {
+                    return NotFound($"Ingen kund med ID: {id} hittades.");
+                }
+
+                return Ok(customer);
+
             }
 
-            var customer = await _customerRepository.GetCustomerByIdAsync(id);
-
-            if (customer == null)
+            catch (Exception ex)
             {
-                return NotFound($"Ingen kund med ID: {id} hittades.");
+                return StatusCode(500, "Ett fel inträffande vid inhämtning av kund");
             }
 
-            return Ok(customer);
+
         }
 
 
@@ -195,103 +261,170 @@ namespace MVC.Controllers
         [HttpPost("CreateCustomer")]
         public async Task<IActionResult> CreateCustomer(CreateCustomerViewModel vm)
         {
-            if (!ModelState.IsValid)
+
+            try
             {
-                return View("Index", await _customerRepository.GetAllCustomersAsync());
+                if (!ModelState.IsValid)
+                {
+                    return View("Index", await _customerRepository.GetAllCustomersAsync());
+                }
+
+                Customer customer = new Customer
+                {
+
+                    Name = vm.Name,
+                    PhoneNumber = vm.PhoneNumber,
+                    Email = vm.Email,
+                    Adress = vm.Adress,
+                    ZipCode = vm.ZipCode,
+                    City = vm.City,
+                    Country = vm.Country,
+                    Discount = vm.Discount,
+
+                };
+
+                await _customerRepository.AddCustomerAsync(customer);
+                TempData["SuccessMessage"] = "Kunden har lagts till!";
+                return RedirectToAction(nameof(CustomerList));
+
             }
 
-            Customer customer = new Customer
+            catch (Exception ex)
             {
+                return StatusCode(500, "ett fel inträffade vid skapandet av kund");
+            }
 
-                Name = vm.Name,
-                PhoneNumber = vm.PhoneNumber,
-                Email = vm.Email,
-                Adress = vm.Adress,
-                ZipCode = vm.ZipCode,
-                City = vm.City,
-                Country = vm.Country,
-                Discount = vm.Discount,
 
-            };
 
-            await _customerRepository.AddCustomerAsync(customer);
-            TempData["SuccessMessage"] = "Kunden har lagts till!";
-            return RedirectToAction(nameof(CustomerList));
         }
 
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create(Customer customer)
         {
-            if (!ModelState.IsValid)
+
+            try
             {
-                return View("Index", await _customerRepository.GetAllCustomersAsync());
+                if (!ModelState.IsValid)
+                {
+                    return View("Index", await _customerRepository.GetAllCustomersAsync());
+                }
+
+                await _customerRepository.AddCustomerAsync(customer);
+                TempData["SuccessMessage"] = "Kunden har lagts till!";
+                return RedirectToAction(nameof(CustomerList));
+
             }
 
-            await _customerRepository.AddCustomerAsync(customer);
-            TempData["SuccessMessage"] = "Kunden har lagts till!";
-            return RedirectToAction(nameof(CustomerList));
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, "Ett fel inträffade vid skapande av kund");
+
+            }
+
+
+
+
         }
 
         [HttpPost("Update")]
         public async Task<IActionResult> Update(Customer customer)
         {
-            if (string.IsNullOrEmpty(customer.Id) || customer.Id.Length != 24)
+
+
+            try
             {
-                return BadRequest("Ogiltigt ID.");
+                if (string.IsNullOrEmpty(customer.Id) || customer.Id.Length != 24)
+                {
+                    return BadRequest("Ogiltigt ID.");
+                }
+
+                await _customerRepository.UpdateCustomerAsync(customer);
+
+                TempData["SuccessMessage"] = "Kunduppgifter uppdaterade!";
+                return RedirectToAction(nameof(CustomerList));
+
             }
 
-            await _customerRepository.UpdateCustomerAsync(customer);
 
-            TempData["SuccessMessage"] = "Kunduppgifter uppdaterade!";
-            return RedirectToAction(nameof(CustomerList));
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Ett fel inträffade vid försök att uppdatera kunduppgifter");
+            }
+
+
         }
 
         [HttpPost("Delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            if (string.IsNullOrEmpty(id) || id.Length != 24)
+            try
             {
-                return BadRequest("Ogiltigt ID.");
+                await _customerRepository.DeleteCustomerAsync(id);
+                TempData["SuccessMessage"] = "Kunden har raderats.";
+                return RedirectToAction(nameof(CustomerList));
+
             }
 
-            await _customerRepository.DeleteCustomerAsync(id);
-            TempData["SuccessMessage"] = "Kunden har raderats.";
-            return RedirectToAction(nameof(CustomerList));
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Ett fel inträffade vid försök att radera kund");
+            }
+
+
+
+
         }
 
 
         public async Task<IActionResult> History(string id)
         {
-            if (string.IsNullOrEmpty(id))
+
+
+            try
             {
-                return RedirectToAction(nameof(CustomerList));
+                if (string.IsNullOrEmpty(id))
+                {
+                    return RedirectToAction(nameof(CustomerList));
+                }
+
+
+                var customer = await _customerRepository.GetCustomerByIdAsync(id);
+                if (customer == null)
+                {
+                    return NotFound($"Ingen finns med kund med id: {id}.");
+                }
+
+
+                List<Order> orders = await _orderRepository.GetOrdersByCustomerIdAsync(id);
+
+
+                var vm = new HistoryCustomerViewModel
+                {
+                    Id = customer.Id,
+                    Name = customer.Name,
+                    Discount = customer.ToString(),
+                    allOrders = orders.OrderByDescending(o => o.OrderDate).ToList()
+
+
+
+                };
+
+
+                return View(vm);
+
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Ett fel inträffade vid hämtning av kundhistorik");
+
             }
 
 
-            var customer = await _customerRepository.GetCustomerByIdAsync(id);
-            if (customer == null)
-            {
-                return NotFound($"Ingen finns med kund med id: {id}.");
-            }
 
 
-            List<Order> orders = await _orderRepository.GetOrdersByCustomerIdAsync(id);
-
-
-            var vm = new HistoryCustomerViewModel
-            {
-                Id = customer.Id,
-                Name = customer.Name,
-                Discount = customer.ToString(),
-                allOrders = orders.OrderByDescending(o => o.OrderDate).ToList()
-
-
-
-            };
-
-
-            return View(vm);
         }
 
     }

@@ -54,17 +54,15 @@ async function fetchOrderDetails(id) {
         const response = await fetch(`/Order/Orders/${id}`);
         const order = await response.json();
 
+        window.lastFetchedOrder = order;
 
         document.getElementById('detailOrderIdDisplay').textContent = id.slice(-5);
         document.getElementById('detailOrderId').value = id;
-
 
         if (order.customer) {
             document.getElementById('detailCustomerName').textContent = order.customer.name || "Namn saknas";
             document.getElementById('detailCustomerEmail').innerHTML = `<i class="bi bi-envelope"></i> ${order.customer.email || '-'}`;
             document.getElementById('detailCustomerPhone').innerHTML = `<i class="bi bi-telephone"></i> ${order.customer.phoneNumber || '-'}`;
-
-
             document.getElementById('detailCustomerAdress').textContent = order.customer.adress || "";
             document.getElementById('detailCustomerZip').textContent = order.customer.zipCode || "";
             document.getElementById('detailCustomerCity').textContent = order.customer.city || "";
@@ -81,19 +79,52 @@ async function fetchOrderDetails(id) {
 
         // --- HATTAR ---
         const list = document.getElementById('detailHatsList');
-        list.innerHTML = order.hats?.map(h =>
-            `<li class="list-group-item d-flex justify-content-between">
-                ${h.name} <span>${h.quantity || 1} st</span>
-            </li>`
-        ).join('') || "Inga hattar valda";
+        list.innerHTML = order.hats?.map(h => {
+            let statusBadge = '';
+            let nameHtml = h.name;
+
+            if (h.isReturned) {
+                nameHtml = `<s>${h.name}</s>`;
+                statusBadge = `<span class="badge bg-danger ms-2">Returnerad</span>`;
+            } else if (h.isReclaimed) {
+                nameHtml = `<s>${h.name}</s>`;
+                statusBadge = `<span class="badge bg-warning text-dark ms-2">Reklamation</span>`;
+            }
+
+            const sizes = h.sizes?.map(s => `${s.label} x${s.quantity}`).join(', ') || 'Storlek saknas';
+
+            return `<li class="list-group-item d-flex justify-content-between align-items-center"
+                        data-hat-id="${h.id}">
+                        <div class="d-flex align-items-center gap-2">
+                            ${h.imageUrl
+                    ? `<img src="${h.imageUrl}" alt="${h.name}"
+                                       class="hat-thumb rounded"
+                                       style="width:40px;height:40px;object-fit:cover;cursor:pointer;"
+                                       data-hat-img="${h.imageUrl}"
+                                       data-hat-name="${h.name}">`
+                    : `<div style="width:40px;height:40px;" class="rounded bg-secondary opacity-25"></div>`
+                }
+                            <span>${nameHtml}${statusBadge}</span>
+                        </div>
+                        <span class="d-flex gap-3 align-items-center">
+                            <span class="text-muted small">${sizes}</span>
+                        </span>
+                    </li>`;
+        }).join('') || '<li class="list-group-item">Inga hattar valda</li>';
+
+        // Klick på thumbnail → stor bild
+        list.querySelectorAll('.hat-thumb').forEach(img => {
+            img.addEventListener('click', function(e) {
+                e.stopPropagation();
+                showHatImageModal(this.getAttribute('data-hat-img'), this.getAttribute('data-hat-name'));
+            });
+        });
 
         // --- PRIS ---
-
         const transportEl = document.getElementById('detailTransportPrice');
         if (transportEl) {
             transportEl.textContent = `${(order.transportPrice || 0).toLocaleString('sv-SE')} kr`;
         }
-
         document.getElementById('detailTotalPrice').textContent = `${(order.finalPrice || 0).toLocaleString('sv-SE')} kr`;
 
         // --- KNAPP-LOGIK ---
@@ -102,25 +133,17 @@ async function fetchOrderDetails(id) {
         const isTaken = order.makerId && order.makerId !== "00000000-0000-0000-0000-000000000000";
 
         if (isTaken) {
-            // 1. DÖLJ "Ta mig an" istället för att bara göra den grå
             btn.classList.add('d-none');
-
-            // 2. Visa "Släpp"-knappen
             if (btnRelease) {
                 btnRelease.classList.remove('d-none');
                 btnRelease.innerHTML = `<i class="bi bi-arrow-left-circle"></i> Släpp (${order.makerName || 'order'})`;
             }
         } else {
-            // 1. VISA "Ta mig an" igen
             btn.classList.remove('d-none');
             btn.innerHTML = `<i class="bi bi-person-plus"></i> Ta mig an`;
             btn.disabled = false;
-
-            // Se till att den har rätt färg (grön)
             btn.classList.remove('btn-outline-secondary');
             btn.classList.add('btn-success');
-
-            // 2. DÖLJ "Släpp"-knappen
             if (btnRelease) btnRelease.classList.add('d-none');
         }
 
@@ -128,6 +151,37 @@ async function fetchOrderDetails(id) {
         console.error("Fel vid hämtning av orderdetaljer:", err);
     }
 }
+
+function showHatImageModal(imgUrl, name) {
+    let modal = document.getElementById('hatImageModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'hatImageModal';
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="hatImageModalTitle"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="hatImageModalImg" src="" alt=""
+                             class="img-fluid rounded"
+                             style="max-height:500px; object-fit:contain;">
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+
+    modal.querySelector('#hatImageModalTitle').textContent = name || 'Hatt';
+    modal.querySelector('#hatImageModalImg').src = imgUrl;
+
+    new bootstrap.Modal(modal).show();
+}
+
+
 async function assignOrderToMe(orderId) {
     const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
     const response = await fetch(`/Order/AssignToMe?orderId=${orderId}`, {
@@ -235,3 +289,129 @@ function generateOrderPDF() {
     const url = `/Order/PrintShippingDocument/${orderId}`;
     window.open(url, '_blank');
 }
+
+document.getElementById('btnReturn')?.addEventListener('click', function(e) {
+    window.btnType = "SubmitReturn"
+    e.preventDefault();
+    openReturnReclaimModal('Returned');
+});
+document.getElementById('btnReclaim')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.btnType = "SubmitReclaim"
+    openReturnReclaimModal('Reclaimed');
+});
+
+function openReturnReclaimModal(statusType) {
+    const detailModalEl = document.getElementById('orderDetailModal');
+    const detailInstance = bootstrap.Modal.getInstance(detailModalEl);
+    if (detailInstance) {
+        detailInstance.hide();
+    }
+
+    const title = document.getElementById('actionModalTitle');
+    const statusInput = document.getElementById('currentActionStatus');
+    const checklist = document.getElementById('orderHatsChecklist');
+    const commentArea = document.getElementById('actionComment');
+
+    statusInput.value = statusType;
+    title.innerText = statusType === 'Returned' ? 'Registrera Retur' : 'Registrera Reklamation';
+
+    commentArea.value = '';
+    checklist.innerHTML = '';
+    if (window.lastFetchedOrder && window.lastFetchedOrder.hats) {
+        let globalIndex = 0; // För att ge varje checkbox ett helt unikt ID
+
+        window.lastFetchedOrder.hats.forEach((hat) => {
+            // Loopa igenom varje storlek för denna hatt
+            if (hat.sizes && hat.sizes.length > 0) {
+                hat.sizes.forEach((size) => {
+                    const sizeQuantity = size.quantity || 1;
+                    // Loopa igenom antalet för just denna storlek
+                    for (let i = 0; i < sizeQuantity; i++) {
+                        const uniqueId = `${hat.id}_${size.label}_${i}`;
+                        const item = `
+              <div class="list-group-item d-flex align-items-center py-1">
+                  <input class="form-check-input me-2 hat-checkbox"
+                         type="checkbox"
+                         value="${hat.id}"
+                         id="${uniqueId}">
+                  <label class="form-check-label stretched-link small" for="${uniqueId}">
+                      ${hat.name} (${size.label})
+                  </label>
+              </div>`;
+                        checklist.innerHTML += item;
+                        globalIndex++;
+                    }
+                });
+            } else {
+                // Fallback om inga storlekar finns
+                const quantity = 1; // Standard till 1 om inga storlekar
+                for (let i = 0; i < quantity; i++) {
+                    const uniqueId = `${hat.id}_no_size_${i}`;
+                    const item = `
+              <div class="list-group-item d-flex align-items-center py-1">
+                  <input class="form-check-input me-2 hat-checkbox"
+                         type="checkbox"
+                         value="${hat.id}"
+                         id="${uniqueId}">
+                  <label class="form-check-label stretched-link small" for="${uniqueId}">
+                      ${hat.name}
+                  </label>
+              </div>`;
+                    checklist.innerHTML += item;
+                    globalIndex++;
+                }
+            }
+        });
+    } else {
+        checklist.innerHTML = '<div class="p-2 text-muted small">Inga hattar hittades på ordern.</div>';
+    }
+
+    const actionModal = new bootstrap.Modal(document.getElementById('returnReclaimModal'));
+    actionModal.show();
+}
+
+document.getElementById('actionSubmitBtn').addEventListener('click', async function() {
+    console.log(window.lastFetchedOrder)
+    const selectedHats = Array.from(document.querySelectorAll('.hat-checkbox:checked')).map(cb => cb.id);
+    const orderId = window.lastFetchedOrder.id;
+    const actionComment = document.getElementById('actionComment').value;
+    const customerId = window.lastFetchedOrder.customerId;
+    const payload = {
+        OrderId: orderId,
+        CustomerId: customerId,
+        HatIds: selectedHats,
+        Description: actionComment
+    };
+    console.log(JSON.stringify(payload));
+
+    const btnType = window.btnType
+
+    try {
+        const response = await fetch(`/Return/${btnType}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                OrderId: orderId,
+                CustomerId: customerId,
+                HatIds: selectedHats,       // var: SelectedHats
+                Description: actionComment  // var: Comment
+            })
+        });
+
+
+        if (response.ok) {
+            const actionModal = bootstrap.Modal.getInstance(document.getElementById('returnReclaimModal'));
+            actionModal.hide();
+            location.reload();
+        } else {
+            alert("Kunde inte skicka in ändringarna.");
+        }
+    } catch (error) {
+        console.error("Fel vid skickande:", error);
+    }
+});
+
+
+
+
