@@ -1,1 +1,144 @@
-<h1>hej</h1>
+@model MVC.ViewModels.ReturnIndexViewModel
+
+@{
+    ViewData["Title"] = "Hantering av Returer & Reklamationer";
+}
+
+<link rel="stylesheet" href="~/css/return.css" />
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-arrow-left-right"></i> @ViewData["Title"]</h1>
+
+    </div>
+
+    <hr />
+
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-greencolor text-dark d-flex justify-content-between align-items-center">
+            <h3 class="h5 mb-0"><i class="bi bi-box-seam"></i> Aktiva Returer</h3>
+            <span class="badge rounded-pill bg-dark">@Model.ReturnedItems.Count</span>
+        </div>
+        <div class="card-body">
+            @if (Model.ReturnedItems.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>Orderdatum</th>
+            <th>Produkt</th>
+            <th>Beskrivning / Felmeddelande</th> <th class="text-end">Åtgärd</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ReturnedItems)
+        {
+            <tr>
+                <td>@item.OrderDate.ToShortDateString()</td>
+                <td>
+                    <strong>@item.Hat.Name</strong><br />
+                    <small class="text-muted">#@item.OrderId</small>
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.Reason))
+                    {
+                        <span class="text-wrap" style="max-width: 300px; display: block;">
+                            <i class="bi bi-chat-left-text text-muted"></i> @item.Reason
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-muted font-italic">Ingen beskrivning angiven.</span>
+                    }
+                </td>
+                <td class="text-end">
+                    <form asp-action="MarkAsHandled" method="post">
+                        <input type="hidden" name="orderId" value="@item.OrderId" />
+                        <input type="hidden" name="hatId" value="@item.Hat.Id" />
+                        <button type="submit" class="btn btn-success btn-sm">Hanterad</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-check-circle-fill display-4 d-block mb-2 text-success"></i>
+                    <p>Inga väntande returer just nu.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+    <div class="card-header bg-greencolor text-white d-flex justify-content-between align-items-center">
+        <h3 class="h5 mb-0"><i class="bi bi-exclamation-triangle"></i> Aktiva Reklamationer</h3>
+        <span class="badge rounded-pill bg-light text-danger">@Model.ReclaimedItems.Count</span>
+    </div>
+    <div class="card-body">
+        @if (Model.ReclaimedItems.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Orderdatum</th>
+                            <th>Produkt</th>
+                            <th>Beskrivning / Felmeddelande</th>
+                            <th class="text-end">Åtgärd</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ReclaimedItems)
+                        {
+                            <tr>
+                                <td>@item.OrderDate.ToShortDateString()</td>
+                                <td>
+                                    <strong>@item.Hat.Name</strong><br />
+                                    <small class="text-muted">#@item.OrderId</small>
+                                </td>
+                                <td>
+                                    @* HÄR SKA BESKRIVNINGEN RENDERAS *@
+                                    @if (!string.IsNullOrEmpty(item.Reason))
+                                    {
+                                        <span class="text-wrap" style="max-width: 300px; display: block;">
+                                            <i class="bi bi-chat-left-text text-muted"></i> @item.Reason
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted font-italic">Ingen beskrivning angiven.</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <form asp-action="MarkAsHandled" method="post">
+                                        <input type="hidden" name="orderId" value="@item.OrderId" />
+                                        <input type="hidden" name="hatId" value="@item.Hat.Id" />
+                                        <button type="submit" class="btn btn-success btn-sm">Hanterad</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+            else
+            {
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-emoji-smile display-4 d-block mb-2 text-info"></i>
+                    <p>Inga väntande reklamationer.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+}

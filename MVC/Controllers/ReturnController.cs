@@ -1,60 +1,87 @@
-
 using Microsoft.AspNetCore.Mvc;
-using Repository.Repositories;
 using MVC.ViewModels;
 using Repository;
-using MongoDB.Bson;
-namespace MVC.Controllers
+using Models;
 
+namespace MVC.Controllers
 {
     public class ReturnController : Controller
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly HatRepository _hatRepository;
 
-        public ReturnController(IOrderRepository orderRepository, HatRepository hatRepository)
+        public ReturnController(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _hatRepository = hatRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View();
+            var viewModel = new ReturnIndexViewModel
+            {
+                ReturnedItems = await _orderRepository.GetAllReturnedHatsAsync(),
+                ReclaimedItems = await _orderRepository.GetAllReclaimedHatsAsync()
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitReturn([FromBody] ReturnViewModel model)
+        public async Task<IActionResult> MarkAsHandled(string orderId, string hatId)
         {
-            Console.WriteLine(model.ToJson());
-            if (!ModelState.IsValid)
-            {
-                Console.WriteLine("faiaiasddsaldsallsdldssla");
-                return BadRequest(ModelState);
-            }
-
-            foreach (var hatId in model.HatIds)
-            {
-                Console.WriteLine($"Updating hat with ID: {hatId} to returned");
-                await _orderRepository.UpdateHatReturnedAsync(model.OrderId, hatId, true);
-            }
-            return Ok("Retur skickad");
+            await _orderRepository.MarkAsHandledAsync(orderId, hatId);
+            return RedirectToAction("Index");
         }
+
+        [HttpPost]
+public async Task<IActionResult> SubmitReturn([FromBody] ReturnViewModel model)
+{
+    if (!ModelState.IsValid) return BadRequest(ModelState);
+
+    try 
+    {
+        // NY RAD: Spara ner beskrivningen på ordern i databasen
+        await _orderRepository.UpdateReturnReasonAsync(model.OrderId, model.Description);
+
+        foreach (var combinedId in model.HatIds)
+        {
+            var cleanHatId = combinedId.Split('_')[0]; 
+            await _orderRepository.UpdateHatReturnedAsync(model.OrderId, cleanHatId, true);
+        }
+        return Ok("Retur skickad");
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, "Fel: " + ex.Message);
+    }
+}
 
         [HttpPost]
         public async Task<IActionResult> SubmitReclaim([FromBody] ReturnViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            foreach (var hatId in model.HatIds)
-            {
-                await _orderRepository.UpdateHatReclaimedAsync(model.OrderId, hatId, true);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            return Ok("Reklamation skickad");
+            try
+            {
+                // 1. Spara beskrivningen på ordern
+                if (!string.IsNullOrEmpty(model.Description))
+                {
+                    await _orderRepository.UpdateReturnReasonAsync(model.OrderId, model.Description);
+                }
+
+                // 2. Flagga hattarna som reklamerade
+                foreach (var combinedId in model.HatIds)
+                {
+                    var cleanHatId = combinedId.Split('_')[0];
+                    await _orderRepository.UpdateHatReclaimedAsync(model.OrderId, cleanHatId, true);
+                }
+
+                return Ok("Reklamation skickad");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in SubmitReclaim: {ex.Message}");
+                return StatusCode(500, "Ett internt fel uppstod vid bearbetning av reklamationen.");
+            }
         }
     }
 }

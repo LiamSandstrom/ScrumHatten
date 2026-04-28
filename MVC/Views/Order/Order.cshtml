@@ -10,7 +10,7 @@
             <h1 style="color: #006039; >Orderöversikt</h1>
             <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                 <span class="badge bg-dark">Totalt: @Model.OrderList.Count ordrar</span>
-            <button class="btn btn-primary" style="background-color: #006039; border-color: #A37E2C; color: #A37E2C;" data-bs-toggle="modal" data-bs-target="#createOrderModal">
+            <button class="btn btn-primary" style="background-color: #006039; border-color: #ffffff; color: #ffffff;" data-bs-toggle="modal" data-bs-target="#createOrderModal">
                     Ny order
                 </button>
             </div>
@@ -500,7 +500,7 @@
   <div class="modal fade" id="orderDetailModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header custom-header-brown text-white">
+            <div class="modal-header" style=" background-color: #006039; color: white; border: none;">
                     <h5 class="modal-title">Orderdetaljer #<span id="detailOrderIdDisplay"></span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>

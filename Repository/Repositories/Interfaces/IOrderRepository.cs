@@ -50,6 +50,9 @@ namespace Repository
         Task<List<SalesMonth>> GetOrdersByMonth(DateTime startDate, DateTime endDate);
 
         Task<IEnumerable<Order>> GetOrdersByUserAsync(string userName);
-
+        Task<List<ReturnItemDto>> GetAllReturnedHatsAsync();
+        Task<List<ReturnItemDto>> GetAllReclaimedHatsAsync();
+        Task MarkAsHandledAsync(string orderId, string hatId);
+        Task UpdateReturnReasonAsync(string orderId, string reason);
     }
 }
