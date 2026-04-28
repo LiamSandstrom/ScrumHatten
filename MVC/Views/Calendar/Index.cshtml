@@ -14,8 +14,8 @@
 
         .fc-button-primary, .fc-customPlusButton-button {
             background-color: #006039 !important; 
-            color: #A37E2C !important; 
-            border-color: #A37E2C !important;
+            color: #ffffff !important; 
+            border-color: #ffffff !important;
             text-transform: capitalize;
             opacity: 1 !important;
         }
@@ -25,7 +25,7 @@
         }
 
         .fc-daygrid-event-dot {
-            border-color: #A37E2C !important;
+            border-color: #ffffff !important;
         }
 
             .fc-button-primary:hover, .fc-customPlusButton-button:hover {
@@ -127,9 +127,6 @@
                             var assignedTo = (ev.assignedToName || "").toLowerCase().trim();
                             var currentUser = currentUserName.toLowerCase().trim();
 
-                            // Determine styling: if assignedTo is current user => dark green (mine)
-                            // if assignedTo is someone else => brown (assigned to another)
-                            // otherwise public/default => light green
                             if (assignedTo && assignedTo === currentUser) {
                                 ev.backgroundColor = '#006039'; 
                                 ev.borderColor = '#A37E2C';
@@ -148,7 +145,6 @@
                                 ev.textColor = '#000000';
                             }
 
-                            // Ensure title already includes order number (server may have prefixed it)
                             return ev;
                         });
                         successCallback(processedEvents);
@@ -331,7 +327,7 @@
     
              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
     
-             <button type="button" class="btn btn-primary" style="background-color: #006039; border-color: #A37E2C; color: #A37E2C;" 
+             <button type="button" class="btn btn-primary" style="background-color: #006039; border-color: #ffffff; color: #ffffff;" 
              onClick="saveEvent()">Spara</button>
             </div>
         </div>
