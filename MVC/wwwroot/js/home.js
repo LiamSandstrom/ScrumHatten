@@ -52,6 +52,8 @@ async function messageWidget() {
     <li class="list-group-item d-flex align-items-center">
     <span class="text-dark me-2">${item.senderName}</span>
     <span class="text-dark me-2">${trimmedContent}</span>
+    <a href="/Message/Index/${item.senderId}"><i class="bi bi-arrow-right"></i></a>
+    </li>
 
 
     `}).join("");
