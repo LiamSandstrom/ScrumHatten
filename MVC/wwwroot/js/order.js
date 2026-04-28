@@ -80,8 +80,6 @@ async function fetchOrderDetails(id) {
         // --- HATTAR ---
         const list = document.getElementById('detailHatsList');
         list.innerHTML = order.hats?.map(h => {
-            console.log('Hat sizes:', h.sizes, 'Size label:', h.sizes?.[0]?.Label);
-
             let statusBadge = '';
             let nameHtml = h.name;
 
@@ -93,24 +91,32 @@ async function fetchOrderDetails(id) {
                 statusBadge = `<span class="badge bg-warning text-dark ms-2">Reklamation</span>`;
             }
 
+            const sizes = h.sizes?.map(s => `${s.label} x${s.quantity}`).join(', ') || 'Storlek saknas';
+
             return `<li class="list-group-item d-flex justify-content-between align-items-center"
-                        style="cursor:pointer"
-                        data-hat-id="${h.id}"
-                        data-hat-img="${h.imageUrl || ''}">
-                        <span>${nameHtml}${statusBadge}</span>
+                        data-hat-id="${h.id}">
+                        <div class="d-flex align-items-center gap-2">
+                            ${h.imageUrl
+                    ? `<img src="${h.imageUrl}" alt="${h.name}"
+                                       class="hat-thumb rounded"
+                                       style="width:40px;height:40px;object-fit:cover;cursor:pointer;"
+                                       data-hat-img="${h.imageUrl}"
+                                       data-hat-name="${h.name}">`
+                    : `<div style="width:40px;height:40px;" class="rounded bg-secondary opacity-25"></div>`
+                }
+                            <span>${nameHtml}${statusBadge}</span>
+                        </div>
                         <span class="d-flex gap-3 align-items-center">
-                            <span class="text-muted small">${h.sizes?.[0]?.quantity || 1} st</span>
-                            <span class="text-muted small">${h.sizes?.[0]?.label || 'Storlek saknas'}</span>
+                            <span class="text-muted small">${sizes}</span>
                         </span>
                     </li>`;
         }).join('') || '<li class="list-group-item">Inga hattar valda</li>';
 
-        // Klick på hatt-rad → visa bild
-        list.querySelectorAll('li[data-hat-id]').forEach(row => {
-            row.addEventListener('click', function() {
-                const hatId = this.getAttribute('data-hat-id');
-                const imgUrl = this.getAttribute('data-hat-img');
-                showHatImageModal(hatId, imgUrl);
+        // Klick på thumbnail → stor bild
+        list.querySelectorAll('.hat-thumb').forEach(img => {
+            img.addEventListener('click', function(e) {
+                e.stopPropagation();
+                showHatImageModal(this.getAttribute('data-hat-img'), this.getAttribute('data-hat-name'));
             });
         });
 
@@ -146,8 +152,7 @@ async function fetchOrderDetails(id) {
     }
 }
 
-function showHatImageModal(hatId, imgUrl) {
-    // Återanvänd eller skapa en enkel bildmodal
+function showHatImageModal(imgUrl, name) {
     let modal = document.getElementById('hatImageModal');
     if (!modal) {
         modal = document.createElement('div');
@@ -157,32 +162,21 @@ function showHatImageModal(hatId, imgUrl) {
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Hattbild</h5>
+                        <h5 class="modal-title" id="hatImageModalTitle"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body text-center">
-                        <img id="hatImageModalImg" src="" alt="Hattbild"
+                        <img id="hatImageModalImg" src="" alt=""
                              class="img-fluid rounded"
-                             style="max-height:400px; object-fit:contain;">
-                        <p id="hatImageModalFallback" class="text-muted mt-3 d-none">Ingen bild tillgänglig.</p>
+                             style="max-height:500px; object-fit:contain;">
                     </div>
                 </div>
             </div>`;
         document.body.appendChild(modal);
     }
 
-    const img = modal.querySelector('#hatImageModalImg');
-    const fallback = modal.querySelector('#hatImageModalFallback');
-
-    if (imgUrl) {
-        img.src = imgUrl;
-        img.classList.remove('d-none');
-        fallback.classList.add('d-none');
-    } else {
-        img.src = '';
-        img.classList.add('d-none');
-        fallback.classList.remove('d-none');
-    }
+    modal.querySelector('#hatImageModalTitle').textContent = name || 'Hatt';
+    modal.querySelector('#hatImageModalImg').src = imgUrl;
 
     new bootstrap.Modal(modal).show();
 }

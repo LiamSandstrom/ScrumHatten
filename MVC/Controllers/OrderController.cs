@@ -16,6 +16,7 @@ namespace MVC.Controllers
     [Route("Order")]
     public class OrderController : BaseController
     {
+        private readonly IWebHostEnvironment _env;
         private readonly IOrderRepository orderRepository;
         private readonly ICustomsService _customsService;
         private IUserRepository userRepository;
@@ -23,7 +24,7 @@ namespace MVC.Controllers
         private HatRepository hatRepository;
         private IMaterialRepository materialRepository;
 
-        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo, IOrderRepository orderRepo, IMaterialRepository materialRepo, ICustomsService customsService)
+        public OrderController(IUserRepository userRepo, HatRepository hatRepo, ICustomerRepository customerRepo, IOrderRepository orderRepo, IMaterialRepository materialRepo, ICustomsService customsService, IWebHostEnvironment env)
         {
             orderRepository = orderRepo;
             userRepository = userRepo;
@@ -31,6 +32,7 @@ namespace MVC.Controllers
             customerRepository = customerRepo;
             materialRepository = materialRepo;
             _customsService = customsService;
+            _env = env;
         }
 
         [HttpGet("")]
@@ -153,22 +155,34 @@ namespace MVC.Controllers
             {
                 if (hat.HatId == null)
                 {
+                    string? imageUrl = null;
+
+                    if (hat.CustomImage != null && hat.CustomImage.Length > 0)
+                    {
+                        var fileName = $"{ObjectId.GenerateNewId()}{Path.GetExtension(hat.CustomImage.FileName)}";
+                        var savePath = Path.Combine(_env.WebRootPath, "images", "hats", fileName);
+                        using var stream = new FileStream(savePath, FileMode.Create);
+                        await hat.CustomImage.CopyToAsync(stream);
+                        imageUrl = $"/images/hats/{fileName}";
+                    }
+
                     Hat customHat = new Hat
                     {
+                        Id = ObjectId.GenerateNewId().ToString(),
                         CustomHat = true,
                         Name = "Custom",
                         Price = (double)hat.CustomPrice,
                         Description = hat.CustomDescription,
                         Materials = hat.Materials,
+                        ImageUrl = imageUrl,
                         Sizes = new List<HatSize>
-                {
-                    new HatSize { Label = hat.Size, Quantity = hat.Quantity }
-                }
+        {
+            new HatSize { Label = hat.Size, Quantity = hat.Quantity }
+        }
                     };
                     hatsInOrder.Add(customHat);
                     continue;
                 }
-
                 var baseHat = await hatRepository.GetHatById(hat.HatId);
                 if (baseHat == null)
                     return Json(CreateResponse(false, $"Hatt med id {hat.HatId} hittades inte"));
@@ -191,6 +205,7 @@ namespace MVC.Controllers
 
                     Hat modifiedHat = new Hat
                     {
+                        Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
                         CustomHat = true,
                         Name = baseHat.Name,
                         Price = baseHat.Price,
