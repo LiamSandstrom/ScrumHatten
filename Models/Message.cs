@@ -6,10 +6,8 @@ namespace Models
     public class Message
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)] // Själva meddelandet kan fortfarande ha ObjectId som sin egen nyckel
+        [BsonRepresentation(BsonType.ObjectId)] 
         public string Id { get; set; } = string.Empty;
-
-        // Dessa matchar UUID-strängarna från dina User-dokument
         public string? SenderId { get; set; }
         public string SenderName { get; set; } = string.Empty;
         public string ReceiverId { get; set; } = string.Empty;

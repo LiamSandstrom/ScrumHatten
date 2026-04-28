@@ -44,9 +44,8 @@ public async Task<IActionResult> Index(string? id, string? groupId)
             ViewBag.SelectedUserId = groupId;
             ViewBag.SelectedUserName = group.Name;
             ViewBag.IsGroupChat = true;
-            ViewBag.CurrentGroup = group; // Viktigt för modalen
-
-            // --- HÄR ÄR FIXEN: Fyll listorna för modalen i RÄTT controller ---
+            ViewBag.CurrentGroup = group; 
+            
             var memberIds = group.MemberIds ?? new List<string>();
             
             ViewBag.GroupMembers = allUsers
@@ -67,7 +66,7 @@ public async Task<IActionResult> Index(string? id, string? groupId)
         var selectedUser = allUsers.FirstOrDefault(u => u.Id.ToString() == id);
         ViewBag.SelectedUserName = selectedUser?.Name ?? "Kollega";
         messages = await _messageRepo.GetConversationAsync(currentUserId, id);
-        // ... olästa-logik ...
+        
     }
 
     return View(messages.OrderBy(m => m.Timestamp).ToList());
@@ -85,7 +84,6 @@ public async Task<IActionResult> Index(string? id, string? groupId)
             return await ProcessMessageSend(receiverId, content, true);
         }
 
-        // Privat hjälpmetod för att slippa dubbelkod vid sändning
         private async Task<IActionResult> ProcessMessageSend(string receiverId, string content, bool isGroup)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -149,33 +147,26 @@ public async Task<IActionResult> LeaveGroup(string groupId)
 {
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     
-    // 1. Hämta gruppen
     var group = await _groupRepo.GetGroupByIdAsync(groupId);
     if (group == null) return RedirectToAction("Index");
 
-    // 2. Ta bort den aktuella användaren ur listan
     group.MemberIds.Remove(currentUserId);
 
-    // 3. KOLLEN: Är gruppen tom nu?
     if (group.MemberIds.Count == 0)
     {
-        // Om ingen är kvar -> RADERA gruppen helt
         await _groupRepo.DeleteGroupAsync(groupId);
     }
     else
     {
-        // Om folk är kvar -> UPPDATERA gruppen (ta bort dig själv)
         await _groupRepo.UpdateGroupAsync(group);
     }
 
-    // Skicka användaren tillbaka till en tom chattvy
     return RedirectToAction("Index");
 }
 
 [HttpPost]
 public async Task<IActionResult> UpdateMembers(string groupId, List<string> selectedUsers)
 {
-    // selectedUsers bör innehålla ALLA som ska vara kvar/lägga till
     await _groupRepo.UpdateGroupMembersAsync(groupId, selectedUsers);
     return RedirectToAction("Index", new { groupId = groupId });
 }
@@ -199,7 +190,7 @@ public async Task<IActionResult> AddMembers(string groupId, List<string> newUser
     if (group != null && newUserIds != null && newUserIds.Any())
     {
         group.MemberIds.AddRange(newUserIds);
-        group.MemberIds = group.MemberIds.Distinct().ToList(); // Säkerhetsåtgärd mot dubbletter
+        group.MemberIds = group.MemberIds.Distinct().ToList(); 
         await _groupRepo.UpdateGroupMembersAsync(groupId, group.MemberIds);
     }
     return RedirectToAction("Index", new { groupId = groupId });

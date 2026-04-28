@@ -6,7 +6,6 @@ using System.Text;
 
 namespace Models
 {
-    //klassen viisar kopplingen mellan en hatt och material. "Hur mycket ull går det åt till just den här hatten"
     public class HatMaterial
     {
         [BsonRepresentation(BsonType.ObjectId)]
