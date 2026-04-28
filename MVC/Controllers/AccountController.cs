@@ -64,7 +64,6 @@ namespace MVC.Controllers
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, registerViewModel.selectedRole);
-                    await signInManager.SignInAsync(user, isPersistent: false);
                     return Json(CreateResponse(
                         success: true,
                         message: "Lyckad registrering!",

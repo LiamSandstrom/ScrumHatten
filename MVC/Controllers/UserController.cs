@@ -28,7 +28,7 @@ namespace MVC.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "Admin")] avkommentera denna i prod
+        //[Authorize(Roles = "Admin")] 
         public async Task<IActionResult> UserList()
         {
             List<ApplicationRole> allRoles = await _roleRepository.GetAllRolesAsync();
@@ -85,34 +85,34 @@ namespace MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Search([FromQuery] string searchTerm)
         {
-                List<User> result = await _userRepository.GetUserByStringMatch(searchTerm);
-                List<UserWithRoleName> userListExpanded = new List<UserWithRoleName>();
+            List<User> result = await _userRepository.GetUserByStringMatch(searchTerm);
+            List<UserWithRoleName> userListExpanded = new List<UserWithRoleName>();
 
-                for (int i = 0; i < result.Count; i++)
+            for (int i = 0; i < result.Count; i++)
+            {
+                UserWithRoleName userWithRoleName = new UserWithRoleName
                 {
-                    UserWithRoleName userWithRoleName = new UserWithRoleName
-                    {
-                        User = result[i],
-                    };
-                    userListExpanded.Add(userWithRoleName);
-                    ApplicationRole gottenRole = await _roleRepository.GetRoleByIdAsync(result[i].Roles.FirstOrDefault());
-                    string? gottenRoleName = gottenRole.Name;
-                    if (gottenRoleName != null)
-                    {
-                        userListExpanded[i].RoleName = gottenRoleName;
-                    }
-                    else
-                    {
-                        userListExpanded[i].RoleName = "No role found";
-
-                    }
+                    User = result[i],
+                };
+                userListExpanded.Add(userWithRoleName);
+                ApplicationRole gottenRole = await _roleRepository.GetRoleByIdAsync(result[i].Roles.FirstOrDefault());
+                string? gottenRoleName = gottenRole.Name;
+                if (gottenRoleName != null)
+                {
+                    userListExpanded[i].RoleName = gottenRoleName;
                 }
+                else
+                {
+                    userListExpanded[i].RoleName = "No role found";
 
-                return Json(userListExpanded);
-}
+                }
+            }
+
+            return Json(userListExpanded);
+        }
 
 
-        //[Authorize(Roles = "Admin")] avkommentera denna i prod
+        //[Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -143,33 +143,22 @@ namespace MVC.Controllers
             return View(editUserViewModel);
 
         }
-        /// <summary>
-        /// Denna metod postar ändringar av användarinformation
-        /// </summary>
-        /// <param name="editUserViewModel"></param>
-        /// <param name="roleManager"></param>
-        /// <returns></returns>
-        /// 
-        //[Authorize(Roles = "Admin")] avkommentera denna i prod !!!
         [HttpPost]
         public async Task<IActionResult> Edit(EditUserViewModel editUserViewModel)
         {
             User user = await _userRepository.GetUser(editUserViewModel.Id);
 
-            // Bortser från validering av lösenord om input är tomt
             if (string.IsNullOrWhiteSpace(editUserViewModel.Password))
             {
                 ModelState.Remove("Password");
                 ModelState.Remove("ConfirmPassword");
             }
 
-            // Kör validering
             if (!ModelState.IsValid)
             {
                 return View(editUserViewModel);
             }
 
-            // Ändrar infon i databasen
             user.Name = editUserViewModel.Name;
             user.Email = editUserViewModel.Email;
             user.PhoneNumber = editUserViewModel.Phonenumber;
@@ -191,7 +180,6 @@ namespace MVC.Controllers
                 var result = await _userManager.ResetPasswordAsync(user, token, editUserViewModel.Password);
             }
 
-            // Kör repo-frågan med ändrade uppgifterna
             await _userRepository.UpdateUserAsync(user);
 
             return RedirectToAction("UserList");

@@ -1,40 +1,40 @@
-@using Models
-@model (Order order, Customer customer) 
+/*~~*/ /*~~*/
+/*~~*/ /*~~*/ /*~~*/ /*~~~~*/ /*~~~~~*/ 
 
-@{
-    ViewData["Title"] = "Shipping Document";
-    Layout = null; 
+~~
+    /*~~~~~~~~~~~~~*/ ~ /*~~~~~*/ /*~~~~~~*/
+    /*~~*/ ~ /*~*/ 
     
-    decimal hatSubtotal = Model.order.Hats?.Sum(h => (decimal)h.Price) ?? 0;
+    /*~~~*/ /*~~~~~~~*/ ~ /*~~~~~~~~~~~~~~~~~~~*/ ~~ /*~~~~~~~~~~~~~*/ ~~ ~~
 
-    var euCountries = new List<string> { "Sverige", "Danmark", "Finland", "Tyskland", "Grekland", "Italien", "Frankrike", "Spanien", "Belgien", "Nederländerna" };
-    bool isEu = euCountries.Any(c => c.Equals(Model.customer.Country, StringComparison.OrdinalIgnoreCase));
+    ~~~ /*~~~~~~~*/ ~ ~~~ /*~~~~~~~~*/ ~ /*~~~~~~*/ /*~~~~~~*/ /*~~~~~~*/ /*~~~~~~~*/ /*~~~~~~~*/ /*~~~~~~*/ /*~~~~~~~~*/ /*~~~~~~*/ /*~~~~~~*/ /*~~~~~~~~~~~*/ ~~
+    /**/ /**/ ~ /*~~~~~~~~~~~~~*/ ~~ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-    decimal displayCustomsFee = Model.order.CustomsFee;
+    /*~~~*/ /*~~~~~~~~~~~~~*/ ~ /*~~~~~~~~~~~~~~~~~~~*/
 
-    if (isEu) 
-    {
-        displayCustomsFee = 0;
-    }
-    else if (displayCustomsFee == 0 && hatSubtotal > 0)
-    {
-        displayCustomsFee = hatSubtotal * 0.15m;
-    }
+    ~~ /*~~*/ 
+    ~
+        /*~~~~~~~~~~~~~*/ ~ ~~
+    ~
+    /**/ ~~ /*~~~~~~~~~~~~~~*/ ~~ ~ ~~ /*~~~~~~~*/ ~ ~~
+    ~
+        /*~~~~~~~~~~~~~*/ ~ /*~~~~~~~*/ ~ /*~~*/
+    ~
 
-    decimal customsRatePercent = 0;
-    if (hatSubtotal > 0) 
-    {
-        customsRatePercent = (displayCustomsFee / hatSubtotal) * 100;
-    }
+    /*~~~*/ /*~~~~~~~~~~~~~~*/ ~ ~~
+    ~~ /*~~~~~~~~*/ ~ ~~ 
+    ~
+        /*~~~~~~~~~~~~~~*/ ~ /*~~~~~~~~~~~~~~*/ ~ /*~~~~~~~~*/ ~ /**/
+    ~
 
-    decimal vat = Model.order.FinalPrice - (Model.order.FinalPrice / 1.25m);
-}
+    /*~~~*/ ~~~ ~ /*~~~~~~~~~~~~~~~~~~*/ ~ /*~~~~~~~~~~~~~~~~~~~*/ ~ /*~~~*/
+~
 
 <!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="utf-8" />
-    <title>Fraktsedel - @Model.order.Id</title>
+    <title>Fraktsedel - /*~~~~~~~~~~~*/</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
@@ -61,8 +61,8 @@
             </div>
             <div class="text-end">
                 <h4>FRAKTSEDEL / INVOICE</h4>
-                <span>Order #@Model.order.Id</span><br />
-                <span>Datum: @Model.order.OrderDate.ToShortDateString()</span>
+                <span>Order #/*~~~~~~~~~~~*/</span><br />
+                <span>Datum: /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/</span>
             </div>
         </div>
 
@@ -74,10 +74,10 @@
             <div class="col-6 text-end">
                 <h6 class="text-muted text-uppercase">Mottagare</h6>
                 <p>
-                    <strong>@Model.customer.Name</strong><br />
-                    @Model.customer.Adress<br />
-                    @Model.customer.ZipCode @Model.customer.City<br />
-                    @Model.customer.Country
+                    <strong>/*~~~~~~~~~~~~~~~~*/</strong><br />
+                    /*~~~~~~~~~~~~~~~~~~*/<br />
+                    /*~~~~~~~~~~~~~~~~~~~*/ /*~~~~~~~~~~~~~~~~*/<br />
+                    /*~~~~~~~~~~~~~~~~~~~*/
                 </p>
             </div>
         </div>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="col-4 text-end">
                     <strong>Ursprung:</strong> SE (Sweden)<br />
-                    <strong>Tullsats:</strong> @(isEu ? "0.0" : customsRatePercent.ToString("0.0"))%
+                    <strong>Tullsats:</strong> /*~~*/ ~ /*~*/ ~ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/%
                 </div>
             </div>
         </div>
@@ -105,28 +105,28 @@
             <tbody>
                 <tr>
                     <td>Varuvärde (Hattar)</td>
-                    <td class="text-end">@hatSubtotal.ToString("C")</td>
+                    <td class="text-end">/*~~~~~~~~~~~~~~~~~~~~~~*/</td>
                 </tr>
                 <tr>
                     <td>Fraktkostnad</td>
-                    <td class="text-end">@Model.order.TransportPrice.ToString("C")</td>
+                    <td class="text-end">/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/</td>
                 </tr>
                 
-                @if (displayCustomsFee > 0)
-                {
+                ~~~ /*~~~~~~~~~~~~~~*/ ~ ~~
+                ~
                     <tr>
-                        <td>Tullavgift (@Model.customer.Country)</td>
-                        <td class="text-end">@displayCustomsFee.ToString("C")</td>
+                        <td>Tullavgift (/*~~~~~~~~~~~~~~~~~~~*/)</td>
+                        <td class="text-end">/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/</td>
                     </tr>
-                }
+                ~
 
                 <tr>
                     <td class="fw-bold text-primary">Varav Moms (25%)</td>
-                    <td class="text-end fw-bold text-primary">@vat.ToString("C")</td>
+                    <td class="text-end fw-bold text-primary">/*~~~~~~~~~~~~~~*/</td>
                 </tr>
                 <tr class="table-dark">
                     <td class="fw-bold">TOTALT (Inkl. allt)</td>
-                    <td class="text-end fw-bold">@Model.order.FinalPrice.ToString("C")</td>
+                    <td class="text-end fw-bold">/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/</td>
                 </tr>
             </tbody>
         </table>

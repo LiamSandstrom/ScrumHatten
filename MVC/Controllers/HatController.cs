@@ -25,7 +25,6 @@ namespace MVC.Controllers
             _materialRepository = materialRepository;
         }
 
-        //HäMTA ALLA HATTAR OCH MATERIALER
 
         public async Task<IActionResult> Index()
         {
@@ -36,7 +35,6 @@ namespace MVC.Controllers
 
             return View(model);
 
-            ///LÄGG TILL HATT
         }
 
         [HttpPost]
@@ -122,7 +120,6 @@ namespace MVC.Controllers
             return RedirectToAction("Index");
         }
 
-        //TA BORT HATT
 
         [HttpPost]
         public IActionResult DeleteHat(string id)
@@ -140,7 +137,6 @@ namespace MVC.Controllers
             return RedirectToAction("Index");
         }
 
-        //REDIGERA HATT
 
         [HttpPost]
         public async Task<IActionResult> UpdateHat(
