@@ -19,13 +19,15 @@
 
 .statGrid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    row-gap: 0rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 50px;
+    margin: 2rem;
+    justify-content: center;
 }
 
 .statGrid > .card {
     height: 300px;
+
 }
 
 .SalesSumContainer {
@@ -36,6 +38,16 @@
     grid-column: 1 / span 2;
     height: 300px !important;
 }
+
+@media only screen and (max-width: 600px) {
+    {
+        .lineChartCard {
+            grid-column: 1;
+        }
+    }
+
+}
+
 
 .lineChartInner {
    
